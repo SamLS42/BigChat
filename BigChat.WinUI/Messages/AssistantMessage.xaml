@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="BigChat.Messages.AssistantMessage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:CommunityToolkit.Labs.WinUI.MarkdownTextBlock"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodel="using:BigChat.AppCore.ViewModel"
+    d:DataContext="{d:DesignInstance Type=viewmodel:MessageViewModel}"
+    mc:Ignorable="d">
+
+    <StackPanel
+        HorizontalAlignment="Left"
+        Background="Transparent"
+        PointerEntered="Element_PointerEntered"
+        PointerExited="Element_PointerExited"
+        Style="{StaticResource AssistantCardStyle}">
+        <ProgressRing IsIndeterminate="True" Visibility="{x:Bind Message.TextIsEmpty, Mode=OneWay}" />
+        <controls:MarkdownTextBlock
+            x:Name="AssistantResponse"
+            Config="{x:Bind MarkdownConfig, Mode=OneTime}"
+            Visibility="{x:Bind Message.TextIsEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}" />
+        <StackPanel
+            x:Name="ActionButtonsPanel"
+            Grid.Row="1"
+            Padding="0,4,0,4"
+            HorizontalAlignment="Left"
+            Background="Transparent"
+            Opacity="0"
+            Orientation="Horizontal"
+            Spacing="4">
+            <!--<Button Style="{StaticResource TransparentButton}">
+                <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE777;" />
+            </Button>-->
+            <Button Click="CopyButton_Click" Style="{StaticResource TransparentButton}">
+                <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE8C8;" />
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

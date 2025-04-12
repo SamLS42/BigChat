@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BigChat (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "BigChat (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="BigChat.Main.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:BigChat.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:media="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:ui="using:CommunityToolkit.WinUI"
+    xmlns:usercontrols="using:BigChat.Main"
+    xmlns:viewmodel="using:BigChat.AppCore.ViewModel"
+    d:DataContext="{d:DesignInstance Type=viewmodel:MainPageViewModel}"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="ChatInfoTemplate" x:DataType="viewmodel:ConversationViewModel">
+            <usercontrols:ChatNavigationViewItem Conversation="{x:Bind}" />
+        </DataTemplate>
+    </Page.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <TitleBar
+            Title="BigChat"
+            BackRequested="TitleBar_BackRequested"
+            IsBackButtonEnabled="{x:Bind NavViewFrame.CanGoBack, Mode=OneWay}"
+            IsBackButtonVisible="True"
+            IsPaneToggleButtonVisible="True"
+            PaneToggleRequested="TitleBar_PaneToggleRequested">
+            <TitleBar.IconSource>
+                <SymbolIconSource Symbol="Globe" />
+                <!--<BitmapIconSource UriSource="ms-appx:///Assets/myIcon.png" />-->
+            </TitleBar.IconSource>
+
+        </TitleBar>
+
+        <NavigationView
+            x:Name="NavView"
+            Grid.Row="1"
+            CompactPaneLength="52"
+            IsBackButtonVisible="Collapsed"
+            IsPaneToggleButtonVisible="False"
+            SelectionChanged="NavigationView_SelectionChanged">
+
+            <NavigationView.PaneCustomContent>
+                <Grid>
+                    <Button
+                        x:Name="PageButton"
+                        Margin="16,0,16,8"
+                        HorizontalAlignment="Stretch"
+                        AllowFocusOnInteraction="False"
+                        Command="{x:Bind ViewModel.OpenNewConversationCommand}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Visibility="{x:Bind NavView.IsPaneOpen, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="{x:Bind Loc.NewChatText, Mode=OneWay}" />
+                    </Button>
+                    <Button
+                        Margin="4,0,4,9"
+                        Command="{x:Bind ViewModel.OpenNewConversationCommand}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Visibility="{x:Bind NavView.IsPaneOpen, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}">
+                        <FontIcon Glyph="&#xE932;" />
+                    </Button>
+                </Grid>
+            </NavigationView.PaneCustomContent>
+
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem
+                    x:Name="ConversationsRoot"
+                    Icon="{ui:FontIcon Glyph=&#xE8F2;}"
+                    IsExpanded="True"
+                    MenuItemsSource="{x:Bind ChatNavigationViewItems}"
+                    SelectsOnInvoked="False" />
+                <NavigationViewItem x:Name="EmptyConversation" Visibility="Collapsed" />
+            </NavigationView.MenuItems>
+
+            <NavigationView.AutoSuggestBox>
+                <AutoSuggestBox
+                    ItemsSource="{x:Bind ViewModel.FilteredConversations, Mode=OneWay}"
+                    QueryIcon="Find"
+                    QuerySubmitted="AutoSuggestBox_QuerySubmitted"
+                    SuggestionChosen="AutoSuggestBox_SuggestionChosen"
+                    Text="{x:Bind ViewModel.AutoSuggestBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextChanged="AutoSuggestBox_TextChanged" />
+            </NavigationView.AutoSuggestBox>
+
+            <!--<NavigationView.PaneFooter>
+                <StackPanel>
+                    <NavigationViewItem Content="Knowledge Database" Icon="Library" />
+                </StackPanel>
+            </NavigationView.PaneFooter>-->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Frame x:Name="NavViewFrame" Navigated="NavViewFrame_Navigated" />
+                <usercontrols:UserInput Grid.Row="1" Visibility="{x:Bind ViewModel.IsShowingConversation, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+            </Grid>
+        </NavigationView>
+    </Grid>
+</Page>
