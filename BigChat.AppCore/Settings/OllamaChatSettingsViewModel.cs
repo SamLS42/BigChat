@@ -25,11 +25,19 @@ public partial class OllamaChatSettingsViewModel : ObservableObject
 
         Endpoint = ChatSettings.Endpoint ?? string.Empty;
         ModelId = ChatSettings.ModelId ?? string.Empty;
-        Temperature = ChatSettings.Temperature ?? default;
-        MaxOutputTokens = ChatSettings.MaxOutputTokens ?? default;
-        TopP = ChatSettings.TopP ?? default;
-        FrequencyPenalty = ChatSettings.FrequencyPenalty ?? default;
-        PresencePenalty = ChatSettings.PresencePenalty ?? default;
+
+        LoadSettings();
+    }
+
+    private void LoadSettings()
+    {
+        Temperature = ChatSettings.Temperature ?? Constants.DefaultTemperature;
+        MaxOutputTokens = ChatSettings.MaxOutputTokens ?? Constants.DefaultMaxOutputTokens;
+        TopP = ChatSettings.TopP ?? Constants.DefaultTopP;
+        FrequencyPenalty = ChatSettings.FrequencyPenalty ?? Constants.DefaultFrequencyPenalty;
+        PresencePenalty = ChatSettings.PresencePenalty ?? Constants.DefaultPresencePenalty;
+
+        Save();
     }
 
     [RelayCommand]

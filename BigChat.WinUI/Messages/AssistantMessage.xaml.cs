@@ -26,7 +26,7 @@ internal sealed partial class AssistantMessage : UserControl, IMessageControl
         if (string.Equals(e.PropertyName, nameof(Message.Text), StringComparison.Ordinal))
         {
             //needed to not block the UI, works better with low priority, I think
-            AssistantResponse.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => AssistantResponse.Text = Message.Text ?? string.Empty);
+            AssistantResponse.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.High, () => AssistantResponse.Text = Message.Text ?? string.Empty);
         }
     }
 
