@@ -76,8 +76,11 @@
                             </toolkit:SettingsCard.Header>
                             <TextBox Style="{StaticResource TextBlockStyle}" Text="{x:Bind ChatCompletionsSettings.ModelId, Mode=TwoWay}" />
                         </toolkit:SettingsCard>
-                        <toolkit:SettingsExpander Description="Do not change unless you know what you are doing" Header="Advanced configuration">
-                            <Button Command="{x:Bind ChatCompletionsSettings.RestoreDefaultsCommand}" IsEnabled="{x:Bind AdvanceSettings.IsExpanded, Mode=OneWay}">
+                        <toolkit:SettingsExpander
+                            x:Name="AzureAIAdvanceSettings"
+                            Description="Do not change unless you know what you are doing"
+                            Header="Advanced configuration">
+                            <Button Command="{x:Bind ChatCompletionsSettings.RestoreDefaultsCommand}" IsEnabled="{x:Bind AzureAIAdvanceSettings.IsExpanded, Mode=OneWay}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE777;" />
                                     <TextBlock Text="{x:Bind Loc.RestoreDefaultsText, Mode=OneWay}" />
@@ -152,10 +155,10 @@
                             <TextBox Style="{StaticResource TextBlockStyle}" Text="{x:Bind OllamaChatSettings.ModelId, Mode=TwoWay}" />
                         </toolkit:SettingsCard>
                         <toolkit:SettingsExpander
-                            x:Name="AdvanceSettings"
+                            x:Name="OllamaAdvanceSettings"
                             Description="Do not change unless you know what you are doing"
                             Header="Advanced configuration">
-                            <Button Command="{x:Bind OllamaChatSettings.RestoreDefaultsCommand}" IsEnabled="{x:Bind AdvanceSettings.IsExpanded, Mode=OneWay}">
+                            <Button Command="{x:Bind OllamaChatSettings.RestoreDefaultsCommand}" IsEnabled="{x:Bind OllamaAdvanceSettings.IsExpanded, Mode=OneWay}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <FontIcon Glyph="&#xE777;" />
                                     <TextBlock Text="{x:Bind Loc.RestoreDefaultsText, Mode=OneWay}" />
