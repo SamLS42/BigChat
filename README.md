@@ -2,11 +2,12 @@
 
 BigChat is a WinUI 3 chat application built using a vertical slice architecture. It provides a modern desktop interface for chatting with large language models. You can choose between using the Ollama inference engine or Azure AI Inference to drive the chat functionality.
 
+![image](https://github.com/user-attachments/assets/21d88ffa-0792-443d-849c-f02f16e6e0b1)
+
 ## Features
 
 - **Chat UI:** A responsive interface where conversations are listed and managed.
 - **Multiple AI Providers:** Support for both Ollama and Azure AI Inference enabling flexible chat experiences.
-- **Vertical Slice Architecture:** Each feature and layer (UI, application core, infrastructure, settings) is separated into its own slice, simplifying maintenance and scalability.
 - **Local Data Store:** Entity Framework Core with SQLite is used for data persistence to store conversations and messages.
 - **Settings Management:** Easily switch between AI providers and customize chat parameters (such as temperature, token limits, and penalties).
 
@@ -19,7 +20,6 @@ BigChat is a WinUI 3 chat application built using a vertical slice architecture.
 ## Getting Started
 
 1. **Clone the Repository**
-
 
 2. **Restore Dependencies and Build**
 
