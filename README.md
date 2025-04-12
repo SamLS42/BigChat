@@ -1,4 +1,4 @@
-# BigChat# BigChat
+# BigChat
 
 BigChat is a WinUI 3 chat application built using a vertical slice architecture. It provides a modern desktop interface for chatting with large language models. You can choose between using the Ollama inference engine or Azure AI Inference to drive the chat functionality.
 
