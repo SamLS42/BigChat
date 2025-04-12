@@ -58,7 +58,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE.txt) f
 
 ## Acknowledgments
 
-- The project leverages the latest [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml) framework.
+- The project leverages the latest [WinUI](https://github.com/microsoft/microsoft-ui-xaml) framework.
 - Built using technologies such as .NET 9, Entity Framework Core, and CommunityToolkit libraries.
 
 ---
