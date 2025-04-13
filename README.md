@@ -16,6 +16,7 @@ BigChat is a WinUI 3 chat application built using a vertical slice architecture.
 - **Windows 10** or later.
 - **Visual Studio 2022** with WinUI 3 and .NET 9 development workload installed.
 - **.NET 9 SDK**
+- **[CommunityToolkit.Labs packages source](https://github.com/CommunityToolkit/Labs-Windows?tab=readme-ov-file#getting-started)**
 
 ## Getting Started
 
