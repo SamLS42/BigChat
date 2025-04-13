@@ -44,10 +44,6 @@ In the **Settings** page of the application, you can configure the endpoints and
 
 Adjust these settings to tailor the chat experience to your needs.
 
-## Vertical Slice Architecture
-
-Each functional slice (chat management, settings, notifications, etc.) is decoupled within the application. This approach isolates changes and new features to individual slices, making the project easier to maintain, extend, and test.
-
 ## Disclaimer
 
 **This project is not intended for production use.**  
