@@ -9,28 +9,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <ResourceDictionary>
-                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-                    <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
-                    <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
-                    <converters:EmptyStringToObjectConverter
-                        x:Key="EmptyStringToObjectConverter"
-                        EmptyValue="Visible"
-                        NotEmptyValue="Collapsed" />
-                    <Style
-                        x:Key="TransparentButton"
-                        BasedOn="{StaticResource DefaultButtonStyle}"
-                        TargetType="Button">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="BorderBrush" Value="Transparent" />
-                    </Style>
-                    <Style x:Key="AssistantCardStyle" TargetType="StackPanel">
-                        <Setter Property="Padding" Value="12" />
-                        <Setter Property="Spacing" Value="8" />
-                        <Setter Property="Margin" Value="0,4,0,0" />
-                    </Style>
-                    <x:Double x:Key="SmallIconSize">16</x:Double>
-                </ResourceDictionary>
+                <ResourceDictionary Source="/CustomStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
