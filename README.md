@@ -16,6 +16,7 @@ BigChat is a WinUI 3 chat application built using a vertical slice architecture.
 - **Windows 10** or later.
 - **Visual Studio 2022** with WinUI 3 and .NET 9 development workload installed.
 - **.NET 9 SDK**
+- **[CommunityToolkit.Labs packages source](https://github.com/CommunityToolkit/Labs-Windows?tab=readme-ov-file#getting-started)**
 
 ## Getting Started
 
@@ -42,10 +43,6 @@ In the **Settings** page of the application, you can configure the endpoints and
 - **Azure AI Inference:** Provide the API key, model ID, and adjust parameters such as temperature and token limits.
 
 Adjust these settings to tailor the chat experience to your needs.
-
-## Vertical Slice Architecture
-
-Each functional slice (chat management, settings, notifications, etc.) is decoupled within the application. This approach isolates changes and new features to individual slices, making the project easier to maintain, extend, and test.
 
 ## Disclaimer
 
