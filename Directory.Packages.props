@@ -26,7 +26,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.7.250401001" />
-    <PackageVersion Include="Meziantou.Analyzer" Version="2.0.196" />
+    <PackageVersion Include="Meziantou.Analyzer" Version="2.0.197" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="System.Reactive" Version="6.0.1" />
     <PackageVersion Include="xunit.v3" Version="2.0.1" />
