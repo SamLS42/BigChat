@@ -14,7 +14,8 @@
     <PackageVersion Include="Microsoft.Extensions.AI.AzureAIInference" Version="9.4.0-preview.1.25207.5" />
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.46.0-alpha" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.47.0-alpha" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.13.1" />
     <PackageVersion Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageVersion Include="Microsoft.Extensions.AI" Version="9.4.0-preview.1.25207.5" />

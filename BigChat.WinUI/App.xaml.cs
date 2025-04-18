@@ -2,6 +2,7 @@
 using BigChat.Infrastructure;
 using BigChat.Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System.Diagnostics.CodeAnalysis;
 
@@ -18,6 +19,7 @@ public partial class App : Application
     {
         InitializeComponent();
         ConfigureServices();
+        UnhandledException += App_UnhandledException;
     }
 
     public T GetService<T>() where T : notnull
@@ -40,6 +42,11 @@ public partial class App : Application
         IServiceCollection serviceCollection = new ServiceCollection()
                .AddTransient<MainWindow>()
                .AddServices()
+               .AddLogging(builder =>
+               {
+                   builder.SetMinimumLevel(LogLevel.Error);
+                   builder.AddEventLog();
+               })
                .AddPlatformServices()
                .AddViewModels()
                .AddMemoryCache(setup =>
@@ -50,5 +57,12 @@ public partial class App : Application
                ;
 
         ServiceProvider = serviceCollection.BuildServiceProvider();
+    }
+
+    private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+#pragma warning disable CA1848 // Use the LoggerMessage delegates
+        ServiceProvider.GetRequiredService<ILogger<App>>().LogCritical(e.Exception, "An unhandled exception occurred: {ErrorMessage}", e.Message);
+#pragma warning restore CA1848 // Use the LoggerMessage delegates
     }
 }

@@ -4,7 +4,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="using:BigChat.UserControls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="using:BigChat.AppCore.ViewModel"
     d:DataContext="{d:DesignInstance Type=viewmodel:ConversationViewModel}"
@@ -35,7 +34,8 @@
             Padding="0,8,8,8"
             HorizontalAlignment="Right"
             AllowFocusOnInteraction="False"
-            Style="{StaticResource TransparentButton}"
+            Background="Transparent"
+            BorderBrush="Transparent"
             Visibility="Visible">
             <DropDownButton.Flyout>
                 <MenuFlyout Placement="Bottom">
