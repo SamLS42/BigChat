@@ -11,8 +11,8 @@ public class MyDbContext : DbContext
     }
 
     public static readonly Func<MyDbContext, int, int, int, IAsyncEnumerable<Message>> RecentMessagesQuery =
-        EF.CompileAsyncQuery((MyDbContext db, int conversationId, int after, int count) => db.Messages
-        .Where(m => m.ConversationId == conversationId && m.Id > after)
+        EF.CompileAsyncQuery((MyDbContext db, int conversationId, int afterId, int count) => db.Messages
+        .Where(m => m.ConversationId == conversationId && m.Id > afterId)
         .OrderBy(m => m.Id)
         .Take(count));
 
