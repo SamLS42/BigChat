@@ -23,9 +23,9 @@ public partial class ChatCompletionsSettingsViewModel : ObservableObject
         SettingsService = settingsService;
 
         ChatSettings = SettingsService.GetChatCompletionsSettings() ?? new();
-        Endpoint = ChatSettings.Endpoint ?? string.Empty;
-        APIKey = ChatSettings.APIKey ?? string.Empty;
-        ModelId = ChatSettings.ModelId ?? string.Empty;
+        Endpoint = ChatSettings.Endpoint;
+        APIKey = ChatSettings.APIKey;
+        ModelId = ChatSettings.ModelId;
 
         LoadSettings();
     }
@@ -37,19 +37,11 @@ public partial class ChatCompletionsSettingsViewModel : ObservableObject
         TopP = ChatSettings.TopP;
         FrequencyPenalty = ChatSettings.FrequencyPenalty;
         PresencePenalty = ChatSettings.PresencePenalty;
-
-        Save();
     }
 
     [RelayCommand]
     private void RestoreDefaults()
     {
-        Temperature = Constants.DefaultTemperature;
-        MaxOutputTokens = Constants.DefaultMaxOutputTokens;
-        TopP = Constants.DefaultTopP;
-        FrequencyPenalty = Constants.DefaultFrequencyPenalty;
-        PresencePenalty = Constants.DefaultPresencePenalty;
-
         ChatSettings.Temperature = Constants.DefaultTemperature;
         ChatSettings.MaxOutputTokens = Constants.DefaultMaxOutputTokens;
         ChatSettings.TopP = Constants.DefaultTopP;
@@ -71,5 +63,7 @@ public partial class ChatCompletionsSettingsViewModel : ObservableObject
         ChatSettings.PresencePenalty = PresencePenalty;
 
         SettingsService.SetChatCompletionsClientSettings(ChatSettings);
+
+        LoadSettings();
     }
 }

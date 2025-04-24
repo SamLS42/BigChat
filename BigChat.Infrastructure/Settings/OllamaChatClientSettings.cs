@@ -2,7 +2,7 @@
 
 public class OllamaChatClientSettings
 {
-    public string? ModelId { get; set; }
+    public string ModelId { get; set; } = string.Empty;
     public string Endpoint { get; set; } = "http://localhost:11434";
     public double Temperature { get; set; } = Constants.DefaultTemperature;
     public int MaxOutputTokens { get; set; } = Constants.DefaultMaxOutputTokens;
