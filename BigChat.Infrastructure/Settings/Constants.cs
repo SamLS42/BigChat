@@ -1,4 +1,4 @@
-﻿namespace BigChat.AppCore.Settings;
+﻿namespace BigChat.Infrastructure.Settings;
 
 public static class Constants
 {
@@ -11,7 +11,7 @@ public static class Constants
     public static double MaxFrequencyPenalty { get; } = 2;
     public static double MaxPresencePenalty { get; } = 2;
     public static double DefaultTemperature { get; } = 1;
-    public static double DefaultMaxOutputTokens { get; } = 8192;
+    public static int DefaultMaxOutputTokens { get; } = 8192;
     public static double DefaultTopP { get; } = 1;
     public static double DefaultFrequencyPenalty { get; } //= 0;
     public static double DefaultPresencePenalty { get; } //= 0;

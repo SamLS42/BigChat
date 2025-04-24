@@ -1,5 +1,6 @@
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.Settings;
+using BigChat.Infrastructure.Settings;
 using BigChat.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
