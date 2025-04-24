@@ -43,7 +43,7 @@ public sealed partial class MainPageViewModel : ObservableObject,
     [RelayCommand]
     private async Task LoadConversations(CancellationToken cancellationToken = default)
     {
-        await foreach (var conversation in Db.Conversations.Select(c => new { c.Id, c.Subject })
+        await foreach (var conversation in Db.Conversations.OrderByDescending(c => c.CreatedAt).Select(c => new { c.Id, c.Subject })
             .AsAsyncEnumerable()
             .WithCancellation(cancellationToken))
         {
