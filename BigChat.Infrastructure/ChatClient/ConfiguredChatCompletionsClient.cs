@@ -83,11 +83,11 @@ internal sealed class ConfiguredChatCompletionsClient : IChatClient
         if (SettingsService.GetChatCompletionsSettings() is ChatCompletionsClientSettings settings)
         {
             ChatOptions.ModelId = settings.ModelId;
-            ChatOptions.Temperature = settings.Temperature;
+            ChatOptions.Temperature = (float?)settings.Temperature;
             ChatOptions.MaxOutputTokens = settings.MaxOutputTokens;
-            ChatOptions.TopP = settings.TopP;
-            ChatOptions.FrequencyPenalty = settings.FrequencyPenalty;
-            ChatOptions.PresencePenalty = settings.PresencePenalty;
+            ChatOptions.TopP = (float?)settings.TopP;
+            ChatOptions.FrequencyPenalty = (float?)settings.FrequencyPenalty;
+            ChatOptions.PresencePenalty = (float?)settings.PresencePenalty;
         }
 
         return ChatOptions;

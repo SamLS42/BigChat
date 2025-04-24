@@ -9,7 +9,7 @@ public partial class ChatCompletionsSettingsViewModel : ObservableObject
     [ObservableProperty] public partial string APIKey { get; set; }
     [ObservableProperty] public partial string ModelId { get; set; }
     [ObservableProperty] public partial double Temperature { get; set; }
-    [ObservableProperty] public partial double MaxOutputTokens { get; set; }
+    [ObservableProperty] public partial int MaxOutputTokens { get; set; }
     [ObservableProperty] public partial double TopP { get; set; }
     [ObservableProperty] public partial double FrequencyPenalty { get; set; }
     [ObservableProperty] public partial double PresencePenalty { get; set; }
@@ -32,11 +32,11 @@ public partial class ChatCompletionsSettingsViewModel : ObservableObject
 
     private void LoadSettings()
     {
-        Temperature = ChatSettings.Temperature ?? Constants.DefaultTemperature;
-        MaxOutputTokens = ChatSettings.MaxOutputTokens ?? Constants.DefaultMaxOutputTokens;
-        TopP = ChatSettings.TopP ?? Constants.DefaultTopP;
-        FrequencyPenalty = ChatSettings.FrequencyPenalty ?? Constants.DefaultFrequencyPenalty;
-        PresencePenalty = ChatSettings.PresencePenalty ?? Constants.DefaultPresencePenalty;
+        Temperature = ChatSettings.Temperature;
+        MaxOutputTokens = ChatSettings.MaxOutputTokens;
+        TopP = ChatSettings.TopP;
+        FrequencyPenalty = ChatSettings.FrequencyPenalty;
+        PresencePenalty = ChatSettings.PresencePenalty;
 
         Save();
     }
@@ -50,11 +50,11 @@ public partial class ChatCompletionsSettingsViewModel : ObservableObject
         FrequencyPenalty = Constants.DefaultFrequencyPenalty;
         PresencePenalty = Constants.DefaultPresencePenalty;
 
-        ChatSettings.Temperature = (float?)Constants.DefaultTemperature;
-        ChatSettings.MaxOutputTokens = (int?)Constants.DefaultMaxOutputTokens;
-        ChatSettings.TopP = (float?)Constants.DefaultTopP;
-        ChatSettings.FrequencyPenalty = (float?)Constants.DefaultFrequencyPenalty;
-        ChatSettings.PresencePenalty = (float?)Constants.DefaultPresencePenalty;
+        ChatSettings.Temperature = Constants.DefaultTemperature;
+        ChatSettings.MaxOutputTokens = Constants.DefaultMaxOutputTokens;
+        ChatSettings.TopP = Constants.DefaultTopP;
+        ChatSettings.FrequencyPenalty = Constants.DefaultFrequencyPenalty;
+        ChatSettings.PresencePenalty = Constants.DefaultPresencePenalty;
 
         Save();
     }
@@ -64,11 +64,11 @@ public partial class ChatCompletionsSettingsViewModel : ObservableObject
         ChatSettings.Endpoint = Endpoint;
         ChatSettings.APIKey = APIKey;
         ChatSettings.ModelId = ModelId;
-        ChatSettings.Temperature = (float?)Temperature;
-        ChatSettings.MaxOutputTokens = (int?)MaxOutputTokens;
-        ChatSettings.TopP = (float?)TopP;
-        ChatSettings.FrequencyPenalty = (float?)FrequencyPenalty;
-        ChatSettings.PresencePenalty = (float?)PresencePenalty;
+        ChatSettings.Temperature = Temperature;
+        ChatSettings.MaxOutputTokens = MaxOutputTokens;
+        ChatSettings.TopP = TopP;
+        ChatSettings.FrequencyPenalty = FrequencyPenalty;
+        ChatSettings.PresencePenalty = PresencePenalty;
 
         SettingsService.SetChatCompletionsClientSettings(ChatSettings);
     }
