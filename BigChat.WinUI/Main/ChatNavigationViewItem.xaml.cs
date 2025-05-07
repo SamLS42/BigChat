@@ -22,7 +22,7 @@ internal sealed partial class ChatNavigationViewItem
         set => SetValue(ConversationProperty, value);
     }
 
-    private static readonly DependencyProperty ConversationProperty = DependencyProperty.Register(
+    public static readonly DependencyProperty ConversationProperty = DependencyProperty.Register(
         name: nameof(Conversation),
         propertyType: typeof(ConversationViewModel),
         ownerType: typeof(ChatNavigationViewItem),

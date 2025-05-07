@@ -44,7 +44,7 @@ internal sealed partial class AssistantMessage : UserControl, IMessageControl
         }
     }
 
-    private static readonly DependencyProperty MessageProperty = DependencyProperty.Register(
+    public static readonly DependencyProperty MessageProperty = DependencyProperty.Register(
         name: nameof(Message),
         propertyType: typeof(MessageViewModel),
         ownerType: typeof(AssistantMessage),

@@ -26,7 +26,7 @@ internal sealed partial class UserMessage : UserControl, IMessageControl
         set { SetValue(MessageProperty, value); Bindings.Update(); }
     }
 
-    private static readonly DependencyProperty MessageProperty = DependencyProperty.Register(
+    public static readonly DependencyProperty MessageProperty = DependencyProperty.Register(
         name: nameof(Message),
         propertyType: typeof(MessageViewModel),
         ownerType: typeof(UserMessage),
