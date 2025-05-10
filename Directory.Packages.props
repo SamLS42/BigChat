@@ -11,15 +11,15 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="9.0.3" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.AI.AzureAIInference" Version="9.4.3-preview.1.25230.7" />
+    <PackageVersion Include="Microsoft.Extensions.AI.AzureAIInference" Version="9.4.4-preview.1.25259.16" />
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.48.0-alpha" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.49.0-alpha" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.13.1" />
     <PackageVersion Include="System.Data.SQLite.Core" Version="1.0.119" />
-    <PackageVersion Include="Microsoft.Extensions.AI" Version="9.4.3-preview.1.25230.7" />
-    <PackageVersion Include="Microsoft.Extensions.AI.Ollama" Version="9.4.3-preview.1.25230.7" />
+    <PackageVersion Include="Microsoft.Extensions.AI" Version="9.4.4-preview.1.25259.16" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Ollama" Version="9.4.4-preview.1.25259.16" />
     <PackageVersion Include="Microsoft.Extensions.AI.OpenAI" Version="9.3.0-preview.1.25161.3" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageVersion Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
