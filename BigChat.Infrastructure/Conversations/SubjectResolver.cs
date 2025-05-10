@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace BigChat.Infrastructure.Conversations;
 
-public partial class SubjectResolver(ChatClientProvider chatClientProvider, MyDbContext db)
+public partial class SubjectResolver(ChatClientProvider chatClientProvider, IDbContextFactory<MyDbContext> dbContextFactory)
 {
     private const string DetermineSubjectOrder = """
             Based on our conversation so far, please determine the primary subject of our discussion. Once identified, output the subject in exactly the following format (and nothing else):
@@ -25,6 +25,8 @@ public partial class SubjectResolver(ChatClientProvider chatClientProvider, MyDb
     public async Task<string?> ResolveSubjectAsync(int conversationId, CancellationToken cancellationToken = default)
     {
         List<Message> tempResults = new(ContextLength);
+
+        await using MyDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
 
         await foreach (Message item in db.GetRecentMessages(conversationId, afterId: 0, count: ContextLength).WithCancellation(cancellationToken))
         {

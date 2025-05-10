@@ -1,13 +1,14 @@
 ﻿using BigChat.Infrastructure.ChatClient;
 using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
 namespace BigChat.Infrastructure.Conversations;
 
-public class ConversationProcessor(MyDbContext db, ChatClientProvider chatClientProvider)
+public class ConversationProcessor(IDbContextFactory<MyDbContext> dbContextFactory, ChatClientProvider chatClientProvider)
 {
     private ConcurrentDictionary<int, (ResponseMessage response, CancellationTokenSource cts)> RunningJobs { get; } = [];
 
@@ -41,6 +42,8 @@ public class ConversationProcessor(MyDbContext db, ChatClientProvider chatClient
             (ResponseMessage response, CancellationToken cancellationToken) = (job.response, job.cts.Token);
 
             List<ChatMessage> messages = [];
+
+            await using MyDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
 
             await foreach (Message m in db.GetRecentMessages(conversationId, 0, 50).WithCancellation(cancellationToken))
             {
