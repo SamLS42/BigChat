@@ -7,8 +7,17 @@ namespace BigChat.AppCore.ViewModel;
 
 public partial class MessageViewModel(Message message) : ObservableObject
 {
-    public int Id { get => message.Id; set => message.Id = value; }
-    public int ConversationId { get => message.ConversationId; set => message.ConversationId = value; }
+    public int Id
+    {
+        get => message.Id;
+        set => message.Id = value;
+    }
+
+    public int ConversationId
+    {
+        get => message.ConversationId;
+        set => message.ConversationId = value;
+    }
 
     public bool TextIsEmpty => string.IsNullOrWhiteSpace(Text);
 
