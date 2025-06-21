@@ -1,11 +1,12 @@
 ﻿using BigChat.Infrastructure.Settings;
 using Microsoft.Extensions.AI;
+using OllamaSharp;
 
 namespace BigChat.Infrastructure.ChatClient;
 internal sealed class ConfiguredOllamaChatClient : IChatClient
 {
     private ISettingsService SettingsService { get; }
-    private OllamaChatClient? ChatClient { get; set; }
+    private OllamaApiClient? ChatClient { get; set; }
     private ChatOptions ChatOptions { get; } = new ChatOptions();
     private string? Endpoint => SettingsService.GetOllamaChatSettings()?.Endpoint;
     private int EndpointHash { get; set; }
@@ -25,7 +26,7 @@ internal sealed class ConfiguredOllamaChatClient : IChatClient
         ChatClient?.Dispose();
     }
 
-    private OllamaChatClient GetChatClient()
+    private OllamaApiClient GetChatClient()
     {
         if (string.IsNullOrWhiteSpace(Endpoint))
         {
@@ -34,7 +35,7 @@ internal sealed class ConfiguredOllamaChatClient : IChatClient
 
         if (EndpointHash != StringComparer.Ordinal.GetHashCode(Endpoint) || ChatClient is null)
         {
-            ChatClient = new OllamaChatClient(Endpoint);
+            ChatClient = new OllamaApiClient(Endpoint);
 
             EndpointHash = StringComparer.Ordinal.GetHashCode(Endpoint);
         }
@@ -46,23 +47,19 @@ internal sealed class ConfiguredOllamaChatClient : IChatClient
         ChatOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return GetChatClient().GetResponseAsync(messages, GetChatOptions(), cancellationToken);
+        return ((IChatClient)GetChatClient()).GetResponseAsync(messages, GetChatOptions(), cancellationToken);
     }
 
     public object? GetService(Type serviceType, object? serviceKey = null)
     {
-        if (ChatClient is IChatClient client)
-        {
-            return client.GetService(serviceType, serviceKey);
-        }
-        return null;
+        return ChatClient is IChatClient client ? client.GetService(serviceType, serviceKey) : null;
     }
 
     public IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(IEnumerable<ChatMessage> messages,
         ChatOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return GetChatClient().GetStreamingResponseAsync(messages, GetChatOptions(), cancellationToken);
+        return ((IChatClient)GetChatClient()).GetStreamingResponseAsync(messages, options ?? GetChatOptions(), cancellationToken);
     }
 
     private ChatOptions GetChatOptions()

@@ -1,7 +1,6 @@
 ﻿using BigChat.Infrastructure.ChatClient;
 using BigChat.Infrastructure.Conversations;
 using BigChat.Infrastructure.Data;
-using BigChat.Infrastructure.Embeddings;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
@@ -19,7 +18,6 @@ public static class ServiceRegistration
             .AddSingleton<ChatClientProvider>()
             .AddSingleton<SubjectResolver>()
             .AddSingleton<ConversationProcessor>()
-            .AddSingleton<IEmbeddingGenerator<string, Embedding<float>>, SKEmbeddingGenerator>()
             .AddSingleton(services =>
             {
                 SqliteConnection connection = new($"Data Source={AppDomain.CurrentDomain.BaseDirectory}\\MyDB.db;");

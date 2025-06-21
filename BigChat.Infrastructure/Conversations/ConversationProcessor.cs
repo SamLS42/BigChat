@@ -3,90 +3,37 @@ using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
-using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 
 namespace BigChat.Infrastructure.Conversations;
 
 public class ConversationProcessor(IDbContextFactory<MyDbContext> dbContextFactory, ChatClientProvider chatClientProvider)
 {
-    private ConcurrentDictionary<int, (ResponseMessage response, CancellationTokenSource cts)> RunningJobs { get; } = [];
-
-    public bool TryGetStreamingMessage(int conversationId, [MaybeNullWhen(false)] out ResponseMessage value)
+    public async Task<string> GetAIResponseAsync(int conversationId, CancellationToken cancellationToken)
     {
-        if (RunningJobs.TryGetValue(conversationId, out (ResponseMessage response, CancellationTokenSource cts) job))
+        List<ChatMessage> messages = [];
+
+        await using MyDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        await foreach (Message m in db.GetRecentMessages(conversationId, 0, 50).WithCancellation(cancellationToken))
         {
-            value = job.response;
-            return true;
+            messages.Add(new ChatMessage(new ChatRole(m.Role), m.Text));
         }
 
-        value = null;
-        return false;
-    }
+        string response = (await chatClientProvider.GetChatClient().GetResponseAsync(messages, cancellationToken: cancellationToken)).Text;
 
-    public ResponseMessage GetStreamingResponse(int conversationId)
-    {
-        CancellationTokenSource cts = new();
-
-        ResponseMessage message = new() { Text = string.Empty };
-
-        RunningJobs.TryAdd(conversationId, (message, cts));
-
-        return message;
-    }
-
-    public async Task ProcessConversationAsync(int conversationId)
-    {
-        if (RunningJobs.TryGetValue(conversationId, out (ResponseMessage response, CancellationTokenSource cts) job))
+        if (!string.IsNullOrWhiteSpace(response))
         {
-            (ResponseMessage response, CancellationToken cancellationToken) = (job.response, job.cts.Token);
-
-            List<ChatMessage> messages = [];
-
-            await using MyDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-
-            await foreach (Message m in db.GetRecentMessages(conversationId, 0, 50).WithCancellation(cancellationToken))
+            Message message = (await db.Messages.AddAsync(new Message
             {
-                messages.Add(new ChatMessage(new ChatRole(m.Role), m.Text));
-            }
+                ConversationId = conversationId,
+                CreatedAt = DateTime.UtcNow,
+                Role = ChatRole.Assistant.Value,
+                Text = response,
+            }, cancellationToken: default)).Entity;
 
-            try
-            {
-                await foreach (ChatResponseUpdate messagePart in chatClientProvider.GetChatClient().GetStreamingResponseAsync(messages, cancellationToken: cancellationToken))
-                {
-                    response.Text += messagePart;
-                }
-            }
-            finally
-            {
-                // Even if the processing is cancelled, the text already received will be added to the conversation.
-                // Hence the "cancellationToken: default", it won't be cancelled
-                if (!string.IsNullOrWhiteSpace(response.Text))
-                {
-                    Message message = (await db.Messages.AddAsync(new Message
-                    {
-                        ConversationId = conversationId,
-                        CreatedAt = DateTime.UtcNow,
-                        Role = ChatRole.Assistant.Value,
-                        Text = response.Text,
-                    }, cancellationToken: default)).Entity;
-
-                    await db.SaveChangesAsync(cancellationToken: default);
-
-                    response.Id = message.Id;
-                }
-
-                response.Completed = true;
-                RunningJobs.TryRemove(conversationId, out _);
-            }
+            await db.SaveChangesAsync(cancellationToken: default);
         }
-    }
 
-    public async Task CancelProcessConversationAsync(int conversationId)
-    {
-        if (RunningJobs.TryRemove(conversationId, out (ResponseMessage response, CancellationTokenSource cts) job))
-        {
-            await job.cts.CancelAsync();
-        }
+        return response;
     }
 }

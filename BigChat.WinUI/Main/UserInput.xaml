@@ -30,17 +30,8 @@
                 Grid.Column="1"
                 VerticalAlignment="Top"
                 Orientation="Horizontal">
-                <Button
-                    Command="{x:Bind Conversation.AddMessageCommand}"
-                    Style="{StaticResource AccentButtonStyle}"
-                    Visibility="{x:Bind Conversation.StreamingMessage, Mode=OneWay, Converter={StaticResource EmptyStringToObjectConverter}}">
+                <Button Command="{x:Bind Conversation.AddMessageCommand}" Style="{StaticResource AccentButtonStyle}">
                     <SymbolIcon Symbol="Send" />
-                </Button>
-                <Button
-                    Command="{x:Bind Conversation.AddMessageCancelCommand}"
-                    Style="{ThemeResource AccentButtonStyle}"
-                    Visibility="{x:Bind Conversation.StreamingMessage, Mode=OneWay, Converter={StaticResource EmptyStringToObjectConverter}, ConverterParameter=True}">
-                    <SymbolIcon Symbol="Stop" />
                 </Button>
             </StackPanel>
         </Grid>
