@@ -20,7 +20,6 @@ internal static class ServiceRegistrationExtensions
             .AddSingleton<ILocalizedTexts, LocalizedTexts>()
             .AddSingleton<INavigationService, NavigationService>()
             .AddSingleton<DialogService>()
-            .AddSingleton<IMessageControlSelector, MessageControlSelector>()
-            .AddSingleton<IMessageControlProvider, MessageControlProvider>();
+            .AddSingleton<IMessageControlSelector, MessageControlSelector>();
     }
 }

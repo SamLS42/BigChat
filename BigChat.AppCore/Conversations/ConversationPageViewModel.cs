@@ -85,14 +85,14 @@ public sealed partial class ConversationPageViewModel(MyDbContext db,
         }
     }
 
-    private void AddResponse(string response)
+    private IMessageControl AddResponse()
     {
         NotifyAddCommand();
 
         MessageViewModel message = new(new()
         {
             Role = ChatRole.Assistant.Value,
-            Text = response,
+            Text = string.Empty,
             ConversationId = Conversation.Id,
             CreatedAt = DateTime.Now,
         });
@@ -100,6 +100,8 @@ public sealed partial class ConversationPageViewModel(MyDbContext db,
         IMessageControl control = messageControlSelector.GetControl(message);
 
         Messages.Add(control);
+
+        return control;
     }
 
     [RelayCommand(FlowExceptionsToTaskScheduler = true)]
@@ -126,8 +128,8 @@ public sealed partial class ConversationPageViewModel(MyDbContext db,
     {
         try
         {
-            string response = await conversationProcessor.GetAIResponseAsync(Conversation.Id, cancellationToken);
-            AddResponse(response);
+            IMessageControl control = AddResponse();
+            control.Message.Text = await conversationProcessor.GetAIResponseAsync(Conversation.Id, cancellationToken);
             await CheckSubjectAsync(cancellationToken);
         }
         catch (MissingSettingsException ex)

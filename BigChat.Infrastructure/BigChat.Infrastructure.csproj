@@ -12,7 +12,6 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
 		<PackageReference Include="Microsoft.Extensions.AI.AzureAIInference" />
-		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Onnx" />
 		<PackageReference Include="OllamaSharp" />
 		<PackageReference Include="Roslynator.Analyzers">
 		  <PrivateAssets>all</PrivateAssets>
