@@ -1,6 +1,6 @@
 using BigChat.AppCore.Messages;
 using BigChat.AppCore.ViewModel;
-using CommunityToolkit.Labs.WinUI.MarkdownTextBlock;
+using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
