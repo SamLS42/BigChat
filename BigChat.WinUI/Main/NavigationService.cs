@@ -1,5 +1,5 @@
-﻿using BigChat.AppCore.Navigation;
-using BigChat.AppCore.ViewModel;
+﻿using BigChat.AppCore.Conversations;
+using BigChat.AppCore.Navigation;
 using BigChat.Conversations;
 using BigChat.Settings;
 using DynamicData;
@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Navigation;
 using System.Collections.ObjectModel;
 
 namespace BigChat.Main;
+
 internal sealed class NavigationService : INavigationService
 {
     private Frame Frame { get; set; } = null!;

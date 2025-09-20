@@ -1,4 +1,4 @@
-﻿namespace BigChat.Infrastructure.ChatClient;
+﻿namespace BigChat.AppCore.ChatClient;
 public enum SupportedClients
 {
     Ollama = 0,

@@ -1,53 +1,76 @@
-﻿using BigChat.AppCore.Conversations.EventMessages;
-using BigChat.AppCore.Navigation;
+﻿using BigChat.AppCore.Conversations;
+using BigChat.AppCore.Conversations.EventMessages;
 using BigChat.Infrastructure.Data;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
 using Microsoft.EntityFrameworkCore;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
-namespace BigChat.AppCore.ViewModel;
+namespace BigChat.AppCore.MainPage;
 
-public sealed partial class MainPageViewModel : ObservableObject,
+public sealed partial class MainPageViewModel : ReactiveObject,
     IRecipient<ConversationAdded>,
     IDisposable
 {
-    private MyDbContext Db { get; init; }
-    public SourceList<ConversationViewModel> Conversations { get; init; } = new();
-    private INavigationService NavigationService { get; set; }
+    private readonly CompositeDisposable Disposables = [];
+    private SourceList<ConversationViewModel> ConversationSource { get; } = new();
+    public IObservableList<ConversationViewModel> Conversations => ConversationSource.AsObservableList();
+    public ConversationViewModel? SelectedConversation { get; set; }
 
-    [ObservableProperty]
-    public partial bool IsShowingConversation { get; set; }
+    private ObservableAsPropertyHelper<ConversationViewModel> _selectedConversationPageViewModel = null!;
+    public ConversationViewModel SelectedConversationPageViewModel => _selectedConversationPageViewModel.Value;
+    public BehaviorSubject<int> ConversationChangedSource { get; set; } = new(0);
+    public IObservable<int> ConversationChanged => ConversationChangedSource.AsObservable();
+    private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
 
-    [ObservableProperty]
+    private SourceList<int> BackStack { get; } = new();
+    private SourceList<int> ForwardStack { get; } = new();
+
+    [Reactive]
     public partial string AutoSuggestBoxText { get; set; } = string.Empty;
 
-    [ObservableProperty]
+    [Reactive]
     public partial ReadOnlyCollection<ConversationViewModel> FilteredConversations { get; set; } = ReadOnlyCollection<ConversationViewModel>.Empty;
 
-    public MainPageViewModel(MyDbContext db, INavigationService navigationService)
+    public MainPageViewModel()
     {
-        Db = db;
-        NavigationService = navigationService;
         WeakReferenceMessenger.Default.Register(this);
+
+        this.WhenAnyValue(x => x.SelectedConversation)
+            .Subscribe(c =>
+            {
+                int id = c?.Id ?? 0;
+                ConversationChangedSource.OnNext(id);
+                BackStack.Add(id);
+            })
+            .DisposeWith(Disposables);
+
+        _selectedConversationPageViewModel = ConversationChanged
+            .Select(id => new ConversationViewModel() { ConversationId = id })
+            .ToProperty(this, nameof(SelectedConversationPageViewModel));
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void OpenNewConversation()
     {
-        NavigationService.OpenEmptyConversation();
+        SelectedConversation = null;
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private async Task LoadConversations(CancellationToken cancellationToken = default)
     {
-        await foreach (var conversation in Db.Conversations.OrderByDescending(c => c.CreatedAt).Select(c => new { c.Id, c.Subject })
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        await foreach (var conversation in db.Conversations.OrderByDescending(c => c.CreatedAt).Select(c => new { c.Id, c.Subject })
             .AsAsyncEnumerable()
             .WithCancellation(cancellationToken))
         {
-            Conversations.Add(new ConversationViewModel
+            ConversationSource.Add(new ConversationViewModel
             {
                 Id = conversation.Id,
                 Subject = conversation.Subject,
@@ -58,67 +81,69 @@ public sealed partial class MainPageViewModel : ObservableObject,
     public void Receive(ConversationAdded message)
     {
         ArgumentNullException.ThrowIfNull(message);
-        Conversations.Add(message.NewConversation);
+        ConversationSource.Add(message.NewConversation);
     }
 
     public void Dispose()
     {
         WeakReferenceMessenger.Default.UnregisterAll(this);
-        Conversations.Clear();
+        ConversationSource.Clear();
         Conversations.Dispose();
+        Disposables.Dispose();
+        _selectedConversationPageViewModel.Dispose();
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private async Task UpdateConversationSubjectAsync(ConversationViewModel conversation, CancellationToken cancellationToken = default)
     {
-        await Db.Conversations.Where(c => c.Id == conversation.Id)
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        await db.Conversations.Where(c => c.Id == conversation.Id)
             .ExecuteUpdateAsync(s => s.SetProperty(c => c.Subject, conversation.Subject), cancellationToken: cancellationToken);
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private async Task DeleteConversationAsync(ConversationViewModel conversation, CancellationToken cancellationToken = default)
     {
-        NavigationService.RemoveFromBackStack(conversation);
+        BackStack.Remove(conversation.Id);
 
-        NavigationService.LeaveConversation(conversation);
+        if (conversation == SelectedConversation)
+        {
+            SelectedConversation = null;
+        }
 
-        Conversations.Remove(conversation);
-        await Db.Conversations.Where(c => c.Id == conversation.Id)
+        ConversationSource.Remove(conversation);
+
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        await db.Conversations.Where(c => c.Id == conversation.Id)
             .ExecuteDeleteAsync(cancellationToken: cancellationToken);
     }
 
-    [RelayCommand]
-    private void UpdateBackStackOnNavigation()
-    {
-        NavigationService.UpdateBackStackOnNavigation();
-    }
+    private IObservable<bool> CanGoBack => BackStack.CountChanged.Select(c => c != 0);
 
-    [RelayCommand]
-    private void NavigateOnSelection(object selectedItem)
-    {
-        NavigationService.NavigateOnSelection(selectedItem);
-        IsShowingConversation = NavigationService.SelectedConversation is not null;
-    }
-
-    [RelayCommand]
+    [ReactiveCommand(CanExecute = nameof(CanGoBack))]
     private void GoBack()
     {
-        NavigationService.GoBack();
+        BackStack.RemoveAt(-1);
+        int id = BackStack.Items[BackStack.Items.Count - 1];
+        SelectedConversation = Conversations.Items.SingleOrDefault(c => c.Id == id);
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void OpenEmptyConversation()
     {
-        NavigationService.OpenEmptyConversation();
+        SelectedConversation = null;
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void SelectConversation((ConversationViewModel conversation, bool navigate) parameter)
     {
-        NavigationService.SelectConversation(parameter.conversation, parameter.navigate);
+        BackStack.Add(SelectedConversation?.Id ?? 0);
+        SelectedConversation = Conversations.Items.SingleOrDefault(c => c.Id == parameter.conversation.Id);
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void SelectSuggestedConversation(object chosenSuggestion)
     {
         if (chosenSuggestion is ConversationViewModel conversation)
@@ -129,7 +154,7 @@ public sealed partial class MainPageViewModel : ObservableObject,
         }
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void UpdateAutoSuggestBoxText(object SelectedItem)
     {
         AutoSuggestBoxText = SelectedItem is ConversationViewModel conversation
@@ -137,7 +162,7 @@ public sealed partial class MainPageViewModel : ObservableObject,
             : string.Empty;
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void FilterConversations()
     {
         FilteredConversations = new([.. Conversations.Items.Where(c => c.Subject.Contains(AutoSuggestBoxText, StringComparison.OrdinalIgnoreCase))]);

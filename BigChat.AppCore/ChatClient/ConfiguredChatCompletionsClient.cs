@@ -1,9 +1,9 @@
 ﻿using Azure;
 using Azure.AI.Inference;
-using BigChat.Infrastructure.Settings;
+using BigChat.AppCore.Settings;
 using Microsoft.Extensions.AI;
 
-namespace BigChat.Infrastructure.ChatClient;
+namespace BigChat.AppCore.ChatClient;
 
 internal sealed class ConfiguredChatCompletionsClient : IChatClient
 {

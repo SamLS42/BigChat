@@ -1,15 +1,13 @@
 ﻿[*.cs]
 
-# MA0004: Use Task.ConfigureAwait
-dotnet_diagnostic.MA0004.severity = silent
+# CA2000: Dispose objects before losing scope
+dotnet_diagnostic.CA2000.severity = suggestion
 
 # CA2007: Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.CA2007.severity = silent
 
-# CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-dotnet_diagnostic.CS8618.severity = silent
+dotnet_diagnostic.CA1822.severity = silent
 
-dotnet_diagnostic.CA1812.severity = silent
-
-# CA1822: Mark members as static
-dotnet_diagnostic.CA1822.severity = suggestion
+dotnet_diagnostic.CA1812.severity = suggestion
+dotnet_diagnostic.CA1034.severity = silent
+dotnet_diagnostic.CA1515.severity = silent

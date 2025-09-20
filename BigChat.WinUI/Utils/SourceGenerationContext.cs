@@ -1,5 +1,5 @@
-﻿using BigChat.Infrastructure.ChatClient;
-using BigChat.Infrastructure.Settings;
+﻿using BigChat.AppCore.ChatClient;
+using BigChat.AppCore.Settings;
 using System.Text.Json.Serialization;
 
 namespace BigChat.Utils;

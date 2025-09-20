@@ -1,8 +1,8 @@
-﻿using BigChat.Infrastructure.Settings;
+﻿using BigChat.AppCore.Settings;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BigChat.Infrastructure.ChatClient;
+namespace BigChat.AppCore.ChatClient;
 public class ChatClientProvider([FromKeyedServices(nameof(ConfiguredChatCompletionsClient))] IChatClient configuredChatCompletionsClient,
     [FromKeyedServices(nameof(ConfiguredOllamaChatClient))] IChatClient ConfiguredOllamaChatClient,
     ISettingsService settings

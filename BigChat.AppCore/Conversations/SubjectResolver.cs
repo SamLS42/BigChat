@@ -1,11 +1,11 @@
-﻿using BigChat.Infrastructure.ChatClient;
+﻿using BigChat.AppCore.ChatClient;
 using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using System.Text.RegularExpressions;
 
-namespace BigChat.Infrastructure.Conversations;
+namespace BigChat.AppCore.Conversations;
 
 public partial class SubjectResolver(ChatClientProvider chatClientProvider, IDbContextFactory<MyDbContext> dbContextFactory)
 {

@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="using:BigChat.AppCore.ViewModel"
-    d:DataContext="{d:DesignInstance Type=viewmodel:ConversationViewModel}"
     mc:Ignorable="d">
 
     <Grid ColumnSpacing="8">

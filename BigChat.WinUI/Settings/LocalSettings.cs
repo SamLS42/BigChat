@@ -1,4 +1,4 @@
-﻿using BigChat.Infrastructure.Settings;
+﻿using BigChat.AppCore.Settings;
 
 namespace BigChat.Settings;
 

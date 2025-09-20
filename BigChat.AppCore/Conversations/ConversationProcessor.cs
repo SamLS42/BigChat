@@ -1,10 +1,10 @@
-﻿using BigChat.Infrastructure.ChatClient;
+﻿using BigChat.AppCore.ChatClient;
 using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 
-namespace BigChat.Infrastructure.Conversations;
+namespace BigChat.AppCore.Conversations;
 
 public class ConversationProcessor(IDbContextFactory<MyDbContext> dbContextFactory, ChatClientProvider chatClientProvider)
 {

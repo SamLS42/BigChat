@@ -1,8 +1,8 @@
-﻿using BigChat.Infrastructure.Settings;
+﻿using BigChat.AppCore.Settings;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
 
-namespace BigChat.Infrastructure.ChatClient;
+namespace BigChat.AppCore.ChatClient;
 internal sealed class ConfiguredOllamaChatClient : IChatClient
 {
     private ISettingsService SettingsService { get; }

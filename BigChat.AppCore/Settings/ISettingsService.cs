@@ -1,6 +1,6 @@
-﻿using BigChat.Infrastructure.ChatClient;
+﻿using BigChat.AppCore.ChatClient;
 
-namespace BigChat.Infrastructure.Settings;
+namespace BigChat.AppCore.Settings;
 
 public interface ISettingsService
 {

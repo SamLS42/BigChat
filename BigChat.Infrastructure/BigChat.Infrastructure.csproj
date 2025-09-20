@@ -2,7 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
-		<IsAotCompatible>false</IsAotCompatible>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -11,14 +10,6 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
-		<PackageReference Include="Microsoft.Extensions.AI.AzureAIInference" />
-		<PackageReference Include="OllamaSharp" />
-		<PackageReference Include="Roslynator.Analyzers">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-		<PackageReference Include="Microsoft.Extensions.AI" />
 	</ItemGroup>
 
 	<ItemGroup>

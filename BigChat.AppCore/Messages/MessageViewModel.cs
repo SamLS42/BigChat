@@ -1,77 +1,49 @@
-﻿using BigChat.Infrastructure.Data.Models;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using Microsoft.Extensions.AI;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 using System.Text.RegularExpressions;
 
 namespace BigChat.AppCore.ViewModel;
 
-public partial class MessageViewModel(Message message) : ObservableObject
+public partial class MessageViewModel : ReactiveObject
 {
-    public int Id
-    {
-        get => message.Id;
-        set => message.Id = value;
-    }
+    public int Id { get; set; }
+    public int ConversationId { get; set; }
 
-    public int ConversationId
-    {
-        get => message.ConversationId;
-        set => message.ConversationId = value;
-    }
+    [Reactive]
+    public partial string Text { get; set; } = string.Empty;
+    public ChatRole Role { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-    public bool TextIsEmpty => string.IsNullOrWhiteSpace(Text);
-
-    public event EventHandler? EditConfirmed;
-
-    [ObservableProperty]
+    [Reactive]
     public partial string ReasoningText { get; private set; } = string.Empty;
 
-    [ObservableProperty]
+    [Reactive]
     public partial string ResponseText { get; private set; } = string.Empty;
 
-    [ObservableProperty]
+    [Reactive]
     public partial bool IsEditable { get; private set; }
 
-    [ObservableProperty]
+    [Reactive]
     public partial string EditText { get; set; } = string.Empty;
 
-    public string Text
-    {
-        get => message.Text;
-        set
-        {
-            if (!string.Equals(message.Text, value, StringComparison.Ordinal) && value is not null)
-            {
-                message.Text = value;
-
-                OnPropertyChanged(nameof(Text));
-                OnPropertyChanged(nameof(TextIsEmpty));
-            }
-        }
-    }
-
-    public string Role
-    {
-        get => message.Role;
-        set => SetProperty(message.Role, value, message, (u, n) => u.Role = n);
-    }
-
-    [RelayCommand]
+    [ReactiveCommand]
     private void EnableEdit()
     {
         EditText = Text ?? string.Empty;
         IsEditable = true;
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void ConfirmEdit()
     {
+        if (string.IsNullOrWhiteSpace(EditText)) return;
+
         IsEditable = false;
         Text = EditText;
-        EditConfirmed?.Invoke(this, EventArgs.Empty);
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void CancelEdit()
     {
         IsEditable = false;

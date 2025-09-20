@@ -1,5 +1,4 @@
-﻿using BigChat.Infrastructure.Settings;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace BigChat.AppCore.Settings;

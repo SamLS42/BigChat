@@ -1,10 +1,9 @@
 ﻿using BigChat.AppCore.Localization;
 using BigChat.AppCore.Messages;
 using BigChat.AppCore.Navigation;
-using BigChat.Infrastructure.Settings;
+using BigChat.AppCore.Settings;
 using BigChat.Localization;
 using BigChat.Main;
-using BigChat.Messages;
 using BigChat.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -19,7 +18,6 @@ internal static class ServiceRegistrationExtensions
             .AddSingleton<IStringLocalizer, StringLocalizer>()
             .AddSingleton<ILocalizedTexts, LocalizedTexts>()
             .AddSingleton<INavigationService, NavigationService>()
-            .AddSingleton<DialogService>()
-            .AddSingleton<IMessageControlSelector, MessageControlSelector>();
+            .AddSingleton<DialogService>();
     }
 }

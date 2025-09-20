@@ -74,7 +74,7 @@
                             VerticalAlignment="Center"
                             Style="{ThemeResource SubtitleTextBlockStyle}"
                             Text="Azure AI Inference" />
-                        <ToggleSwitch Grid.Column="1" IsOn="{x:Bind Settings.AzureAIInferenceIsOn, Mode=TwoWay}" />
+                        <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.AzureAIInferenceIsOn, Mode=TwoWay}" />
                     </Grid>
 
                     <toolkit:SettingsCard Header="{x:Bind Loc.ApiEndpointText}">
@@ -111,8 +111,8 @@
                                     <TextBlock Text="{x:Bind Loc.TemperatureText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.TemperatureToolTipText, Mode=OneWay}" />
                                 </toolkit:SettingsCard.Header>
                                 <Slider
-                                    Maximum="{x:Bind MaxTemperature}"
-                                    Minimum="{x:Bind MinTemperature}"
+                                    Maximum="{x:Bind ViewModel.MaxTemperature}"
+                                    Minimum="{x:Bind ViewModel.MinTemperature}"
                                     Style="{StaticResource SmallerStep}"
                                     Value="{x:Bind ChatCompletionsSettings.Temperature, Mode=TwoWay}" />
                             </toolkit:SettingsCard>
@@ -129,8 +129,8 @@
                                     <TextBlock Text="{x:Bind Loc.TopPText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.TopPToolTipText, Mode=OneWay}" />
                                 </toolkit:SettingsCard.Header>
                                 <Slider
-                                    Maximum="{x:Bind MaxTopP}"
-                                    Minimum="{x:Bind MinTopP}"
+                                    Maximum="{x:Bind ViewModel.MaxTopP}"
+                                    Minimum="{x:Bind ViewModel.MinTopP}"
                                     Style="{StaticResource SmallerStep}"
                                     Value="{x:Bind ChatCompletionsSettings.TopP, Mode=TwoWay}" />
                             </toolkit:SettingsCard>
@@ -140,8 +140,8 @@
                                     <TextBlock Text="{x:Bind Loc.FrequencyPenaltyText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.FrequencyPenaltyToolTipText, Mode=OneWay}" />
                                 </toolkit:SettingsCard.Header>
                                 <Slider
-                                    Maximum="{x:Bind MaxFrequencyPenalty}"
-                                    Minimum="{x:Bind MinFrequencyPenalty}"
+                                    Maximum="{x:Bind ViewModel.MaxFrequencyPenalty}"
+                                    Minimum="{x:Bind ViewModel.MinFrequencyPenalty}"
                                     Style="{StaticResource SmallerStep}"
                                     Value="{x:Bind ChatCompletionsSettings.FrequencyPenalty, Mode=TwoWay}" />
                             </toolkit:SettingsCard>
@@ -151,8 +151,8 @@
                                     <TextBlock Text="{x:Bind Loc.PresencePenaltyText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.PresencePenaltyToolTipText, Mode=OneWay}" />
                                 </toolkit:SettingsCard.Header>
                                 <Slider
-                                    Maximum="{x:Bind MaxPresencePenalty}"
-                                    Minimum="{x:Bind MinPresencePenalty}"
+                                    Maximum="{x:Bind ViewModel.MaxPresencePenalty}"
+                                    Minimum="{x:Bind ViewModel.MinPresencePenalty}"
                                     Style="{StaticResource SmallerStep}"
                                     Value="{x:Bind ChatCompletionsSettings.PresencePenalty, Mode=TwoWay}" />
                             </toolkit:SettingsCard>
@@ -174,7 +174,7 @@
                         <ToggleSwitch
                             Grid.Column="1"
                             HorizontalAlignment="Right"
-                            IsOn="{x:Bind Settings.OllamaIsOn, Mode=TwoWay}" />
+                            IsOn="{x:Bind ViewModel.OllamaIsOn, Mode=TwoWay}" />
                     </Grid>
 
                     <toolkit:SettingsCard Header="{x:Bind Loc.ApiEndpointText}">
@@ -202,8 +202,8 @@
                                     <TextBlock Text="{x:Bind Loc.TemperatureText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.TemperatureToolTipText, Mode=OneWay}" />
                                 </toolkit:SettingsCard.Header>
                                 <Slider
-                                    Maximum="{x:Bind MaxTemperature}"
-                                    Minimum="{x:Bind MinTemperature}"
+                                    Maximum="{x:Bind ViewModel.MaxTemperature}"
+                                    Minimum="{x:Bind ViewModel.MinTemperature}"
                                     Style="{StaticResource SmallerStep}"
                                     Value="{x:Bind OllamaChatSettings.Temperature, Mode=TwoWay}" />
                             </toolkit:SettingsCard>
@@ -220,8 +220,8 @@
                                     <TextBlock Text="{x:Bind Loc.TopPText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.TopPToolTipText, Mode=OneWay}" />
                                 </toolkit:SettingsCard.Header>
                                 <Slider
-                                    Maximum="{x:Bind MaxTopP}"
-                                    Minimum="{x:Bind MinTopP}"
+                                    Maximum="{x:Bind ViewModel.MaxTopP}"
+                                    Minimum="{x:Bind ViewModel.MinTopP}"
                                     Style="{StaticResource SmallerStep}"
                                     Value="{x:Bind OllamaChatSettings.TopP, Mode=TwoWay}" />
                             </toolkit:SettingsCard>
@@ -231,8 +231,8 @@
                                     <TextBlock Text="{x:Bind Loc.FrequencyPenaltyText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.FrequencyPenaltyToolTipText, Mode=OneWay}" />
                                 </toolkit:SettingsCard.Header>
                                 <Slider
-                                    Maximum="{x:Bind MaxFrequencyPenalty}"
-                                    Minimum="{x:Bind MinFrequencyPenalty}"
+                                    Maximum="{x:Bind ViewModel.MaxFrequencyPenalty}"
+                                    Minimum="{x:Bind ViewModel.MinFrequencyPenalty}"
                                     Style="{StaticResource SmallerStep}"
                                     Value="{x:Bind OllamaChatSettings.FrequencyPenalty, Mode=TwoWay}" />
                             </toolkit:SettingsCard>
@@ -242,8 +242,8 @@
                                     <TextBlock Text="{x:Bind Loc.PresencePenaltyText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.PresencePenaltyToolTipText, Mode=OneWay}" />
                                 </toolkit:SettingsCard.Header>
                                 <Slider
-                                    Maximum="{x:Bind MaxPresencePenalty}"
-                                    Minimum="{x:Bind MinPresencePenalty}"
+                                    Maximum="{x:Bind ViewModel.MaxPresencePenalty}"
+                                    Minimum="{x:Bind ViewModel.MinPresencePenalty}"
                                     Style="{StaticResource SmallerStep}"
                                     Value="{x:Bind OllamaChatSettings.PresencePenalty, Mode=TwoWay}" />
                             </toolkit:SettingsCard>

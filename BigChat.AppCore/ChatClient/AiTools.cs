@@ -3,9 +3,11 @@ using BigChat.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 
-namespace BigChat.Infrastructure.ChatClient;
+namespace BigChat.AppCore.ChatClient;
+
 public class AiTools(IDbContextFactory<MyDbContext> dbContextFactory)
 {
+
     [Description("Gets the list of conversation in the application")]
     public async Task<Conversation[]> GetConversationList(CancellationToken cancellationToken)
     {

@@ -1,4 +1,4 @@
-using BigChat.AppCore.ViewModel;
+using BigChat.AppCore.Conversations;
 
 namespace BigChat.AppCore.Navigation;
 

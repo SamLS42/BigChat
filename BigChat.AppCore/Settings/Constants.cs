@@ -1,4 +1,4 @@
-﻿namespace BigChat.Infrastructure.Settings;
+﻿namespace BigChat.AppCore.Settings;
 
 public static class Constants
 {

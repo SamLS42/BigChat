@@ -1,7 +1,7 @@
+using BigChat.AppCore;
+using BigChat.AppCore.Conversations;
 using BigChat.AppCore.Localization;
-using BigChat.AppCore.ViewModel;
 using BigChat.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using WinRT;
 
@@ -9,7 +9,7 @@ namespace BigChat.Main;
 
 internal sealed partial class ChatNavigationViewItem
 {
-    private LocalizedTexts Loc { get; } = App.ServiceProvider.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
 
     public ChatNavigationViewItem()
     {

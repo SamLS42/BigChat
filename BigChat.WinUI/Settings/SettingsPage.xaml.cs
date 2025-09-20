@@ -1,8 +1,7 @@
+using BigChat.AppCore;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.Settings;
-using BigChat.Infrastructure.Settings;
 using BigChat.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using System.ComponentModel;
 using WinRT;
@@ -17,18 +16,10 @@ namespace BigChat.Settings;
 /// </summary>
 internal sealed partial class SettingsPage : Page
 {
-    private ChatCompletionsSettingsViewModel ChatCompletionsSettings { get; set; } = App.ServiceProvider.GetRequiredService<ChatCompletionsSettingsViewModel>();
-    private OllamaChatSettingsViewModel OllamaChatSettings { get; set; } = App.ServiceProvider.GetRequiredService<OllamaChatSettingsViewModel>();
-    private LocalizedTexts Loc { get; } = App.ServiceProvider.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
-    private SettingsViewModel Settings { get; } = App.ServiceProvider.GetRequiredService<SettingsViewModel>();
-    public double MaxTemperature => Constants.MaxTemperature;
-    public double MinTemperature => Constants.MinTemperature;
-    public double MaxTopP => Constants.MaxTopP;
-    public double MinTopP => Constants.MinTopP;
-    public double MaxFrequencyPenalty => Constants.MaxFrequencyPenalty;
-    public double MinFrequencyPenalty => Constants.MinFrequencyPenalty;
-    public double MaxPresencePenalty => Constants.MaxPresencePenalty;
-    public double MinPresencePenalty => Constants.MinPresencePenalty;
+    private ChatCompletionsSettingsViewModel ChatCompletionsSettings { get; set; } = ServiceLocator.GetRequiredService<ChatCompletionsSettingsViewModel>();
+    private OllamaChatSettingsViewModel OllamaChatSettings { get; set; } = ServiceLocator.GetRequiredService<OllamaChatSettingsViewModel>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
+    private SettingsViewModel ViewModel { get; } = ServiceLocator.GetRequiredService<SettingsViewModel>();
 
     public SettingsPage()
     {

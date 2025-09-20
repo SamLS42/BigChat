@@ -1,12 +1,21 @@
-﻿using BigChat.Infrastructure.ChatClient;
-using BigChat.Infrastructure.Settings;
+﻿using BigChat.AppCore.ChatClient;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BigChat.AppCore.Settings;
+
 public sealed partial class SettingsViewModel : ObservableObject
 {
     [ObservableProperty] public partial bool OllamaIsOn { get; set; }
     [ObservableProperty] public partial bool AzureAIInferenceIsOn { get; set; }
+
+    public double MaxTemperature => Constants.MaxTemperature;
+    public double MinTemperature => Constants.MinTemperature;
+    public double MaxTopP => Constants.MaxTopP;
+    public double MinTopP => Constants.MinTopP;
+    public double MaxFrequencyPenalty => Constants.MaxFrequencyPenalty;
+    public double MinFrequencyPenalty => Constants.MinFrequencyPenalty;
+    public double MaxPresencePenalty => Constants.MaxPresencePenalty;
+    public double MinPresencePenalty => Constants.MinPresencePenalty;
 
     private ISettingsService SettingsService { get; set; }
 
