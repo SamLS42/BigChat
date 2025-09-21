@@ -4,6 +4,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using ReactiveUI;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.System;
@@ -20,54 +21,57 @@ internal sealed partial class UserMessage : ReactiveUserMessage
     {
         InitializeComponent();
 
-        this.BindCommand(ViewModel, vm => vm.EnableEditCommand, v => v.EnableEditBtn);
-        this.BindCommand(ViewModel, vm => vm.CancelEditCommand, v => v.CancelEditBtn);
-        this.BindCommand(ViewModel, vm => vm.ConfirmEditCommand, v => v.ConfirmEditBtn);
+        this.WhenActivated(d =>
+        {
+            this.BindCommand(ViewModel, vm => vm.EnableEditCommand, v => v.EnableEditBtn).DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.CancelEditCommand, v => v.CancelEditBtn).DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.ConfirmEditCommand, v => v.ConfirmEditBtn).DisposeWith(d);
 
-        Observable.FromEventPattern<object, KeyRoutedEventArgs>(EditTextBox, nameof(EditTextBox.PreviewKeyDown))
-            .Subscribe(ep =>
-            {
-                if (ep.EventArgs.Key == VirtualKey.Enter && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
+            Observable.FromEventPattern<object, KeyRoutedEventArgs>(EditTextBox, nameof(EditTextBox.PreviewKeyDown))
+                .Subscribe(ep =>
                 {
-                    ViewModel!.ConfirmEditCommand.Execute().Subscribe();
-                    ep.EventArgs.Handled = true;
-                }
-            });
+                    if (ep.EventArgs.Key == VirtualKey.Enter && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
+                    {
+                        ViewModel!.ConfirmEditCommand.Execute().Subscribe();
+                        ep.EventArgs.Handled = true;
+                    }
+                }).DisposeWith(d);
 
-        Observable.FromEventPattern<object, KeyRoutedEventArgs>(EditTextBox, nameof(EditTextBox.PreviewKeyDown))
-            .Subscribe(ep =>
-            {
-                if (ep.EventArgs.Key == VirtualKey.Enter && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
+            Observable.FromEventPattern<object, KeyRoutedEventArgs>(EditTextBox, nameof(EditTextBox.PreviewKeyDown))
+                .Subscribe(ep =>
                 {
-                    ViewModel!.ConfirmEditCommand.Execute().Subscribe();
-                    ep.EventArgs.Handled = true;
-                }
-            });
+                    if (ep.EventArgs.Key == VirtualKey.Enter && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
+                    {
+                        ViewModel!.ConfirmEditCommand.Execute().Subscribe();
+                        ep.EventArgs.Handled = true;
+                    }
+                }).DisposeWith(d);
 
-        Observable.FromEventPattern<object, RoutedEventArgs>(CopyBtn, nameof(CopyBtn.Click))
-            .Subscribe(_ =>
-            {
-                DataPackage dataPackage = new()
+            Observable.FromEventPattern<object, RoutedEventArgs>(CopyBtn, nameof(CopyBtn.Click))
+                .Subscribe(_ =>
                 {
-                    RequestedOperation = DataPackageOperation.Move,
-                };
-                dataPackage.SetText(ViewModel?.Text);
-                Clipboard.SetContent(dataPackage);
-            });
+                    DataPackage dataPackage = new()
+                    {
+                        RequestedOperation = DataPackageOperation.Move,
+                    };
+                    dataPackage.SetText(ViewModel?.Text);
+                    Clipboard.SetContent(dataPackage);
+                }).DisposeWith(d);
 
-        Observable.FromEventPattern<object, PointerRoutedEventArgs>(ActionsGrid, nameof(ActionsGrid.PointerEntered))
-            .Subscribe(_ =>
-            {
-                CreateOrUpdateAppearingAnimation(1f);
-                ActionButtonsPanel.StartAnimation(_springAnimation);
-            });
+            Observable.FromEventPattern<object, PointerRoutedEventArgs>(ActionsGrid, nameof(ActionsGrid.PointerEntered))
+                .Subscribe(_ =>
+                {
+                    CreateOrUpdateAppearingAnimation(1f);
+                    ActionButtonsPanel.StartAnimation(_springAnimation);
+                }).DisposeWith(d);
 
-        Observable.FromEventPattern<object, PointerRoutedEventArgs>(ActionsGrid, nameof(ActionsGrid.PointerExited))
-            .Subscribe(_ =>
-            {
-                CreateOrUpdateAppearingAnimation(0f);
-                ActionButtonsPanel.StartAnimation(_springAnimation);
-            });
+            Observable.FromEventPattern<object, PointerRoutedEventArgs>(ActionsGrid, nameof(ActionsGrid.PointerExited))
+                .Subscribe(_ =>
+                {
+                    CreateOrUpdateAppearingAnimation(0f);
+                    ActionButtonsPanel.StartAnimation(_springAnimation);
+                }).DisposeWith(d);
+        });
     }
 
     private void CreateOrUpdateAppearingAnimation(float finalValue)

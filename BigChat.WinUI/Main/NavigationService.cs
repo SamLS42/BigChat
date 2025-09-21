@@ -12,23 +12,10 @@ namespace BigChat.Main;
 
 internal sealed class NavigationService : INavigationService
 {
-    private Frame Frame { get; set; } = null!;
-    private NavigationView NavigationView { get; set; } = null!;
-    private NavigationViewItem EmptyConversation { get; set; } = null!;
-    private Func<ReadOnlyObservableCollection<ChatNavigationViewItem>> GetItems { get; set; } = null!;
-
-    public void Setup(
-        Frame frame,
-        NavigationView navigationView,
-        NavigationViewItem emptyConversation,
-        Func<ReadOnlyObservableCollection<ChatNavigationViewItem>> getItems
-        )
-    {
-        Frame = frame;
-        NavigationView = navigationView;
-        EmptyConversation = emptyConversation;
-        GetItems = getItems;
-    }
+    public Frame Frame { get; set; } = null!;
+    public NavigationView NavigationView { get; set; } = null!;
+    public NavigationViewItem EmptyConversation { get; set; } = null!;
+    public Func<ReadOnlyObservableCollection<ChatNavigationViewItem>> GetItems { get; set; } = null!;
 
     private object? SelectedMenuItem { get; set; }
     public ConversationViewModel? SelectedConversation { get; set; }

@@ -1,22 +1,27 @@
 using BigChat.AppCore;
-using BigChat.AppCore.Conversations;
 using BigChat.AppCore.Localization;
+using BigChat.AppCore.MainPage;
 using BigChat.Localization;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using ReactiveUI;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Windows.System;
 using Windows.UI.Core;
 using WinRT;
 
 namespace BigChat.Main;
 
-internal sealed partial class UserInput : UserControl, IDisposable
+internal class ReactiveUserInput : ReactiveUserControl<UserInputViewModel>;
+internal sealed partial class UserInput : ReactiveUserInput, IDisposable
 {
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
-    private ConversationViewModel Conversation { get; set; } = null!;
+
+    private Subject<string> UserInputSource { get; } = new();
+    public IObservable<string> UserInputs => UserInputSource.Where(s => !string.IsNullOrWhiteSpace(s)).AsObservable();
 
     public UserInput()
     {
@@ -40,7 +45,7 @@ internal sealed partial class UserInput : UserControl, IDisposable
     {
         if (e.Key == VirtualKey.Enter && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
         {
-            Conversation.AddMessageCommand.Execute().Subscribe();
+            AddMessage();
             e.Handled = true;
         }
     }
@@ -58,5 +63,17 @@ internal sealed partial class UserInput : UserControl, IDisposable
     public void Dispose()
     {
         WeakReferenceMessenger.Default.UnregisterAll(this);
+    }
+
+    private void AddMessage(object sender, RoutedEventArgs e)
+    {
+        AddMessage();
+    }
+
+    private void AddMessage()
+    {
+        UserInputSource.OnNext(InputBox.Text);
+
+        InputBox.Text = string.Empty;
     }
 }

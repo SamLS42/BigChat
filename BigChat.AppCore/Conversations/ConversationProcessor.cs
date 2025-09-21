@@ -19,21 +19,6 @@ public class ConversationProcessor(IDbContextFactory<MyDbContext> dbContextFacto
             messages.Add(new ChatMessage(new ChatRole(m.Role), m.Text));
         }
 
-        string response = (await chatClientProvider.GetChatClient().GetResponseAsync(messages, cancellationToken: cancellationToken)).Text;
-
-        if (!string.IsNullOrWhiteSpace(response))
-        {
-            Message message = (await db.Messages.AddAsync(new Message
-            {
-                ConversationId = conversationId,
-                CreatedAt = DateTime.UtcNow,
-                Role = ChatRole.Assistant.Value,
-                Text = response,
-            }, cancellationToken: default)).Entity;
-
-            await db.SaveChangesAsync(cancellationToken: default);
-        }
-
-        return response;
+        return (await chatClientProvider.GetChatClient().GetResponseAsync(messages, cancellationToken: cancellationToken)).Text;
     }
 }

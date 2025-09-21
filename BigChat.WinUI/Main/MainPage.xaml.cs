@@ -3,8 +3,9 @@ using BigChat.AppCore.Conversations;
 using BigChat.AppCore.Conversations.EventMessages;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.MainPage;
+using BigChat.Conversations;
 using BigChat.Localization;
-using CommunityToolkit.Mvvm.Messaging;
+using BigChat.Settings;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -18,30 +19,78 @@ using WinRT;
 
 namespace BigChat.Main;
 
-internal sealed partial class MainPage : Page,
-    IRecipient<RenameConversationConfirmation>,
-    IRecipient<DeleteConversationConfirmation>,
-    IDisposable
+internal class ReactiveMainPageView : ReactivePage<MainPageViewModel>;
+internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
 {
-    private MainPageViewModel ViewModel { get; } = ServiceLocator.GetRequiredService<MainPageViewModel>();
+    private ConversationPage? CurrentConversationPage { get; set; }
     private CompositeDisposable CleanUp { get; init; } = [];
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
     private DialogService DialogService { get; } = ServiceLocator.GetRequiredService<DialogService>();
 
-    private readonly ReadOnlyObservableCollection<ConversationViewModel> Conversations = null!;
+    private IDisposable? ConversationAddedSubscription { get; set; }
 
+    private readonly ReadOnlyObservableCollection<ConversationViewModel> Conversations = null!;
     public MainPage()
     {
         InitializeComponent();
 
-        //NavigationService navigationService = ServiceLocator.GetRequiredService<INavigationService>().As<NavigationService>();
+        ViewModel = ServiceLocator.GetRequiredService<MainPageViewModel>();
 
-        //navigationService.Setup(NavViewFrame, NavView, EmptyConversation, () => ChatNavigationViewItems);
+        Observable.FromEventPattern<NavigationView, NavigationViewItemInvokedEventArgs>(NavView, nameof(NavView.ItemInvoked))
+            .Subscribe(ep =>
+            {
+                if (ep.EventArgs.IsSettingsInvoked)
+                {
+                    if (NavViewFrame.Content is SettingsPage)
+                    {
+                        return;
+                    }
 
-        ViewModel.GoBackCommand.CanExecute.Subscribe(v => TitleBar.IsBackButtonEnabled = v)
-            .DisposeWith(CleanUp);
+                    NavViewFrame.Navigate(typeof(SettingsPage));
+                }
+                else if (ep.EventArgs.InvokedItem is ConversationViewModel conversation)
+                {
+                    if (NavViewFrame.Content is ConversationPage page && page.ViewModel?.Id == conversation.Id)
+                    {
+                        return;
+                    }
+
+                    NavViewFrame.Navigate(typeof(ConversationPage), conversation);
+                }
+            });
+
+        Observable.FromEventPattern<object, NavigationEventArgs>(NavViewFrame, nameof(NavViewFrame.Navigated))
+            .Subscribe(ep =>
+            {
+                ConversationAddedSubscription?.Dispose();
+
+                if (ep.EventArgs.SourcePageType == typeof(SettingsPage))
+                {
+                    CurrentConversationPage = null;
+                    NavView.SelectedItem = NavView.SettingsItem;
+                }
+                else if (ep.EventArgs.SourcePageType == typeof(ConversationPage))
+                {
+                    CurrentConversationPage = ep.EventArgs.Content.As<ConversationPage>();
+                    NavView.SelectedItem = ep.EventArgs.Parameter;
+
+                    if (ep.EventArgs.Parameter is ConversationViewModel vm && vm.Id == 0)
+                    {
+                        ConversationAddedSubscription = vm.WhenAnyValue(x => x.Id)
+                            .Where(v => v != 0)
+                            .Select(_ => vm)
+                            .Subscribe(vm =>
+                            {
+                                ViewModel.AddConversation(vm);
+                                NavViewFrame.Navigate(typeof(ConversationPage), vm);
+                            });
+                    }
+                }
+            });
+
 
         ViewModel.LoadConversationsCommand.Execute().Subscribe();
+        OpenEmptyConversation();
 
         ViewModel.Conversations
             .Connect()
@@ -49,14 +98,19 @@ internal sealed partial class MainPage : Page,
             .Subscribe()
             .DisposeWith(CleanUp);
 
-        WeakReferenceMessenger.Default.Register<RenameConversationConfirmation>(this);
-        WeakReferenceMessenger.Default.Register<DeleteConversationConfirmation>(this);
+        ViewModel.Conversations
+            .Connect()
+            .OnItemRemoved(vm => NavViewFrame.BackStack.RemoveMany(NavViewFrame.BackStack.Where(p => ReferenceEquals(p.Parameter, vm))))
+            .Subscribe()
+            .DisposeWith(CleanUp);
+
+        UserInput.UserInputs.Subscribe(input => CurrentConversationPage?.ViewModel?.AddMessageCommand.Execute(input).Subscribe())
+            .DisposeWith(CleanUp);
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
+    private void OpenEmptyConversation()
     {
-        base.OnNavigatedTo(e);
-        ViewModel.OpenEmptyConversationCommand.Execute().Subscribe();
+        NavViewFrame.Navigate(typeof(ConversationPage), ViewModel!.GetEmptyConversation());
     }
 
     private void TitleBar_PaneToggleRequested(TitleBar sender, object args)
@@ -66,25 +120,25 @@ internal sealed partial class MainPage : Page,
 
     private void TitleBar_BackRequested(TitleBar sender, object args)
     {
-        ViewModel.GoBackCommand.Execute().Subscribe();
+        NavViewFrame.GoBack();
     }
 
     private void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
     {
         if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
         {
-            ViewModel.FilterConversationsCommand.Execute().Subscribe();
+            ViewModel!.FilterConversationsCommand.Execute().Subscribe();
         }
     }
 
     private void AutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
-        ViewModel.UpdateAutoSuggestBoxTextCommand.Execute(parameter: args.SelectedItem);
+        ViewModel!.UpdateAutoSuggestBoxTextCommand.Execute(parameter: args.SelectedItem);
     }
 
     private void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
-        ViewModel.SelectSuggestedConversationCommand.Execute(parameter: args.ChosenSuggestion);
+        ViewModel!.SelectSuggestedConversationCommand.Execute(parameter: args.ChosenSuggestion);
     }
 
     public void Receive(RenameConversationConfirmation message)
@@ -106,7 +160,7 @@ internal sealed partial class MainPage : Page,
             if (result.HasFlag(ContentDialogResult.Primary))
             {
                 message.Conversation.Subject = dialog.Content.As<TextBox>().Text;
-                ViewModel.UpdateConversationSubjectCommand.Execute(message.Conversation);
+                ViewModel!.UpdateConversationSubjectCommand.Execute(message.Conversation);
             }
         };
     }
@@ -128,14 +182,18 @@ internal sealed partial class MainPage : Page,
 
             if (result.HasFlag(ContentDialogResult.Primary))
             {
-                ViewModel.DeleteConversationCommand.Execute(message.Conversation);
+                ViewModel!.DeleteConversationCommand.Execute(message.Conversation);
             }
         };
     }
 
     public void Dispose()
     {
-        WeakReferenceMessenger.Default.UnregisterAll(this);
         CleanUp.Dispose();
+    }
+
+    private void PageButton_Click(object sender, RoutedEventArgs e)
+    {
+        OpenEmptyConversation();
     }
 }

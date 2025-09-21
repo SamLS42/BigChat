@@ -9,7 +9,6 @@
     xmlns:messages="using:BigChat.Messages"
     xmlns:shared="using:BigChat.Utils"
     xmlns:viewmodel="using:BigChat.AppCore.ViewModel"
-    d:DataContext="{d:DesignInstance Type=viewmodel:ConversationViewModel}"
     mc:Ignorable="d">
 
     <conversations:ReactiveConversationPage.Resources>

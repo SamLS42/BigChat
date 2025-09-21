@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<UserControl
+<main:ReactiveUserInput
     x:Class="BigChat.Main.UserInput"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:main="using:BigChat.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
@@ -24,13 +25,12 @@
                 PlaceholderText="{x:Bind Loc.InputBoxPlaceholderText, Mode=OneWay}"
                 PreviewKeyDown="InputBox_PreviewKeyDown"
                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                Text="{x:Bind Conversation.InputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 TextWrapping="Wrap" />
             <StackPanel
                 Grid.Column="1"
                 VerticalAlignment="Top"
                 Orientation="Horizontal">
-                <Button Command="{x:Bind Conversation.AddMessageCommand}" Style="{StaticResource AccentButtonStyle}">
+                <Button Click="AddMessage">
                     <SymbolIcon Symbol="Send" />
                 </Button>
             </StackPanel>
@@ -38,4 +38,4 @@
 
     </StackPanel>
 
-</UserControl>
+</main:ReactiveUserInput>

@@ -1,18 +1,12 @@
-﻿using BigChat.AppCore.Conversations.EventMessages;
-using BigChat.AppCore.Localization;
-using BigChat.AppCore.Messages;
-using BigChat.AppCore.Notifications;
-using BigChat.AppCore.Settings;
+﻿using BigChat.AppCore.Messages;
 using BigChat.AppCore.ViewModel;
 using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
-using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using System.Globalization;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
@@ -28,59 +22,44 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     public ConversationViewModel()
     {
         MessageSource.Connect()
-            .SubscribeMany(m =>
-            {
-                return m.ObservableForProperty(x => x.Text)
-                    .SkipWhile(m => m.Sender.Id == 0)
+            .SubscribeMany(m => m.ObservableForProperty(x => x.Text)
+                    .SkipWhile(m => m.Sender.Id == 0 && m.Sender.Role != ChatRole.User)
                     .DistinctUntilChanged()
-                    .Subscribe(async vm => await UpdateMessageAsync(vm.Sender));
-            })
+                    .Subscribe())
             .Subscribe()
             .DisposeWith(Disposables);
     }
 
     [Reactive]
     public partial string Subject { get; set; } = string.Empty;
-    public int Id { get; set; }
+
+    [Reactive]
+    public partial int Id { get; set; }
 
     [ReactiveCommand]
-    private void Delete()
-    {
-        WeakReferenceMessenger.Default.Send<DeleteConversationConfirmation>(new(this));
-    }
+    private void Delete() { }
 
     [ReactiveCommand]
-    public void Rename()
-    {
-        WeakReferenceMessenger.Default.Send<RenameConversationConfirmation>(new(this));
-    }
+    public void Rename() { }
 
     public override string ToString()
     {
         return Subject;
     }
 
-    private readonly ILocalizedTexts localizedTexts = ServiceLocator.GetRequiredService<ILocalizedTexts>();
     private readonly SubjectResolver subjectResolver = ServiceLocator.GetRequiredService<SubjectResolver>();
     private readonly ConversationProcessor conversationProcessor = ServiceLocator.GetRequiredService<ConversationProcessor>();
 
-    [Reactive]
-    public partial string InputText { get; set; } = string.Empty;
 
-    [Reactive]
-    public int ConversationId { get; set; }
-
-    [ReactiveCommand(CanExecute = nameof(CanAddMessages))]
-    private async Task AddMessageAsync(CancellationToken cancellationToken)
+    [ReactiveCommand]
+    private async Task AddMessageAsync(string inputText, CancellationToken cancellationToken)
     {
-        if (ConversationId == 0)
+        if (Id == 0)
         {
-            ConversationId = await CreateConversationAsync(cancellationToken);
+            Id = await CreateConversationAsync(cancellationToken);
         }
 
-        await AddUserMessageAsync(InputText.Trim(), cancellationToken);
-
-        InputText = string.Empty;
+        await AddUserMessageAsync(inputText.Trim(), cancellationToken);
 
         await ProcessConversationAsync(cancellationToken);
     }
@@ -90,41 +69,20 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        MessageSource.Edit(async updateAction =>
-        {
-            await foreach (Message message in db.GetRecentMessages(ConversationId, afterId: 0, count: 100))
-            {
-                MessageViewModel messageViewModel = message.ToMessageViewModel();
+        MessageViewModel[] messages = [.. db.Messages.Where(m => m.ConversationId == Id).Select(m => m.ToMessageViewModel())];
 
-                updateAction.AddOrUpdate(messageViewModel);
-            }
-        });
-    }
-
-    private MessageViewModel AddResponse()
-    {
-        MessageViewModel message = new()
-        {
-            Role = ChatRole.Assistant,
-            Text = string.Empty,
-            ConversationId = ConversationId,
-            CreatedAt = DateTime.Now,
-        };
-
-        MessageSource.AddOrUpdate(message);
-
-        return message;
+        MessageSource.EditDiff(messages, areItemsEqual: (m1, m2) => m1.Id == m2.Id);
     }
 
     private async Task UpdateMessageAsync(MessageViewModel message, CancellationToken cancellationToken = default)
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        await db.Messages.Where(m => m.Id == message.Id && m.ConversationId == message.ConversationId)
+        await db.Messages.Where(m => m.Id == message.Id && m.Id == message.Id)
             .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, message.Text).SetProperty(m => m.ModifiedAt, DateTime.Now), cancellationToken: cancellationToken);
 
         // Delete messages after the one updated, the conversation is reset from here
-        await db.Messages.Where(m => m.Id > message.Id && m.ConversationId == message.ConversationId)
+        await db.Messages.Where(m => m.Id > message.Id && m.Id == message.Id)
             .ExecuteDeleteAsync(cancellationToken: cancellationToken);
 
         MessageSource.RemoveKeys(MessageSource.Keys.Where(k => k > message.Id));
@@ -134,24 +92,44 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
     private async Task ProcessConversationAsync(CancellationToken cancellationToken)
     {
-        try
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        Message message = new()
         {
-            MessageViewModel message = AddResponse();
-            message.Text = await conversationProcessor.GetAIResponseAsync(ConversationId, cancellationToken);
-            await CheckSubjectAsync(cancellationToken);
-        }
-        catch (MissingSettingsException ex)
-        {
-            ShowNotification message = new(Text: string.Format(CultureInfo.InvariantCulture, localizedTexts.MissingSettingsMessageText, ex.SettingName), Severity.Error);
-            WeakReferenceMessenger.Default.Send(message);
-        }
+            ConversationId = Id,
+            CreatedAt = DateTime.UtcNow,
+            Role = ChatRole.Assistant.Value,
+            Text = string.Empty
+        };
+
+        await db.Messages.AddAsync(message, cancellationToken);
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        MessageViewModel vm = message.ToMessageViewModel();
+
+        MessageSource.AddOrUpdate(vm);
+
+        Observable.FromAsync(cancellationToken => conversationProcessor.GetAIResponseAsync(Id, cancellationToken))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(async response =>
+            {
+                vm.Text = response;
+
+                await using MyDbContext db = await DbContextFactory.CreateDbContextAsync();
+
+                await db.Messages.Where(m => m.Id == vm.Id && m.Id == vm.Id)
+                    .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, vm.Text).SetProperty(m => m.ModifiedAt, DateTime.Now));
+
+                await CheckSubjectAsync();
+            });
     }
 
-    private async Task CheckSubjectAsync(CancellationToken cancellationToken)
+    private async Task CheckSubjectAsync(CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(Subject) && Messages.Count >= 1)
         {
-            string? subject = await subjectResolver.ResolveSubjectAsync(ConversationId, cancellationToken);
+            string? subject = await subjectResolver.ResolveSubjectAsync(Id, cancellationToken);
             Subject = subject ?? Subject;
         }
     }
@@ -164,7 +142,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         {
             Text = text,
             Role = ChatRole.User.Value,
-            ConversationId = ConversationId,
+            ConversationId = Id,
             CreatedAt = DateTime.UtcNow,
         };
 
@@ -192,11 +170,6 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         await db.SaveChangesAsync(cancellationToken);
 
         return newConversation.Id;
-    }
-
-    private bool CanAddMessages()
-    {
-        return !string.IsNullOrWhiteSpace(InputText);
     }
 
     public void Dispose()

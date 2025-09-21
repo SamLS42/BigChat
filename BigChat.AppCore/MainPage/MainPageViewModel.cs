@@ -1,5 +1,4 @@
 ﻿using BigChat.AppCore.Conversations;
-using BigChat.AppCore.Conversations.EventMessages;
 using BigChat.Infrastructure.Data;
 using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
@@ -9,27 +8,17 @@ using ReactiveUI.SourceGenerators;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace BigChat.AppCore.MainPage;
 
 public sealed partial class MainPageViewModel : ReactiveObject,
-    IRecipient<ConversationAdded>,
     IDisposable
 {
     private readonly CompositeDisposable Disposables = [];
-    private SourceList<ConversationViewModel> ConversationSource { get; } = new();
-    public IObservableList<ConversationViewModel> Conversations => ConversationSource.AsObservableList();
-    public ConversationViewModel? SelectedConversation { get; set; }
+    private SourceCache<ConversationViewModel, int> ConversationSource { get; } = new(c => c.Id);
+    public IObservableCache<ConversationViewModel, int> Conversations => ConversationSource.AsObservableCache();
 
-    private ObservableAsPropertyHelper<ConversationViewModel> _selectedConversationPageViewModel = null!;
-    public ConversationViewModel SelectedConversationPageViewModel => _selectedConversationPageViewModel.Value;
-    public BehaviorSubject<int> ConversationChangedSource { get; set; } = new(0);
-    public IObservable<int> ConversationChanged => ConversationChangedSource.AsObservable();
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
-
-    private SourceList<int> BackStack { get; } = new();
-    private SourceList<int> ForwardStack { get; } = new();
 
     [Reactive]
     public partial string AutoSuggestBoxText { get; set; } = string.Empty;
@@ -39,26 +28,21 @@ public sealed partial class MainPageViewModel : ReactiveObject,
 
     public MainPageViewModel()
     {
-        WeakReferenceMessenger.Default.Register(this);
 
-        this.WhenAnyValue(x => x.SelectedConversation)
-            .Subscribe(c =>
-            {
-                int id = c?.Id ?? 0;
-                ConversationChangedSource.OnNext(id);
-                BackStack.Add(id);
-            })
+        ConversationSource.Connect()
+            .MergeMany(c => c.DeleteCommand.Select(_ => c))
+            .Subscribe(async c => await DeleteConversationAsync(c))
             .DisposeWith(Disposables);
 
-        _selectedConversationPageViewModel = ConversationChanged
-            .Select(id => new ConversationViewModel() { ConversationId = id })
-            .ToProperty(this, nameof(SelectedConversationPageViewModel));
+        ConversationSource.Connect()
+            .MergeMany(c => c.RenameCommand.Select(_ => c))
+            .Subscribe(async c => await UpdateConversationSubjectAsync(c))
+            .DisposeWith(Disposables);
     }
 
-    [ReactiveCommand]
-    private void OpenNewConversation()
+    public void AddConversation(ConversationViewModel conversation)
     {
-        SelectedConversation = null;
+        ConversationSource.AddOrUpdate(conversation);
     }
 
     [ReactiveCommand]
@@ -70,18 +54,12 @@ public sealed partial class MainPageViewModel : ReactiveObject,
             .AsAsyncEnumerable()
             .WithCancellation(cancellationToken))
         {
-            ConversationSource.Add(new ConversationViewModel
+            ConversationSource.AddOrUpdate(new ConversationViewModel
             {
                 Id = conversation.Id,
                 Subject = conversation.Subject,
             });
         }
-    }
-
-    public void Receive(ConversationAdded message)
-    {
-        ArgumentNullException.ThrowIfNull(message);
-        ConversationSource.Add(message.NewConversation);
     }
 
     public void Dispose()
@@ -90,7 +68,6 @@ public sealed partial class MainPageViewModel : ReactiveObject,
         ConversationSource.Clear();
         Conversations.Dispose();
         Disposables.Dispose();
-        _selectedConversationPageViewModel.Dispose();
     }
 
     [ReactiveCommand]
@@ -105,42 +82,14 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     [ReactiveCommand]
     private async Task DeleteConversationAsync(ConversationViewModel conversation, CancellationToken cancellationToken = default)
     {
-        BackStack.Remove(conversation.Id);
-
-        if (conversation == SelectedConversation)
-        {
-            SelectedConversation = null;
-        }
-
         ConversationSource.Remove(conversation);
 
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
         await db.Conversations.Where(c => c.Id == conversation.Id)
             .ExecuteDeleteAsync(cancellationToken: cancellationToken);
-    }
 
-    private IObservable<bool> CanGoBack => BackStack.CountChanged.Select(c => c != 0);
-
-    [ReactiveCommand(CanExecute = nameof(CanGoBack))]
-    private void GoBack()
-    {
-        BackStack.RemoveAt(-1);
-        int id = BackStack.Items[BackStack.Items.Count - 1];
-        SelectedConversation = Conversations.Items.SingleOrDefault(c => c.Id == id);
-    }
-
-    [ReactiveCommand]
-    private void OpenEmptyConversation()
-    {
-        SelectedConversation = null;
-    }
-
-    [ReactiveCommand]
-    private void SelectConversation((ConversationViewModel conversation, bool navigate) parameter)
-    {
-        BackStack.Add(SelectedConversation?.Id ?? 0);
-        SelectedConversation = Conversations.Items.SingleOrDefault(c => c.Id == parameter.conversation.Id);
+        conversation.Dispose();
     }
 
     [ReactiveCommand]
@@ -148,7 +97,6 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     {
         if (chosenSuggestion is ConversationViewModel conversation)
         {
-            SelectConversation((conversation, navigate: true));
             AutoSuggestBoxText = string.Empty;
             FilteredConversations = ReadOnlyCollection<ConversationViewModel>.Empty;
         }
@@ -166,5 +114,17 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     private void FilterConversations()
     {
         FilteredConversations = new([.. Conversations.Items.Where(c => c.Subject.Contains(AutoSuggestBoxText, StringComparison.OrdinalIgnoreCase))]);
+    }
+
+    private static ConversationViewModel emptyConversation = new();
+
+    public ConversationViewModel GetEmptyConversation()
+    {
+        if (ConversationSource.Items.Contains(emptyConversation))
+        {
+            emptyConversation = new();
+        }
+
+        return emptyConversation;
     }
 }
