@@ -8,6 +8,7 @@ using BigChat.Localization;
 using BigChat.Settings;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -26,8 +27,6 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
     private CompositeDisposable CleanUp { get; init; } = [];
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
     private DialogService DialogService { get; } = ServiceLocator.GetRequiredService<DialogService>();
-
-    private IDisposable? ConversationAddedSubscription { get; set; }
 
     private readonly ReadOnlyObservableCollection<ConversationViewModel> Conversations = null!;
     public MainPage()
@@ -48,43 +47,30 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
 
                     NavViewFrame.Navigate(typeof(SettingsPage));
                 }
-                else if (ep.EventArgs.InvokedItem is ConversationViewModel conversation)
+                else if (ep.EventArgs.InvokedItem is ChatNavigationViewItem item)
                 {
-                    if (NavViewFrame.Content is ConversationPage page && page.ViewModel?.Id == conversation.Id)
-                    {
-                        return;
-                    }
-
-                    NavViewFrame.Navigate(typeof(ConversationPage), conversation);
+                    OpenConversation(item.Conversation);
+                }
+                else
+                {
+                    OpenEmptyConversation();
                 }
             });
 
         Observable.FromEventPattern<object, NavigationEventArgs>(NavViewFrame, nameof(NavViewFrame.Navigated))
             .Subscribe(ep =>
             {
-                ConversationAddedSubscription?.Dispose();
+                SelectItem(null);
+                CurrentConversationPage = null;
 
                 if (ep.EventArgs.SourcePageType == typeof(SettingsPage))
                 {
-                    CurrentConversationPage = null;
-                    NavView.SelectedItem = NavView.SettingsItem;
+                    SelectItem(NavView.SettingsItem);
                 }
                 else if (ep.EventArgs.SourcePageType == typeof(ConversationPage))
                 {
                     CurrentConversationPage = ep.EventArgs.Content.As<ConversationPage>();
-                    NavView.SelectedItem = ep.EventArgs.Parameter;
-
-                    if (ep.EventArgs.Parameter is ConversationViewModel vm && vm.Id == 0)
-                    {
-                        ConversationAddedSubscription = vm.WhenAnyValue(x => x.Id)
-                            .Where(v => v != 0)
-                            .Select(_ => vm)
-                            .Subscribe(vm =>
-                            {
-                                ViewModel.AddConversation(vm);
-                                NavViewFrame.Navigate(typeof(ConversationPage), vm);
-                            });
-                    }
+                    SelectItem(ep.EventArgs.Parameter);
                 }
             });
 
@@ -94,23 +80,73 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
 
         ViewModel.Conversations
             .Connect()
+            .SortBy(x => x.Id)
             .Bind(out Conversations)
+            .OnItemRemoved(vm =>
+            {
+                if (ReferenceEquals(CurrentConversationPage?.ViewModel, vm))
+                {
+                    OpenEmptyConversation();
+                }
+
+                PageStackEntry[] ToDelete = [.. NavViewFrame.BackStack.Where(p => p.Parameter is ConversationViewModel c && c.Id == vm.Id)];
+
+                NavViewFrame.BackStack.RemoveMany(ToDelete);
+
+                PageStackEntry[] distintValues = [.. NavViewFrame.BackStack.DistinctUntilChanged(keySelector: p => p.Parameter)];
+
+                NavViewFrame.BackStack.Clear();
+
+                if (distintValues.Length > 1)
+                {
+                    NavViewFrame.BackStack.AddRange(distintValues);
+                }
+            })
             .Subscribe()
             .DisposeWith(CleanUp);
 
         ViewModel.Conversations
             .Connect()
-            .OnItemRemoved(vm => NavViewFrame.BackStack.RemoveMany(NavViewFrame.BackStack.Where(p => ReferenceEquals(p.Parameter, vm))))
             .Subscribe()
             .DisposeWith(CleanUp);
 
-        UserInput.UserInputs.Subscribe(input => CurrentConversationPage?.ViewModel?.AddMessageCommand.Execute(input).Subscribe())
-            .DisposeWith(CleanUp);
+        UserInput.UserInputs.Subscribe(async input =>
+        {
+            ConversationViewModel vm = CurrentConversationPage?.ViewModel ?? await ViewModel.GetNewConversationAsync();
+
+            OpenConversation(vm);
+
+            vm.AddMessageCommand.Execute(input).Subscribe();
+        }).DisposeWith(CleanUp);
+    }
+
+    private void SelectItem(object? obj)
+    {
+        DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+        {
+            NavView.SelectedItem = null;
+            NavView.UpdateLayout();
+            NavView.SelectedItem = obj;
+        });
+    }
+
+    private void OpenConversation(ConversationViewModel conversation)
+    {
+        if (NavViewFrame.Content is ConversationPage page && page.ViewModel?.Id == conversation.Id)
+        {
+            return;
+        }
+
+        NavViewFrame.Navigate(typeof(ConversationPage), conversation);
     }
 
     private void OpenEmptyConversation()
     {
-        NavViewFrame.Navigate(typeof(ConversationPage), ViewModel!.GetEmptyConversation());
+        if (NavViewFrame.Content is Empty)
+        {
+            return;
+        }
+        NavViewFrame.Navigate(typeof(Empty));
     }
 
     private void TitleBar_PaneToggleRequested(TitleBar sender, object args)

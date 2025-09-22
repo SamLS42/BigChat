@@ -1,4 +1,5 @@
-﻿using BigChat.AppCore.Messages;
+﻿using BigChat.AppCore.Localization;
+using BigChat.AppCore.Messages;
 using BigChat.AppCore.ViewModel;
 using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
@@ -18,6 +19,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     private SourceCache<MessageViewModel, int> MessageSource { get; } = new(vm => vm.Id);
     public IObservableCache<MessageViewModel, int> Messages => MessageSource.AsObservableCache();
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
+    private ILocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>();
 
     public ConversationViewModel()
     {
@@ -54,11 +56,6 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     [ReactiveCommand]
     private async Task AddMessageAsync(string inputText, CancellationToken cancellationToken)
     {
-        if (Id == 0)
-        {
-            Id = await CreateConversationAsync(cancellationToken);
-        }
-
         await AddUserMessageAsync(inputText.Trim(), cancellationToken);
 
         await ProcessConversationAsync(cancellationToken);
@@ -127,7 +124,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
     private async Task CheckSubjectAsync(CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(Subject) && Messages.Count >= 1)
+        if ((string.IsNullOrWhiteSpace(Subject) || Subject == Loc.NewChatText) && Messages.Count >= 1)
         {
             string? subject = await subjectResolver.ResolveSubjectAsync(Id, cancellationToken);
             Subject = subject ?? Subject;
@@ -153,23 +150,6 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         MessageViewModel messageViewModel = message.ToMessageViewModel();
 
         MessageSource.AddOrUpdate(messageViewModel);
-    }
-
-    private async Task<int> CreateConversationAsync(CancellationToken cancellationToken)
-    {
-        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
-
-        Conversation newConversation = new()
-        {
-            CreatedAt = DateTime.Now,
-            Subject = string.Empty,
-        };
-
-        await db.Conversations.AddAsync(newConversation, cancellationToken);
-
-        await db.SaveChangesAsync(cancellationToken);
-
-        return newConversation.Id;
     }
 
     public void Dispose()

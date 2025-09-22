@@ -14,7 +14,9 @@
 
     <usercontrols:ReactiveMainPageView.Resources>
         <DataTemplate x:Key="ChatInfoTemplate" x:DataType="viewmodel:ConversationViewModel">
-            <usercontrols:ChatNavigationViewItem Conversation="{x:Bind}" />
+            <NavigationViewItem Icon="Message" ToolTipService.ToolTip="{x:Bind Subject, Mode=OneWay}">
+                <usercontrols:ChatNavigationViewItem Conversation="{x:Bind}" />
+            </NavigationViewItem>
         </DataTemplate>
     </usercontrols:ReactiveMainPageView.Resources>
     <Grid>

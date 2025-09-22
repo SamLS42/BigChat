@@ -18,6 +18,7 @@
 		<PackageReference Include="OllamaSharp" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="Microsoft.Extensions.AI" />
+		<PackageReference Include="System.Interactive" />
 	</ItemGroup>
 
 	<ItemGroup>

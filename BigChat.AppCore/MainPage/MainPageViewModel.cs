@@ -1,5 +1,7 @@
 ﻿using BigChat.AppCore.Conversations;
+using BigChat.AppCore.Localization;
 using BigChat.Infrastructure.Data;
+using BigChat.Infrastructure.Data.Models;
 using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
 using Microsoft.EntityFrameworkCore;
@@ -25,24 +27,22 @@ public sealed partial class MainPageViewModel : ReactiveObject,
 
     [Reactive]
     public partial ReadOnlyCollection<ConversationViewModel> FilteredConversations { get; set; } = ReadOnlyCollection<ConversationViewModel>.Empty;
+    private ILocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>();
 
     public MainPageViewModel()
     {
 
         ConversationSource.Connect()
             .MergeMany(c => c.DeleteCommand.Select(_ => c))
-            .Subscribe(async c => await DeleteConversationAsync(c))
+            .SelectMany(c => Observable.FromAsync(() => DeleteConversationAsync(c)))
+            .Subscribe()
             .DisposeWith(Disposables);
 
         ConversationSource.Connect()
             .MergeMany(c => c.RenameCommand.Select(_ => c))
-            .Subscribe(async c => await UpdateConversationSubjectAsync(c))
+            .SelectMany(c => Observable.FromAsync(() => UpdateConversationSubjectAsync(c)))
+            .Subscribe()
             .DisposeWith(Disposables);
-    }
-
-    public void AddConversation(ConversationViewModel conversation)
-    {
-        ConversationSource.AddOrUpdate(conversation);
     }
 
     [ReactiveCommand]
@@ -57,7 +57,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
             ConversationSource.AddOrUpdate(new ConversationViewModel
             {
                 Id = conversation.Id,
-                Subject = conversation.Subject,
+                Subject = string.IsNullOrWhiteSpace(conversation.Subject) ? Loc.NewChatText : conversation.Subject,
             });
         }
     }
@@ -116,15 +116,37 @@ public sealed partial class MainPageViewModel : ReactiveObject,
         FilteredConversations = new([.. Conversations.Items.Where(c => c.Subject.Contains(AutoSuggestBoxText, StringComparison.OrdinalIgnoreCase))]);
     }
 
-    private static ConversationViewModel emptyConversation = new();
-
-    public ConversationViewModel GetEmptyConversation()
+    private async Task<Conversation> CreateConversationAsync(CancellationToken cancellationToken = default)
     {
-        if (ConversationSource.Items.Contains(emptyConversation))
-        {
-            emptyConversation = new();
-        }
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        return emptyConversation;
+        Conversation newConversation = new()
+        {
+            CreatedAt = DateTime.Now,
+            Subject = Loc.NewChatText,
+        };
+
+        await db.Conversations.AddAsync(newConversation, cancellationToken);
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return newConversation;
+    }
+
+    public async Task<ConversationViewModel> GetNewConversationAsync()
+    {
+        Conversation conversation = await CreateConversationAsync();
+
+        ConversationViewModel vm = new()
+        {
+            Id = conversation.Id,
+            Subject = conversation.Subject,
+        };
+
+        ConversationSource.AddOrUpdate(vm);
+
+        ConversationSource.Refresh(vm);
+
+        return vm;
     }
 }

@@ -5,27 +5,35 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:viewmodel="using:BigChat.AppCore.ViewModel"
     mc:Ignorable="d">
 
+
     <Grid ColumnSpacing="8">
+        <Grid.ContextFlyout>
+            <MenuFlyout Placement="Bottom">
+                <MenuFlyoutItem Command="{x:Bind Conversation.DeleteCommand}" Text="{x:Bind Loc.DeleteText, Mode=OneWay}">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Delete" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem Command="{x:Bind Conversation.RenameCommand}" Text="{x:Bind Loc.RenameText, Mode=OneWay}">
+                    <MenuFlyoutItem.Icon>
+                        <SymbolIcon Symbol="Edit" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+            </MenuFlyout>
+        </Grid.ContextFlyout>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock
-            VerticalAlignment="Center"
-            Text="{x:Bind Conversation.Subject, Mode=OneWay}"
-            Visibility="{x:Bind Conversation.Subject, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}">
+        <TextBlock VerticalAlignment="Center" Text="{x:Bind Conversation.Subject, Mode=OneWay}">
             <ToolTipService.ToolTip>
                 <ToolTip Content="{x:Bind Conversation.Subject, Mode=OneWay}" />
             </ToolTipService.ToolTip>
         </TextBlock>
-
-        <TextBlock
-            VerticalAlignment="Center"
-            Text="{x:Bind Loc.NewChatText, Mode=OneWay}"
-            Visibility="{x:Bind Conversation.Subject, Mode=OneWay, Converter={StaticResource EmptyStringToObjectConverter}}" />
 
         <DropDownButton
             Grid.Column="1"
@@ -52,5 +60,6 @@
             </DropDownButton.Flyout>
         </DropDownButton>
     </Grid>
+
 
 </UserControl>
