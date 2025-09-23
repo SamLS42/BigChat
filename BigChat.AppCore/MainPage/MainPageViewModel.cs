@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
@@ -17,6 +18,8 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     IDisposable
 {
     private readonly CompositeDisposable Disposables = [];
+    public Interaction<Unit, bool> ConfirmDeleteInteraction { get; } = new();
+    public Interaction<string, string?> ConfirmSubjectInteraction { get; } = new();
     private SourceCache<ConversationViewModel, int> ConversationSource { get; } = new(c => c.Id);
     public IObservableCache<ConversationViewModel, int> Conversations => ConversationSource.AsObservableCache();
 
@@ -29,9 +32,9 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     public partial ReadOnlyCollection<ConversationViewModel> FilteredConversations { get; set; } = ReadOnlyCollection<ConversationViewModel>.Empty;
     private ILocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>();
 
+
     public MainPageViewModel()
     {
-
         ConversationSource.Connect()
             .MergeMany(c => c.DeleteCommand.Select(_ => c))
             .SelectMany(c => Observable.FromAsync(() => DeleteConversationAsync(c)))
@@ -50,15 +53,9 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        await foreach (var conversation in db.Conversations.OrderByDescending(c => c.CreatedAt).Select(c => new { c.Id, c.Subject })
-            .AsAsyncEnumerable()
-            .WithCancellation(cancellationToken))
+        await foreach (Conversation conversation in db.Conversations.OrderByDescending(c => c.CreatedAt).AsAsyncEnumerable().WithCancellation(cancellationToken))
         {
-            ConversationSource.AddOrUpdate(new ConversationViewModel
-            {
-                Id = conversation.Id,
-                Subject = string.IsNullOrWhiteSpace(conversation.Subject) ? Loc.NewChatText : conversation.Subject,
-            });
+            ConversationSource.AddOrUpdate(conversation.ToConversationViewModel());
         }
     }
 
@@ -75,21 +72,33 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        await db.Conversations.Where(c => c.Id == conversation.Id)
-            .ExecuteUpdateAsync(s => s.SetProperty(c => c.Subject, conversation.Subject), cancellationToken: cancellationToken);
+        string? newSubject = await ConfirmSubjectInteraction.Handle(conversation.Subject);
+
+        if (newSubject != null)
+        {
+            conversation.Subject = newSubject;
+
+            await db.Conversations.Where(c => c.Id == conversation.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(c => c.Subject, conversation.Subject), cancellationToken: cancellationToken);
+        }
     }
 
     [ReactiveCommand]
     private async Task DeleteConversationAsync(ConversationViewModel conversation, CancellationToken cancellationToken = default)
     {
-        ConversationSource.Remove(conversation);
+        bool confirmed = await ConfirmDeleteInteraction.Handle(Unit.Default);
 
-        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
+        if (confirmed)
+        {
+            ConversationSource.Remove(conversation);
 
-        await db.Conversations.Where(c => c.Id == conversation.Id)
-            .ExecuteDeleteAsync(cancellationToken: cancellationToken);
+            await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        conversation.Dispose();
+            await db.Conversations.Where(c => c.Id == conversation.Id)
+                .ExecuteDeleteAsync(cancellationToken: cancellationToken);
+
+            conversation.Dispose();
+        }
     }
 
     [ReactiveCommand]
@@ -122,7 +131,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
 
         Conversation newConversation = new()
         {
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             Subject = Loc.NewChatText,
         };
 
@@ -137,11 +146,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     {
         Conversation conversation = await CreateConversationAsync();
 
-        ConversationViewModel vm = new()
-        {
-            Id = conversation.Id,
-            Subject = conversation.Subject,
-        };
+        ConversationViewModel vm = conversation.ToConversationViewModel();
 
         ConversationSource.AddOrUpdate(vm);
 

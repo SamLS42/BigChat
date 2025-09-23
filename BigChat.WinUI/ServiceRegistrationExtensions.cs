@@ -1,6 +1,5 @@
 ﻿using BigChat.AppCore.Localization;
 using BigChat.AppCore.Messages;
-using BigChat.AppCore.Navigation;
 using BigChat.AppCore.Settings;
 using BigChat.Localization;
 using BigChat.Main;
@@ -17,7 +16,6 @@ internal static class ServiceRegistrationExtensions
         return serviceCollection.AddSingleton<ISettingsService, LocalSettingsService>()
             .AddSingleton<IStringLocalizer, StringLocalizer>()
             .AddSingleton<ILocalizedTexts, LocalizedTexts>()
-            .AddSingleton<INavigationService, NavigationService>()
             .AddSingleton<DialogService>();
     }
 }

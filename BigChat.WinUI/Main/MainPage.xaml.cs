@@ -1,12 +1,12 @@
 using BigChat.AppCore;
 using BigChat.AppCore.Conversations;
-using BigChat.AppCore.Conversations.EventMessages;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.MainPage;
 using BigChat.Conversations;
 using BigChat.Localization;
 using BigChat.Settings;
 using DynamicData;
+using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -21,41 +21,81 @@ using WinRT;
 namespace BigChat.Main;
 
 internal class ReactiveMainPageView : ReactivePage<MainPageViewModel>;
-internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
+internal sealed partial class MainPage : ReactiveMainPageView
 {
     private ConversationPage? CurrentConversationPage { get; set; }
-    private CompositeDisposable CleanUp { get; init; } = [];
+    private CompositeDisposable Disposables { get; } = [];
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
     private DialogService DialogService { get; } = ServiceLocator.GetRequiredService<DialogService>();
 
-    private readonly ReadOnlyObservableCollection<ConversationViewModel> Conversations = null!;
+    private ReadOnlyObservableCollection<ConversationViewModel> Conversations = null!;
     public MainPage()
     {
         InitializeComponent();
 
         ViewModel = ServiceLocator.GetRequiredService<MainPageViewModel>();
 
-        Observable.FromEventPattern<NavigationView, NavigationViewItemInvokedEventArgs>(NavView, nameof(NavView.ItemInvoked))
-            .Subscribe(ep =>
-            {
-                if (ep.EventArgs.IsSettingsInvoked)
+        ViewModel.ConfirmDeleteInteraction.RegisterHandler(async interaction =>
+        {
+            ContentDialog dialog = DialogService.GetConfirmationDialog(xamlRoot: XamlRoot,
+                title: "Delete Conversation",
+                primaryButtonText: "Delete",
+                content: new TextBlock()
                 {
-                    if (NavViewFrame.Content is SettingsPage)
-                    {
-                        return;
-                    }
+                    Text = "This action can't be undone",
+                    Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
+                });
 
-                    NavViewFrame.Navigate(typeof(SettingsPage));
-                }
-                else if (ep.EventArgs.InvokedItem is ChatNavigationViewItem item)
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            bool deleteConfirmed = result.HasFlag(ContentDialogResult.Primary);
+
+            interaction.SetOutput(deleteConfirmed);
+        })
+        .DisposeWith(Disposables);
+
+        ViewModel.ConfirmSubjectInteraction.RegisterHandler(async interaction =>
+        {
+            TextBox textBox = new()
+            {
+                Text = interaction.Input,
+                SelectionStart = 0,
+                SelectionLength = interaction.Input.Length,
+            };
+
+            ContentDialog dialog = DialogService.GetConfirmationDialog(xamlRoot: XamlRoot,
+                title: "Rename Subject",
+                primaryButtonText: "Save",
+                content: textBox);
+
+            ContentDialogResult result = await dialog.ShowAsync();
+
+            interaction.SetOutput(result.HasFlag(ContentDialogResult.Primary) ? textBox.Text : null);
+        })
+        .DisposeWith(Disposables);
+
+        Observable.FromEventPattern<NavigationView, NavigationViewItemInvokedEventArgs>(NavView, nameof(NavView.ItemInvoked))
+        .Subscribe(ep =>
+        {
+            if (ep.EventArgs.IsSettingsInvoked)
+            {
+                if (NavViewFrame.Content is SettingsPage)
                 {
-                    OpenConversation(item.Conversation);
+                    return;
                 }
-                else
-                {
-                    OpenEmptyConversation();
-                }
-            });
+
+                NavViewFrame.Navigate(typeof(SettingsPage));
+            }
+            else if (ep.EventArgs.InvokedItem is ChatNavigationViewItem item)
+            {
+                OpenConversation(item.Conversation);
+            }
+            else
+            {
+                OpenEmptyConversation();
+            }
+        })
+        .DisposeWith(Disposables);
 
         Observable.FromEventPattern<object, NavigationEventArgs>(NavViewFrame, nameof(NavViewFrame.Navigated))
             .Subscribe(ep =>
@@ -72,15 +112,16 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
                     CurrentConversationPage = ep.EventArgs.Content.As<ConversationPage>();
                     SelectItem(ep.EventArgs.Parameter);
                 }
-            });
-
+            })
+        .DisposeWith(Disposables);
 
         ViewModel.LoadConversationsCommand.Execute().Subscribe();
+
         OpenEmptyConversation();
 
         ViewModel.Conversations
             .Connect()
-            .SortBy(x => x.Id)
+            .SortBy(x => x.CreatedAt, SortDirection.Descending)
             .Bind(out Conversations)
             .OnItemRemoved(vm =>
             {
@@ -89,26 +130,15 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
                     OpenEmptyConversation();
                 }
 
-                PageStackEntry[] ToDelete = [.. NavViewFrame.BackStack.Where(p => p.Parameter is ConversationViewModel c && c.Id == vm.Id)];
-
-                NavViewFrame.BackStack.RemoveMany(ToDelete);
-
-                PageStackEntry[] distintValues = [.. NavViewFrame.BackStack.DistinctUntilChanged(keySelector: p => p.Parameter)];
-
-                NavViewFrame.BackStack.Clear();
-
-                if (distintValues.Length > 1)
-                {
-                    NavViewFrame.BackStack.AddRange(distintValues);
-                }
+                CleanBackStack(vm);
             })
             .Subscribe()
-            .DisposeWith(CleanUp);
+            .DisposeWith(Disposables);
 
         ViewModel.Conversations
             .Connect()
             .Subscribe()
-            .DisposeWith(CleanUp);
+            .DisposeWith(Disposables);
 
         UserInput.UserInputs.Subscribe(async input =>
         {
@@ -117,7 +147,24 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
             OpenConversation(vm);
 
             vm.AddMessageCommand.Execute(input).Subscribe();
-        }).DisposeWith(CleanUp);
+        }).DisposeWith(Disposables);
+    }
+
+    private void CleanBackStack(ConversationViewModel vm)
+    {
+        PageStackEntry[] ToDelete = [.. NavViewFrame.BackStack.Where(p => p.Parameter is ConversationViewModel c && c.Id == vm.Id)];
+
+        NavViewFrame.BackStack.RemoveMany(ToDelete);
+
+        //Distint contiguous entries 
+        PageStackEntry[] distintValues = [.. NavViewFrame.BackStack.DistinctUntilChanged(keySelector: p => p.Parameter)];
+
+        NavViewFrame.BackStack.Clear();
+
+        if (distintValues.Length > 1)
+        {
+            NavViewFrame.BackStack.AddRange(distintValues);
+        }
     }
 
     private void SelectItem(object? obj)
@@ -175,57 +222,6 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
     private void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
         ViewModel!.SelectSuggestedConversationCommand.Execute(parameter: args.ChosenSuggestion);
-    }
-
-    public void Receive(RenameConversationConfirmation message)
-    {
-        ContentDialog dialog = DialogService.GetConfirmationDialog(xamlRoot: XamlRoot,
-            title: "Rename Subject",
-            primaryButtonText: "Save",
-            content: new TextBox()
-            {
-                Text = message.Conversation.Subject,
-                SelectionStart = 0,
-                SelectionLength = message.Conversation.Subject.Length,
-            });
-
-        dialog.ShowAsync().Completed += (info, _) =>
-        {
-            ContentDialogResult result = info.GetResults();
-
-            if (result.HasFlag(ContentDialogResult.Primary))
-            {
-                message.Conversation.Subject = dialog.Content.As<TextBox>().Text;
-                ViewModel!.UpdateConversationSubjectCommand.Execute(message.Conversation);
-            }
-        };
-    }
-
-    public void Receive(DeleteConversationConfirmation message)
-    {
-        ContentDialog dialog = DialogService.GetConfirmationDialog(xamlRoot: XamlRoot,
-            title: "Delete Conversation",
-            primaryButtonText: "Delete",
-            content: new TextBlock()
-            {
-                Text = "This action can't be undone",
-                Style = Application.Current.Resources["CaptionTextBlockStyle"] as Style,
-            });
-
-        dialog.ShowAsync().Completed += (info, _) =>
-        {
-            ContentDialogResult result = info.GetResults();
-
-            if (result.HasFlag(ContentDialogResult.Primary))
-            {
-                ViewModel!.DeleteConversationCommand.Execute(message.Conversation);
-            }
-        };
-    }
-
-    public void Dispose()
-    {
-        CleanUp.Dispose();
     }
 
     private void PageButton_Click(object sender, RoutedEventArgs e)

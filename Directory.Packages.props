@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0-rc.1.25451.107" />
-    <PackageVersion Include="CommunityToolkit.Labs.WinUI.Controls.MarkdownTextBlock" Version="0.1.250910-build.2249" />
+    <PackageVersion Include="CommunityToolkit.Labs.WinUI.Controls.MarkdownTextBlock" Version="0.1.250919-build.2256" />
     <PackageVersion Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250402" />
     <PackageVersion Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />
@@ -17,7 +17,7 @@
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.57.0-alpha" />
-    <PackageVersion Include="OllamaSharp" Version="5.4.5" />
+    <PackageVersion Include="OllamaSharp" Version="5.4.6" />
     <PackageVersion Include="ReactiveUI" Version="21.0.1" />
     <PackageVersion Include="ReactiveUI.SourceGenerators" Version="2.4.1" />
     <PackageVersion Include="ReactiveUI.WinUI" Version="21.0.1" />

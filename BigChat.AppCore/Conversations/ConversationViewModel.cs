@@ -15,6 +15,7 @@ namespace BigChat.AppCore.Conversations;
 
 public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 {
+    IChatClient ChatClient => ServiceLocator.GetRequiredService<IChatClient>();
     private CompositeDisposable Disposables { get; } = [];
     private SourceCache<MessageViewModel, int> MessageSource { get; } = new(vm => vm.Id);
     public IObservableCache<MessageViewModel, int> Messages => MessageSource.AsObservableCache();
@@ -24,11 +25,8 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     public ConversationViewModel()
     {
         MessageSource.Connect()
-            .SubscribeMany(m => m.ObservableForProperty(x => x.Text)
-                    .SkipWhile(m => m.Sender.Id == 0 && m.Sender.Role != ChatRole.User)
-                    .DistinctUntilChanged()
-                    .Subscribe())
-            .Subscribe()
+            .MergeMany(m => m.MessageUpdated.Select(_ => m))
+            .Subscribe(async m => await UpdateMessageAsync(m))
             .DisposeWith(Disposables);
     }
 
@@ -37,6 +35,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
     [Reactive]
     public partial int Id { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     [ReactiveCommand]
     private void Delete() { }
@@ -50,7 +49,6 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     }
 
     private readonly SubjectResolver subjectResolver = ServiceLocator.GetRequiredService<SubjectResolver>();
-    private readonly ConversationProcessor conversationProcessor = ServiceLocator.GetRequiredService<ConversationProcessor>();
 
 
     [ReactiveCommand]
@@ -58,7 +56,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     {
         await AddUserMessageAsync(inputText.Trim(), cancellationToken);
 
-        await ProcessConversationAsync(cancellationToken);
+        await AddAIResponseMessage(cancellationToken);
     }
 
     [ReactiveCommand]
@@ -75,19 +73,39 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        await db.Messages.Where(m => m.Id == message.Id && m.Id == message.Id)
+        await db.Messages.Where(m => m.Id == message.Id)
             .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, message.Text).SetProperty(m => m.ModifiedAt, DateTime.Now), cancellationToken: cancellationToken);
 
         // Delete messages after the one updated, the conversation is reset from here
-        await db.Messages.Where(m => m.Id > message.Id && m.Id == message.Id)
+        await db.Messages.Where(m => m.Id > message.Id)
             .ExecuteDeleteAsync(cancellationToken: cancellationToken);
 
         MessageSource.RemoveKeys(MessageSource.Keys.Where(k => k > message.Id));
 
-        await ProcessConversationAsync(cancellationToken);
+        await AddAIResponseMessage(cancellationToken);
     }
 
-    private async Task ProcessConversationAsync(CancellationToken cancellationToken)
+    private async Task AddAIResponseMessage(CancellationToken cancellationToken)
+    {
+        Observable.FromAsync(CheckSubjectAsync).Subscribe();
+
+        MessageViewModel vm = await CreateAssistantMessageAsync(cancellationToken);
+
+        MessageSource.AddOrUpdate(vm);
+
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        ChatMessage[] messages = await db.Messages.Select(m => new ChatMessage(ChatRole.Parse(m.Role), m.Text))
+            .ToArrayAsync(cancellationToken);
+
+        //The UI gets bloked when using streaming response
+        vm.Text = (await ChatClient.GetResponseAsync(messages, cancellationToken: cancellationToken)).Text;
+
+        await db.Messages.Where(m => m.Id == vm.Id && m.Id == vm.Id)
+            .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, vm.Text).SetProperty(m => m.ModifiedAt, DateTime.Now), cancellationToken: cancellationToken);
+    }
+
+    private async Task<MessageViewModel> CreateAssistantMessageAsync(CancellationToken cancellationToken)
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -104,22 +122,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         await db.SaveChangesAsync(cancellationToken);
 
         MessageViewModel vm = message.ToMessageViewModel();
-
-        MessageSource.AddOrUpdate(vm);
-
-        Observable.FromAsync(cancellationToken => conversationProcessor.GetAIResponseAsync(Id, cancellationToken))
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Subscribe(async response =>
-            {
-                vm.Text = response;
-
-                await using MyDbContext db = await DbContextFactory.CreateDbContextAsync();
-
-                await db.Messages.Where(m => m.Id == vm.Id && m.Id == vm.Id)
-                    .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, vm.Text).SetProperty(m => m.ModifiedAt, DateTime.Now));
-
-                await CheckSubjectAsync();
-            });
+        return vm;
     }
 
     private async Task CheckSubjectAsync(CancellationToken cancellationToken = default)

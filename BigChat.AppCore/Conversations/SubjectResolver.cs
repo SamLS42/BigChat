@@ -1,5 +1,4 @@
-﻿using BigChat.AppCore.ChatClient;
-using BigChat.Infrastructure.Data;
+﻿using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
@@ -7,8 +6,10 @@ using System.Text.RegularExpressions;
 
 namespace BigChat.AppCore.Conversations;
 
-public partial class SubjectResolver(ChatClientProvider chatClientProvider, IDbContextFactory<MyDbContext> dbContextFactory)
+public partial class SubjectResolver(IDbContextFactory<MyDbContext> dbContextFactory)
 {
+    IChatClient ChatClient => ServiceLocator.GetRequiredService<IChatClient>();
+
     private const string DetermineSubjectOrder = """
             Based on our conversation so far, please determine the primary subject of our discussion. Once identified, output the subject in exactly the following format (and nothing else):
 
@@ -38,7 +39,7 @@ public partial class SubjectResolver(ChatClientProvider chatClientProvider, IDbC
             new ChatMessage (role : ChatRole.User, content : DetermineSubjectOrder),
         ];
 
-        ChatResponse response = await chatClientProvider.GetChatClient().GetResponseAsync(LastestMessages, cancellationToken: cancellationToken);
+        ChatResponse response = await ChatClient.GetResponseAsync(LastestMessages, cancellationToken: cancellationToken);
 
         string? subject = SubjectMatcher()
             .Matches(response.Text ?? string.Empty)

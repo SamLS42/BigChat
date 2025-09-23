@@ -2,7 +2,6 @@
 using BigChat.AppCore.Conversations;
 using BigChat.AppCore.MainPage;
 using BigChat.AppCore.Settings;
-using BigChat.AppCore.ViewModel;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,9 +14,18 @@ public static class ViewModelRegistrationExtensions
         return serviceCollection
             .AddKeyedSingleton<IChatClient, ConfiguredChatCompletionsClient>(nameof(ConfiguredChatCompletionsClient))
             .AddKeyedSingleton<IChatClient, ConfiguredOllamaChatClient>(nameof(ConfiguredOllamaChatClient))
-            .AddSingleton<ChatClientProvider>()
+            .AddTransient(services =>
+            {
+                ISettingsService settings = services.GetRequiredService<ISettingsService>();
+
+                return settings.GetSelectedClient() switch
+                {
+                    SupportedClients.AzureAIInference => services.GetKeyedService<IChatClient>(nameof(ConfiguredChatCompletionsClient))!,
+                    SupportedClients.Ollama => services.GetKeyedService<IChatClient>(nameof(ConfiguredOllamaChatClient))!,
+                    _ => throw new NotSupportedException()
+                };
+            })
             .AddSingleton<SubjectResolver>()
-            .AddSingleton<ConversationProcessor>()
             .AddTransient<MainPageViewModel>()
             .AddTransient<ConversationViewModel>()
             .AddTransient<SettingsViewModel>()

@@ -23,10 +23,7 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(x => x.ViewModel!.Text)
-                .WhereNotNull()
-                .Subscribe(text => AssistantResponse.Text = text)
-                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Text, v => v.AssistantResponse.Text).DisposeWith(d);
 
             this.WhenAnyValue(x => x.ViewModel!.Text)
                 .Select(string.IsNullOrWhiteSpace)

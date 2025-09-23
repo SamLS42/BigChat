@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.AI;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text.RegularExpressions;
 
 namespace BigChat.AppCore.ViewModel;
@@ -9,6 +12,9 @@ public partial class MessageViewModel : ReactiveObject
 {
     public int Id { get; set; }
     public int ConversationId { get; set; }
+
+    Subject<Unit> MessageUpdatesSource { get; } = new();
+    public IObservable<Unit> MessageUpdated => MessageUpdatesSource.AsObservable();
 
     [Reactive]
     public partial string Text { get; set; } = string.Empty;
@@ -41,6 +47,8 @@ public partial class MessageViewModel : ReactiveObject
 
         IsEditable = false;
         Text = EditText;
+
+        MessageUpdatesSource.OnNext(Unit.Default);
     }
 
     [ReactiveCommand]
