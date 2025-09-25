@@ -24,7 +24,6 @@ namespace BigChat.Main;
 internal class ReactiveMainPageView : ReactivePage<MainPageViewModel>;
 internal sealed partial class MainPage : ReactiveMainPageView
 {
-    private ConversationPage? CurrentConversationPage { get; set; }
     private CompositeDisposable Disposables { get; } = [];
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
     private DialogService DialogService { get; } = ServiceLocator.GetRequiredService<DialogService>();
@@ -102,7 +101,7 @@ internal sealed partial class MainPage : ReactiveMainPageView
             .Subscribe(ep =>
             {
                 SelectItem(null);
-                CurrentConversationPage = null;
+                ViewModel.CurrentConversationViewModel = null;
 
                 if (ep.EventArgs.SourcePageType == typeof(SettingsPage))
                 {
@@ -111,7 +110,7 @@ internal sealed partial class MainPage : ReactiveMainPageView
                 }
                 else if (ep.EventArgs.SourcePageType == typeof(ConversationPage))
                 {
-                    CurrentConversationPage = ep.EventArgs.Content.As<ConversationPage>();
+                    ViewModel.CurrentConversationViewModel = ep.EventArgs.Parameter.As<ConversationViewModel>();
                     SelectItem(ep.EventArgs.Parameter);
                     UserInput.Visibility = Visibility.Visible;
                 }
@@ -132,7 +131,7 @@ internal sealed partial class MainPage : ReactiveMainPageView
             .Bind(out Conversations)
             .OnItemRemoved(vm =>
             {
-                if (ReferenceEquals(CurrentConversationPage?.ViewModel, vm))
+                if (ReferenceEquals(ViewModel, vm))
                 {
                     OpenEmptyConversation();
                 }
@@ -142,14 +141,9 @@ internal sealed partial class MainPage : ReactiveMainPageView
             .Subscribe()
             .DisposeWith(Disposables);
 
-        ViewModel.Conversations
-            .Connect()
-            .Subscribe()
-            .DisposeWith(Disposables);
-
         UserInput.ViewModel!.UserInputs.Subscribe(async input =>
         {
-            ConversationViewModel vm = CurrentConversationPage?.ViewModel ?? await ViewModel.GetNewConversationAsync();
+            ConversationViewModel vm = ViewModel.CurrentConversationViewModel ?? await ViewModel.GetNewConversationAsync();
 
             OpenConversation(vm);
 
@@ -158,17 +152,21 @@ internal sealed partial class MainPage : ReactiveMainPageView
 
         UserInput.ViewModel!.StopResponseCommand.Subscribe(_ =>
         {
-            ConversationViewModel? vm = CurrentConversationPage?.ViewModel;
-
-            if (vm is null)
+            if (ViewModel.CurrentConversationViewModel is null)
             {
                 Log_StopResponseCommand_Error();
                 return;
             }
 
-            vm.StopResponseCommand.Execute().Subscribe();
+            ViewModel.CurrentConversationViewModel.StopResponseCommand.Execute().Subscribe();
 
         }).DisposeWith(Disposables);
+
+        ViewModel.WhenAnyValue(vm => vm.CurrentConversationViewModel)
+            .WhereNotNull()
+            .SelectMany(c => c.AiIsResponding)
+            .Subscribe(aiIsResponding => UserInput.ViewModel!.AiIsResponding = aiIsResponding)
+            .DisposeWith(Disposables);
     }
 
     private void CleanBackStack(ConversationViewModel vm)

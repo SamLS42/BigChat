@@ -17,6 +17,8 @@ namespace BigChat.AppCore.MainPage;
 public sealed partial class MainPageViewModel : ReactiveObject,
     IDisposable
 {
+    [Reactive]
+    public partial ConversationViewModel? CurrentConversationViewModel { get; set; }
     private readonly CompositeDisposable Disposables = [];
     public Interaction<Unit, bool> ConfirmDeleteInteraction { get; } = new();
     public Interaction<string, string?> ConfirmSubjectInteraction { get; } = new();

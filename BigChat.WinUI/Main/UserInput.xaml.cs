@@ -30,6 +30,9 @@ internal sealed partial class UserInput : ReactiveUserInput
             this.BindCommand(ViewModel, vm => vm.StopResponseCommand, v => v.StopBtn).DisposeWith(d);
 
             this.Bind(ViewModel, vm => vm.InputBoxText, v => v.InputBox.Text).DisposeWith(d);
+
+            this.OneWayBind(ViewModel, vm => vm.AiIsResponding, v => v.SendBtn.Visibility, v => v ? Visibility.Collapsed : Visibility.Visible).DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.AiIsResponding, v => v.StopBtn.Visibility, v => v ? Visibility.Visible : Visibility.Collapsed).DisposeWith(d);
         });
     }
 

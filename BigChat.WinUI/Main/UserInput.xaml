@@ -27,10 +27,10 @@
                 Grid.Column="1"
                 VerticalAlignment="Top"
                 Orientation="Horizontal">
-                <Button x:Name="SendBtn">
+                <Button x:Name="SendBtn" Style="{ThemeResource AccentButtonStyle}">
                     <SymbolIcon Symbol="Send" />
                 </Button>
-                <Button x:Name="StopBtn">
+                <Button x:Name="StopBtn" Style="{ThemeResource AccentButtonStyle}">
                     <SymbolIcon Symbol="Stop" />
                 </Button>
             </StackPanel>
