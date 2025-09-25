@@ -19,6 +19,7 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="Microsoft.Extensions.AI" />
 		<PackageReference Include="System.Interactive" />
+		<PackageReference Include="System.Interactive.Async" />
 	</ItemGroup>
 
 	<ItemGroup>

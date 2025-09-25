@@ -26,10 +26,10 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
             this.OneWayBind(ViewModel, vm => vm.Text, v => v.AssistantResponse.Text).DisposeWith(d);
 
             this.WhenAnyValue(x => x.ViewModel!.Text)
-                .Select(string.IsNullOrWhiteSpace)
-                .Subscribe(messageIsEmpty =>
+                .Select(text => string.IsNullOrWhiteSpace(text))
+                .Subscribe(textIsEmpty =>
                 {
-                    if (messageIsEmpty)
+                    if (textIsEmpty)
                     {
                         ProgressRing.Visibility = Visibility.Visible;
                         AssistantResponse.Visibility = Visibility.Collapsed;

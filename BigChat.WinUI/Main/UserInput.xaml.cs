@@ -2,13 +2,11 @@ using BigChat.AppCore;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.MainPage;
 using BigChat.Localization;
-using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using ReactiveUI;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
+using System.Reactive.Disposables;
 using Windows.System;
 using Windows.UI.Core;
 using WinRT;
@@ -16,36 +14,30 @@ using WinRT;
 namespace BigChat.Main;
 
 internal class ReactiveUserInput : ReactiveUserControl<UserInputViewModel>;
-internal sealed partial class UserInput : ReactiveUserInput, IDisposable
+internal sealed partial class UserInput : ReactiveUserInput
 {
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
-
-    private Subject<string> UserInputSource { get; } = new();
-    public IObservable<string> UserInputs => UserInputSource.Where(s => !string.IsNullOrWhiteSpace(s)).AsObservable();
 
     public UserInput()
     {
         InitializeComponent();
+
+        ViewModel ??= new();
+
+        this.WhenActivated(d =>
+        {
+            this.BindCommand(ViewModel, vm => vm.AddMessageCommand, v => v.SendBtn).DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.StopResponseCommand, v => v.StopBtn).DisposeWith(d);
+
+            this.Bind(ViewModel, vm => vm.InputBoxText, v => v.InputBox.Text).DisposeWith(d);
+        });
     }
-
-    public Visibility IsShowingConversation
-    {
-        get => (Visibility)GetValue(IsShowingConversationProperty);
-        set => SetValue(IsShowingConversationProperty, value);
-    }
-
-    public static readonly DependencyProperty IsShowingConversationProperty = DependencyProperty.Register(
-        name: nameof(IsShowingConversation),
-        propertyType: typeof(Visibility),
-        ownerType: typeof(UserInput),
-        typeMetadata: new PropertyMetadata(defaultValue: Visibility.Visible));
-
 
     private void InputBox_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key == VirtualKey.Enter && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
         {
-            AddMessage();
+            ViewModel!.AddMessageCommand.Execute().Subscribe();
             e.Handled = true;
         }
     }
@@ -58,22 +50,5 @@ internal sealed partial class UserInput : ReactiveUserInput, IDisposable
     public void FocusOnInputBox()
     {
         DispatcherQueue.TryEnqueue(() => InputBox.Focus(FocusState.Programmatic));
-    }
-
-    public void Dispose()
-    {
-        WeakReferenceMessenger.Default.UnregisterAll(this);
-    }
-
-    private void AddMessage(object sender, RoutedEventArgs e)
-    {
-        AddMessage();
-    }
-
-    private void AddMessage()
-    {
-        UserInputSource.OnNext(InputBox.Text);
-
-        InputBox.Text = string.Empty;
     }
 }

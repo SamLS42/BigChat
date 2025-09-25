@@ -8,6 +8,7 @@ using BigChat.Settings;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -106,11 +107,17 @@ internal sealed partial class MainPage : ReactiveMainPageView
                 if (ep.EventArgs.SourcePageType == typeof(SettingsPage))
                 {
                     SelectItem(NavView.SettingsItem);
+                    UserInput.Visibility = Visibility.Collapsed;
                 }
                 else if (ep.EventArgs.SourcePageType == typeof(ConversationPage))
                 {
                     CurrentConversationPage = ep.EventArgs.Content.As<ConversationPage>();
                     SelectItem(ep.EventArgs.Parameter);
+                    UserInput.Visibility = Visibility.Visible;
+                }
+                else if (ep.EventArgs.SourcePageType == typeof(Empty))
+                {
+                    UserInput.Visibility = Visibility.Visible;
                 }
             })
         .DisposeWith(Disposables);
@@ -140,13 +147,27 @@ internal sealed partial class MainPage : ReactiveMainPageView
             .Subscribe()
             .DisposeWith(Disposables);
 
-        UserInput.UserInputs.Subscribe(async input =>
+        UserInput.ViewModel!.UserInputs.Subscribe(async input =>
         {
             ConversationViewModel vm = CurrentConversationPage?.ViewModel ?? await ViewModel.GetNewConversationAsync();
 
             OpenConversation(vm);
 
             vm.AddMessageCommand.Execute(input).Subscribe();
+        }).DisposeWith(Disposables);
+
+        UserInput.ViewModel!.StopResponseCommand.Subscribe(_ =>
+        {
+            ConversationViewModel? vm = CurrentConversationPage?.ViewModel;
+
+            if (vm is null)
+            {
+                Log_StopResponseCommand_Error();
+                return;
+            }
+
+            vm.StopResponseCommand.Execute().Subscribe();
+
         }).DisposeWith(Disposables);
     }
 
@@ -228,4 +249,12 @@ internal sealed partial class MainPage : ReactiveMainPageView
     {
         OpenEmptyConversation();
     }
+
+    //Used by the LoggerMessage
+#pragma warning disable CA1823 // Avoid unused private fields
+    private readonly ILogger _logger = ServiceLocator.GetRequiredService<ILogger<MainPage>>();
+#pragma warning restore CA1823 // Avoid unused private fields
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "ConversationViewModel is null while StopResponseCommand has been called")]
+    private partial void Log_StopResponseCommand_Error();
 }
