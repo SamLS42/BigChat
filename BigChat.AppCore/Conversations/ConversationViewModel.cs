@@ -11,6 +11,7 @@ using ReactiveUI.SourceGenerators;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Text;
 
 namespace BigChat.AppCore.Conversations;
 
@@ -105,19 +106,29 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
         try
         {
+            StringBuilder stringBuilder = new();
+
             await ChatClient.GetStreamingResponseAsync(messages, cancellationToken: StopResponseCts.Token)
                 .ToObservable()
                 .SubscribeOn(RxApp.TaskpoolScheduler)
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .ForEachAsync(update => vm.Text += update.Text);
+                .Do(update =>
+                {
+                    stringBuilder.Append(update.Text);
+                });
+
+            vm.Text = stringBuilder.ToString();
 
             await db.Messages.Where(m => m.Id == vm.Id)
                 .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, vm.Text).SetProperty(m => m.ModifiedAt, DateTime.UtcNow));
         }
-        catch (OperationCanceledException)
+        catch (HttpRequestException e)
         {
+            //TODO: 
+            vm.Text = $"The AI provider appears to not be correctly configured. Error message: {e.Message}";
             await db.Messages.Where(m => m.Id == vm.Id).ExecuteDeleteAsync();
-            MessageSource.Remove(vm);
+        }
+        catch (TaskCanceledException)
+        {
         }
         finally
         {

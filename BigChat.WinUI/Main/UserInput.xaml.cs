@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using ReactiveUI;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Windows.System;
 using Windows.UI.Core;
 using WinRT;
@@ -45,13 +46,15 @@ internal sealed partial class UserInput : ReactiveUserInput
         }
     }
 
-    private void InputBox_Loaded(object _, RoutedEventArgs _2)
+    public void Focus()
     {
-        FocusOnInputBox();
-    }
+        if (InputBox.IsLoaded)
+        {
+            DispatcherQueue.TryEnqueue(() => InputBox.Focus(FocusState.Programmatic));
+            return;
+        }
 
-    public void FocusOnInputBox()
-    {
-        DispatcherQueue.TryEnqueue(() => InputBox.Focus(FocusState.Programmatic));
+        Observable.FromEventPattern(InputBox, nameof(InputBox.Loaded))
+            .Subscribe(_ => DispatcherQueue.TryEnqueue(() => InputBox.Focus(FocusState.Programmatic)));
     }
 }

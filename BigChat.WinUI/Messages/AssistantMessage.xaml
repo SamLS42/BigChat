@@ -16,8 +16,14 @@
         HorizontalAlignment="Left"
         Background="Transparent"
         Style="{StaticResource AssistantCardStyle}">
-        <ProgressRing x:Name="ProgressRing" IsIndeterminate="True" />
-        <controls:MarkdownTextBlock x:Name="AssistantResponse" Config="{x:Bind MarkdownConfig, Mode=OneTime}" />
+        <ProgressRing
+            x:Name="ProgressRing"
+            IsIndeterminate="True"
+            Visibility="Visible" />
+        <controls:MarkdownTextBlock
+            x:Name="AssistantResponse"
+            Config="{x:Bind MarkdownConfig, Mode=OneTime}"
+            Visibility="Collapsed" />
         <StackPanel
             x:Name="ActionButtonsPanel"
             Grid.Row="1"

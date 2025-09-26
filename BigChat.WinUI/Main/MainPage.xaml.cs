@@ -113,10 +113,12 @@ internal sealed partial class MainPage : ReactiveMainPageView
                     ViewModel.CurrentConversationViewModel = ep.EventArgs.Parameter.As<ConversationViewModel>();
                     SelectItem(ep.EventArgs.Parameter);
                     UserInput.Visibility = Visibility.Visible;
+                    DispatcherQueue.TryEnqueue(() => UserInput.Focus());
                 }
                 else if (ep.EventArgs.SourcePageType == typeof(Empty))
                 {
                     UserInput.Visibility = Visibility.Visible;
+                    DispatcherQueue.TryEnqueue(() => UserInput.Focus());
                 }
             })
         .DisposeWith(Disposables);
