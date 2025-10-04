@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Navigation;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using WinRT;
 

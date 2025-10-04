@@ -1,12 +1,37 @@
 ﻿using BigChat.AppCore.ChatClient;
-using CommunityToolkit.Mvvm.ComponentModel;
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
+using System.Reactive.Linq;
 
 namespace BigChat.AppCore.Settings;
 
-public sealed partial class SettingsViewModel : ObservableObject
+public sealed partial class SettingsViewModel : ReactiveObject
 {
-    [ObservableProperty] public partial bool OllamaIsOn { get; set; }
-    [ObservableProperty] public partial bool AzureAIInferenceIsOn { get; set; }
+    public SettingsViewModel()
+    {
+        SupportedClients selectedClient = SettingsService.GetSelectedClient();
+        OllamaIsOn = selectedClient is SupportedClients.Ollama;
+        AzureAIInferenceIsOn = selectedClient is SupportedClients.AzureAIInference;
+
+        this.WhenAnyValue(x => x.OllamaIsOn, x => x.AzureAIInferenceIsOn)
+            .Where(x => x.Item1 || x.Item2)
+            .Subscribe(x =>
+            {
+                if (x.Item1)
+                {
+                    SettingsService.SetSelectedClient(SupportedClients.Ollama);
+                }
+                else if (x.Item2)
+                {
+                    SettingsService.SetSelectedClient(SupportedClients.AzureAIInference);
+                }
+            });
+    }
+
+    [Reactive]
+    public partial bool OllamaIsOn { get; set; }
+    [Reactive]
+    public partial bool AzureAIInferenceIsOn { get; set; }
 
     public double MaxTemperature => Constants.MaxTemperature;
     public double MinTemperature => Constants.MinTemperature;
@@ -17,40 +42,5 @@ public sealed partial class SettingsViewModel : ObservableObject
     public double MaxPresencePenalty => Constants.MaxPresencePenalty;
     public double MinPresencePenalty => Constants.MinPresencePenalty;
 
-    private ISettingsService SettingsService { get; set; }
-
-    public SettingsViewModel(ISettingsService settingsService)
-    {
-        ArgumentNullException.ThrowIfNull(settingsService);
-
-        SettingsService = settingsService;
-
-        SetValues();
-    }
-
-    private void SetValues()
-    {
-        SupportedClients selectedClient = SettingsService.GetSelectedClient();
-        OllamaIsOn = selectedClient is SupportedClients.Ollama;
-        AzureAIInferenceIsOn = selectedClient is SupportedClients.AzureAIInference;
-    }
-
-
-    partial void OnOllamaIsOnChanged(bool oldValue, bool newValue)
-    {
-        if (newValue && oldValue != newValue)
-        {
-            SettingsService.SetSelectedClient(SupportedClients.Ollama);
-            SetValues();
-        }
-    }
-
-    partial void OnAzureAIInferenceIsOnChanged(bool oldValue, bool newValue)
-    {
-        if (newValue && oldValue != newValue)
-        {
-            SettingsService.SetSelectedClient(SupportedClients.AzureAIInference);
-            SetValues();
-        }
-    }
+    private ISettingsService SettingsService { get; } = ServiceLocator.GetRequiredService<ISettingsService>();
 }

@@ -1,23 +1,21 @@
 using BigChat.AppCore;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.MainPage;
-using BigChat.Localization;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using ReactiveUI;
-using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using Windows.System;
 using Windows.UI.Core;
-using WinRT;
 
 namespace BigChat.Main;
 
 internal class ReactiveUserInput : ReactiveUserControl<UserInputViewModel>;
 internal sealed partial class UserInput : ReactiveUserInput
 {
-    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
 
     public UserInput()
     {

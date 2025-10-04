@@ -1,17 +1,18 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 
 namespace BigChat.AppCore.Settings;
-public partial class ChatCompletionsSettingsViewModel : ObservableObject
+
+public partial class ChatCompletionsSettingsViewModel : ReactiveObject
 {
-    [ObservableProperty] public partial string Endpoint { get; set; }
-    [ObservableProperty] public partial string APIKey { get; set; }
-    [ObservableProperty] public partial string ModelId { get; set; }
-    [ObservableProperty] public partial double Temperature { get; set; }
-    [ObservableProperty] public partial int MaxOutputTokens { get; set; }
-    [ObservableProperty] public partial double TopP { get; set; }
-    [ObservableProperty] public partial double FrequencyPenalty { get; set; }
-    [ObservableProperty] public partial double PresencePenalty { get; set; }
+    [Reactive] public partial string Endpoint { get; set; }
+    [Reactive] public partial string APIKey { get; set; }
+    [Reactive] public partial string ModelId { get; set; }
+    [Reactive] public partial double Temperature { get; set; }
+    [Reactive] public partial int MaxOutputTokens { get; set; }
+    [Reactive] public partial double TopP { get; set; }
+    [Reactive] public partial double FrequencyPenalty { get; set; }
+    [Reactive] public partial double PresencePenalty { get; set; }
 
     private ChatCompletionsClientSettings ChatSettings { get; }
 
@@ -38,7 +39,7 @@ public partial class ChatCompletionsSettingsViewModel : ObservableObject
         PresencePenalty = ChatSettings.PresencePenalty;
     }
 
-    [RelayCommand]
+    [ReactiveCommand]
     private void RestoreDefaults()
     {
         ChatSettings.Temperature = Constants.DefaultTemperature;

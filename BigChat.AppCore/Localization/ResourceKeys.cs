@@ -1,4 +1,5 @@
-﻿namespace BigChat.Localization;
+﻿namespace BigChat.AppCore.Localization;
+
 internal static class ResourceKeys
 {
     public static string NewChat { get; } = nameof(NewChat);

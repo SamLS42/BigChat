@@ -3,7 +3,6 @@ using BigChat.AppCore.Conversations;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.MainPage;
 using BigChat.Conversations;
-using BigChat.Localization;
 using BigChat.Settings;
 using DynamicData;
 using DynamicData.Binding;
@@ -16,6 +15,7 @@ using Microsoft.UI.Xaml.Navigation;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using WinRT;
 
@@ -25,7 +25,7 @@ internal class ReactiveMainPageView : ReactivePage<MainPageViewModel>;
 internal sealed partial class MainPage : ReactiveMainPageView
 {
     private CompositeDisposable Disposables { get; } = [];
-    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
     private DialogService DialogService { get; } = ServiceLocator.GetRequiredService<DialogService>();
 
     private ReadOnlyObservableCollection<ConversationViewModel> Conversations = null!;

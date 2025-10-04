@@ -2,7 +2,6 @@
 using BigChat.AppCore.Localization;
 using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
-using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
 using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
@@ -10,6 +9,7 @@ using ReactiveUI.SourceGenerators;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 
 namespace BigChat.AppCore.MainPage;
@@ -32,7 +32,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
 
     [Reactive]
     public partial ReadOnlyCollection<ConversationViewModel> FilteredConversations { get; set; } = ReadOnlyCollection<ConversationViewModel>.Empty;
-    private ILocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
 
 
     public MainPageViewModel()
@@ -63,7 +63,6 @@ public sealed partial class MainPageViewModel : ReactiveObject,
 
     public void Dispose()
     {
-        WeakReferenceMessenger.Default.UnregisterAll(this);
         ConversationSource.Clear();
         Conversations.Dispose();
         Disposables.Dispose();

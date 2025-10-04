@@ -15,7 +15,7 @@ internal static class ServiceRegistrationExtensions
     {
         return serviceCollection.AddSingleton<ISettingsService, LocalSettingsService>()
             .AddSingleton<IStringLocalizer, StringLocalizer>()
-            .AddSingleton<ILocalizedTexts, LocalizedTexts>()
+            .AddSingleton<LocalizedTexts>()
             .AddSingleton<DialogService>();
     }
 }

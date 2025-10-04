@@ -1,7 +1,6 @@
 using BigChat.AppCore;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.Settings;
-using BigChat.Localization;
 using Microsoft.UI.Xaml.Controls;
 using System.ComponentModel;
 using WinRT;
@@ -18,7 +17,7 @@ internal sealed partial class SettingsPage : Page
 {
     private ChatCompletionsSettingsViewModel ChatCompletionsSettings { get; set; } = ServiceLocator.GetRequiredService<ChatCompletionsSettingsViewModel>();
     private OllamaChatSettingsViewModel OllamaChatSettings { get; set; } = ServiceLocator.GetRequiredService<OllamaChatSettingsViewModel>();
-    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>().As<LocalizedTexts>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
     private SettingsViewModel ViewModel { get; } = ServiceLocator.GetRequiredService<SettingsViewModel>();
 
     public SettingsPage()

@@ -28,7 +28,7 @@ public static class ViewModelRegistrationExtensions
             .AddSingleton<SubjectResolver>()
             .AddTransient<MainPageViewModel>()
             .AddTransient<ConversationViewModel>()
-            .AddTransient<SettingsViewModel>()
+            .AddSingleton<SettingsViewModel>()
             .AddTransient<ChatCompletionsSettingsViewModel>()
             .AddTransient<OllamaChatSettingsViewModel>();
     }

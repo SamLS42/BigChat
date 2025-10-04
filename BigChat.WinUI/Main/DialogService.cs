@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace BigChat.Main;
 
-internal sealed class DialogService(ILocalizedTexts loc)
+internal sealed class DialogService(LocalizedTexts loc)
 {
     public ContentDialog GetConfirmationDialog(XamlRoot xamlRoot, object title, string primaryButtonText, object content)
     {

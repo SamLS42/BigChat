@@ -9,6 +9,7 @@ using Microsoft.Extensions.AI;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
@@ -22,7 +23,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     private SourceCache<MessageViewModel, int> MessageSource { get; } = new(vm => vm.Id);
     public IObservableCache<MessageViewModel, int> Messages => MessageSource.AsObservableCache();
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
-    private ILocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<ILocalizedTexts>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
     private BehaviorSubject<bool> AiIsRespondingSource { get; } = new(false);
     public IObservable<bool> AiIsResponding => AiIsRespondingSource.AsObservable();
     private CancellationTokenSource StopResponseCts { get; set; } = new();
