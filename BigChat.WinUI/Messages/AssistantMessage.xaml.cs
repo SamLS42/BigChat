@@ -16,7 +16,7 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
 {
     private readonly Compositor _compositor = CompositionTarget.GetCompositorForCurrentThread();
     private SpringScalarNaturalMotionAnimation? _springAnimation;
-    private MarkdownConfig MarkdownConfig { get; set; } = new();
+    private MarkdownConfig MarkdownConfig => MarkdownConfig.Default;
     public AssistantMessage()
     {
         InitializeComponent();

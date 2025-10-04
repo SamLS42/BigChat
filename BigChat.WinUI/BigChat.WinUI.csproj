@@ -2,16 +2,16 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
-		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<TargetPlatformMinVersion>10.0.26100.0</TargetPlatformMinVersion>
 		<RootNamespace>BigChat</RootNamespace>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<Platforms>x86;x64;ARM64</Platforms>
-		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
+		<Platforms>x64;ARM64</Platforms>
+		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
 		<UseWinUI>true</UseWinUI>
-		<UseUWP>false</UseUWP>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<AppxOSMinVersionReplaceManifestVersion>false</AppxOSMinVersionReplaceManifestVersion>
+		<AppxOSMaxVersionTestedReplaceManifestVersion>false</AppxOSMaxVersionTestedReplaceManifestVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Pages\ConversationPage.xaml" />
@@ -32,10 +32,6 @@
 		<Content Include="Assets\Wide310x150Logo.scale-200.png" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Manifest Include="$(ApplicationManifest)" />
-	</ItemGroup>
-
 	<!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -51,7 +47,10 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" />
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" />
 		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.WindowsAppSDK" />
 		<PackageReference Include="ReactiveUI.WinUI" />
 		<PackageReference Include="Roslynator.Analyzers">
@@ -103,10 +102,10 @@
 		<PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
 		<PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
 		<PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
-		<SupportedOSPlatformVersion>10.0.20348.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
 		<SignAssembly>False</SignAssembly>
-		<PackageCertificateThumbprint>3E0086647F2C0713DF4213E8E2B604EAE5B81F9E</PackageCertificateThumbprint>
-		<PackageCertificateKeyFile>BigChat_TemporaryKey.pfx</PackageCertificateKeyFile>
+		<PackageCertificateThumbprint>4C5EEF3C92D37DD4F597124A241DB18355F84BD6</PackageCertificateThumbprint>
+		<PackageCertificateKeyFile>BigChat.WinUI_TemporaryKey.pfx</PackageCertificateKeyFile>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PublishAot>False</PublishAot>
 	</PropertyGroup>

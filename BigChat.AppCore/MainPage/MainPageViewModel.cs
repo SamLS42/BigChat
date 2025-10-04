@@ -102,10 +102,10 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     [ReactiveCommand]
     private void SelectSuggestedConversation(object chosenSuggestion)
     {
-        if (chosenSuggestion is ConversationViewModel conversation)
+        if (chosenSuggestion is ConversationViewModel)
         {
             AutoSuggestBoxText = string.Empty;
-            FilteredConversations = ReadOnlyCollection<ConversationViewModel>.Empty;
+            FilteredConversations = [];
         }
     }
 

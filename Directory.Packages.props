@@ -17,6 +17,7 @@
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.57.0-alpha" />
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.20250829.1" />
     <PackageVersion Include="OllamaSharp" Version="5.4.7" />
     <PackageVersion Include="ReactiveUI" Version="22.0.1" />
     <PackageVersion Include="ReactiveUI.SourceGenerators" Version="2.4.1" />

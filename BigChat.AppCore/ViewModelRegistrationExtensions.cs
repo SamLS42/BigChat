@@ -1,6 +1,7 @@
 ﻿using BigChat.AppCore.ChatClient;
 using BigChat.AppCore.Conversations;
 using BigChat.AppCore.MainPage;
+using BigChat.AppCore.Notifications;
 using BigChat.AppCore.Settings;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,10 +23,11 @@ public static class ViewModelRegistrationExtensions
                 {
                     SupportedClients.AzureAIInference => services.GetKeyedService<IChatClient>(nameof(ConfiguredChatCompletionsClient))!,
                     SupportedClients.Ollama => services.GetKeyedService<IChatClient>(nameof(ConfiguredOllamaChatClient))!,
-                    _ => throw new NotSupportedException()
+                    _ => services.GetKeyedService<IChatClient>(nameof(SupportedClients.ONNXChatClient))!
                 };
             })
             .AddSingleton<SubjectResolver>()
+            .AddSingleton<NotificationService>()
             .AddTransient<MainPageViewModel>()
             .AddTransient<ConversationViewModel>()
             .AddSingleton<SettingsViewModel>()
