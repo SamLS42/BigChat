@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using System.Collections.ObjectModel;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
@@ -18,7 +17,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     IDisposable
 {
     private readonly CompositeDisposable Disposables = [];
-    public Interaction<Unit, bool> ConfirmDeleteInteraction { get; } = new();
+    public Interaction<ConversationViewModel, bool> ConfirmDeleteInteraction { get; } = new();
     public Interaction<string, string?> ConfirmSubjectInteraction { get; } = new();
     private SourceCache<ConversationViewModel, int> ConversationSource { get; } = new(c => c.Id);
     public IObservableCache<ConversationViewModel, int> Conversations => ConversationSource.AsObservableCache();
@@ -85,7 +84,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     [ReactiveCommand]
     private async Task DeleteConversationAsync(ConversationViewModel conversation, CancellationToken cancellationToken = default)
     {
-        bool confirmed = await ConfirmDeleteInteraction.Handle(Unit.Default);
+        bool confirmed = await ConfirmDeleteInteraction.Handle(conversation);
 
         if (confirmed)
         {

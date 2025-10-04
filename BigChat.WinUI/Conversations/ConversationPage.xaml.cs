@@ -84,8 +84,14 @@ internal sealed partial class ConversationPage : ReactiveConversationPage, IDisp
     {
         if (e.Key == VirtualKey.Enter && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
         {
-            ViewModel!.AddMessageCommand.Execute().Subscribe();
             e.Handled = true;
+
+            if (ViewModel!.AiIsResponding)
+            {
+                return;
+            }
+
+            ViewModel!.AddMessageCommand.Execute(InputBox.Text).Subscribe();
         }
     }
 

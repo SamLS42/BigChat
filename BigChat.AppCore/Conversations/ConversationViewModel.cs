@@ -42,6 +42,11 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     public partial int Id { get; set; }
     public DateTime CreatedAt { get; set; }
 
+    [Reactive]
+    public partial string InputBoxText { get; set; } = string.Empty;
+    private Subject<string> UserInputSource { get; } = new();
+    public IObservable<string> UserInputs => UserInputSource.Where(s => !string.IsNullOrWhiteSpace(s)).AsObservable();
+
     [ReactiveCommand]
     private void Delete() { }
 
@@ -59,7 +64,9 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     [ReactiveCommand]
     private async Task AddMessageAsync(string inputText, CancellationToken cancellationToken)
     {
-        await AddUserMessageAsync(inputText.Trim(), cancellationToken);
+        await AddUserMessageAsync(inputText, cancellationToken);
+
+        InputBoxText = string.Empty;
 
         await AddAIResponseMessage();
     }
@@ -193,11 +200,6 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
         StopResponseCts = new CancellationTokenSource();
     }
-
-    [Reactive]
-    public string InputBoxText { get; set; } = string.Empty;
-    private Subject<string> UserInputSource { get; } = new();
-    public IObservable<string> UserInputs => UserInputSource.Where(s => !string.IsNullOrWhiteSpace(s)).AsObservable();
 
     public void Dispose()
     {
