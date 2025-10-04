@@ -24,24 +24,60 @@
         </DataTemplate>
     </conversations:ReactiveConversationPage.Resources>
 
-    <ListView
-        x:Name="MessageListView"
-        ItemTemplateSelector="{StaticResource ChatTemplateSelector}"
-        ItemsSource="{x:Bind Messages}"
-        ScrollViewer.VerticalScrollBarVisibility="Auto"
-        SelectionMode="None">
-        <ListView.ItemsPanel>
-            <ItemsPanelTemplate>
-                <ItemsStackPanel VerticalAlignment="Bottom" ItemsUpdatingScrollMode="KeepLastItemInView" />
-            </ItemsPanelTemplate>
-        </ListView.ItemsPanel>
-        <ListView.ItemContainerStyle>
-            <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="Margin" Value="0,0,0,16" />
-                <Setter Property="MaxWidth" Value="1024" />
-                <Setter Property="IsTabStop" Value="False" />
-            </Style>
-        </ListView.ItemContainerStyle>
-    </ListView>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ListView
+            x:Name="MessageListView"
+            ItemTemplateSelector="{StaticResource ChatTemplateSelector}"
+            ItemsSource="{x:Bind Messages}"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            SelectionMode="None">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel VerticalAlignment="Bottom" ItemsUpdatingScrollMode="KeepLastItemInView" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="0,0,0,16" />
+                    <Setter Property="MaxWidth" Value="1024" />
+                    <Setter Property="IsTabStop" Value="False" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+
+        <StackPanel Grid.Row="1">
+            <Grid MaxWidth="1024" ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    x:Name="InputBox"
+                    MinHeight="34"
+                    MaxHeight="200"
+                    AcceptsReturn="True"
+                    PlaceholderText="{x:Bind Loc.InputBoxPlaceholderText, Mode=OneWay}"
+                    PreviewKeyDown="InputBox_PreviewKeyDown"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    TextWrapping="Wrap" />
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+                    <Button x:Name="SendBtn" Style="{ThemeResource AccentButtonStyle}">
+                        <SymbolIcon Symbol="Send" />
+                    </Button>
+                    <Button x:Name="StopBtn" Style="{ThemeResource AccentButtonStyle}">
+                        <SymbolIcon Symbol="Stop" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Grid>
 </conversations:ReactiveConversationPage>

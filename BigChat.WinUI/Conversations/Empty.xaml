@@ -11,5 +11,34 @@
     xmlns:viewmodel="using:BigChat.AppCore.ViewModel"
     mc:Ignorable="d">
 
-    <Grid />
+    <Grid>
+        <StackPanel Grid.Row="1" VerticalAlignment="Bottom">
+            <Grid MaxWidth="1024" ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox
+                    x:Name="InputBox"
+                    MinHeight="34"
+                    MaxHeight="200"
+                    AcceptsReturn="True"
+                    PlaceholderText="{x:Bind Loc.InputBoxPlaceholderText, Mode=OneWay}"
+                    PreviewKeyDown="InputBox_PreviewKeyDown"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    TextWrapping="Wrap" />
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="SendBtn"
+                        Click="SendBtn_Click"
+                        Style="{ThemeResource AccentButtonStyle}">
+                        <SymbolIcon Symbol="Send" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Grid>
 </Page>

@@ -104,7 +104,6 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Frame x:Name="NavViewFrame" />
-                <usercontrols:UserInput x:Name="UserInput" Grid.Row="1" />
             </Grid>
         </NavigationView>
     </Grid>

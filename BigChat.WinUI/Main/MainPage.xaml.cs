@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -84,7 +85,7 @@ internal sealed partial class MainPage : ReactiveMainPageView
                     return;
                 }
 
-                NavViewFrame.Navigate(typeof(SettingsPage));
+                NavViewFrame.Navigate(typeof(SettingsPage), null, new SuppressNavigationTransitionInfo());
             }
             else if (ep.EventArgs.InvokedItem is ChatNavigationViewItem item)
             {
@@ -101,24 +102,25 @@ internal sealed partial class MainPage : ReactiveMainPageView
             .Subscribe(ep =>
             {
                 SelectItem(null);
-                ViewModel.CurrentConversationViewModel = null;
 
                 if (ep.EventArgs.SourcePageType == typeof(SettingsPage))
                 {
                     SelectItem(NavView.SettingsItem);
-                    UserInput.Visibility = Visibility.Collapsed;
                 }
                 else if (ep.EventArgs.SourcePageType == typeof(ConversationPage))
                 {
-                    ViewModel.CurrentConversationViewModel = ep.EventArgs.Parameter.As<ConversationViewModel>();
                     SelectItem(ep.EventArgs.Parameter);
-                    UserInput.Visibility = Visibility.Visible;
-                    DispatcherQueue.TryEnqueue(() => UserInput.Focus());
                 }
                 else if (ep.EventArgs.SourcePageType == typeof(Empty))
                 {
-                    UserInput.Visibility = Visibility.Visible;
-                    DispatcherQueue.TryEnqueue(() => UserInput.Focus());
+                    NavViewFrame.Content.As<Empty>().UserInputs.Subscribe(async input =>
+                    {
+                        ConversationViewModel vm = await ViewModel.GetNewConversationAsync();
+
+                        OpenConversation(vm);
+
+                        vm.AddMessageCommand.Execute(input).Subscribe();
+                    }).DisposeWith(Disposables);
                 }
             })
         .DisposeWith(Disposables);
@@ -141,33 +143,6 @@ internal sealed partial class MainPage : ReactiveMainPageView
                 CleanBackStack(vm);
             })
             .Subscribe()
-            .DisposeWith(Disposables);
-
-        UserInput.ViewModel!.UserInputs.Subscribe(async input =>
-        {
-            ConversationViewModel vm = ViewModel.CurrentConversationViewModel ?? await ViewModel.GetNewConversationAsync();
-
-            OpenConversation(vm);
-
-            vm.AddMessageCommand.Execute(input).Subscribe();
-        }).DisposeWith(Disposables);
-
-        UserInput.ViewModel!.StopResponseCommand.Subscribe(_ =>
-        {
-            if (ViewModel.CurrentConversationViewModel is null)
-            {
-                Log_StopResponseCommand_Error();
-                return;
-            }
-
-            ViewModel.CurrentConversationViewModel.StopResponseCommand.Execute().Subscribe();
-
-        }).DisposeWith(Disposables);
-
-        ViewModel.WhenAnyValue(vm => vm.CurrentConversationViewModel)
-            .WhereNotNull()
-            .SelectMany(c => c.AiIsResponding)
-            .Subscribe(aiIsResponding => UserInput.ViewModel!.AiIsResponding = aiIsResponding)
             .DisposeWith(Disposables);
     }
 
@@ -205,7 +180,7 @@ internal sealed partial class MainPage : ReactiveMainPageView
             return;
         }
 
-        NavViewFrame.Navigate(typeof(ConversationPage), conversation);
+        NavViewFrame.Navigate(typeof(ConversationPage), conversation, new SuppressNavigationTransitionInfo());
     }
 
     private void OpenEmptyConversation()
@@ -214,7 +189,7 @@ internal sealed partial class MainPage : ReactiveMainPageView
         {
             return;
         }
-        NavViewFrame.Navigate(typeof(Empty));
+        NavViewFrame.Navigate(typeof(Empty), null, new SuppressNavigationTransitionInfo());
     }
 
     private void TitleBar_PaneToggleRequested(TitleBar sender, object args)

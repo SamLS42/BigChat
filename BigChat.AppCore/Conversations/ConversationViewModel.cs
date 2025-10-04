@@ -24,8 +24,8 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     public IObservableCache<MessageViewModel, int> Messages => MessageSource.AsObservableCache();
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
-    private BehaviorSubject<bool> AiIsRespondingSource { get; } = new(false);
-    public IObservable<bool> AiIsResponding => AiIsRespondingSource.AsObservable();
+    [Reactive]
+    public partial bool AiIsResponding { get; set; }
     private CancellationTokenSource StopResponseCts { get; set; } = new();
     public ConversationViewModel()
     {
@@ -103,7 +103,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         ChatMessage[] messages = await db.Messages.Select(m => new ChatMessage(ChatRole.Parse(m.Role), m.Text))
             .ToArrayAsync();
 
-        AiIsRespondingSource.OnNext(true);
+        AiIsResponding = true;
 
         try
         {
@@ -133,7 +133,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         }
         finally
         {
-            AiIsRespondingSource.OnNext(false);
+            AiIsResponding = false;
         }
     }
 
@@ -193,6 +193,11 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
         StopResponseCts = new CancellationTokenSource();
     }
+
+    [Reactive]
+    public string InputBoxText { get; set; } = string.Empty;
+    private Subject<string> UserInputSource { get; } = new();
+    public IObservable<string> UserInputs => UserInputSource.Where(s => !string.IsNullOrWhiteSpace(s)).AsObservable();
 
     public void Dispose()
     {
