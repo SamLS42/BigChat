@@ -52,6 +52,11 @@ internal sealed partial class MainPage : ReactiveMainPageView
             bool deleteConfirmed = result.HasFlag(ContentDialogResult.Primary);
 
             interaction.SetOutput(deleteConfirmed);
+
+            if (NavViewFrame.Content is ConversationPage page && page.ViewModel!.Id == interaction.Input.Id)
+            {
+                OpenEmptyConversation();
+            }
         })
         .DisposeWith(Disposables);
 
