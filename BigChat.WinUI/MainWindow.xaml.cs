@@ -4,13 +4,13 @@ using BigChat.Main;
 using BigChat.Utils;
 using CommunityToolkit.WinUI.Behaviors;
 using Microsoft.UI.Xaml;
-using ReactiveUI;
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
+using WinRT;
 
 namespace BigChat;
 
-internal sealed partial class MainWindow : Window, IActivatableView, IDisposable
+internal sealed partial class MainWindow : Window, IDisposable
 {
     CompositeDisposable Disposables { get; } = [];
     private NotificationService NotificationService { get; } = ServiceLocator.GetRequiredService<NotificationService>();
@@ -20,6 +20,8 @@ internal sealed partial class MainWindow : Window, IActivatableView, IDisposable
         InitializeComponent();
         ExtendsContentIntoTitleBar = true;
         mainFrame.Navigate(typeof(MainPage));
+
+        SetTitleBar(mainFrame.Content.As<MainPage>().PageTitleBar);
 
         NotificationService.Notifications
             .Subscribe(n =>
@@ -34,8 +36,6 @@ internal sealed partial class MainWindow : Window, IActivatableView, IDisposable
                 DispatcherQueue.TryEnqueue(() => NotificationQueue.Show(notification));
             })
             .DisposeWith(Disposables);
-
-        NotificationService.Send(Severity.Success, "Everything working");
     }
 
     public void Dispose()

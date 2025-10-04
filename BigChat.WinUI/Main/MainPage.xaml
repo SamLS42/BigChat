@@ -32,13 +32,7 @@
             IsBackButtonEnabled="{x:Bind NavViewFrame.CanGoBack, Mode=OneWay}"
             IsBackButtonVisible="True"
             IsPaneToggleButtonVisible="True"
-            PaneToggleRequested="TitleBar_PaneToggleRequested">
-            <TitleBar.IconSource>
-                <SymbolIconSource Symbol="Globe" />
-                <!--<BitmapIconSource UriSource="ms-appx:///Assets/myIcon.png" />-->
-            </TitleBar.IconSource>
-
-        </TitleBar>
+            PaneToggleRequested="TitleBar_PaneToggleRequested" />
 
         <NavigationView
             x:Name="NavView"

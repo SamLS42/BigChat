@@ -6,7 +6,6 @@
     xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:local="using:BigChat"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="BigChat"
     mc:Ignorable="d">
@@ -16,6 +15,9 @@
     </Window.SystemBackdrop>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+        </Grid.RowDefinitions>
         <Frame x:Name="mainFrame" />
 
         <InfoBar

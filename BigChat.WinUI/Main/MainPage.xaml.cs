@@ -15,7 +15,6 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using ReactiveUI;
 using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using WinRT;
@@ -25,7 +24,7 @@ namespace BigChat.Main;
 internal class ReactiveMainPageView : ReactivePage<MainPageViewModel>;
 internal sealed partial class MainPage : ReactiveMainPageView
 {
-    private CompositeDisposable Disposables { get; } = [];
+    public UIElement PageTitleBar => TitleBar;
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
     private DialogService DialogService { get; } = ServiceLocator.GetRequiredService<DialogService>();
 
