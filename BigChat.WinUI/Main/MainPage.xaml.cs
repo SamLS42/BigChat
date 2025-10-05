@@ -222,12 +222,17 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
 
     private void AutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
-        ViewModel!.UpdateAutoSuggestBoxTextCommand.Execute(parameter: args.SelectedItem);
+        ViewModel!.UpdateAutoSuggestBoxTextCommand.Execute(parameter: args.SelectedItem).Subscribe();
     }
 
     private void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
-        ViewModel!.SelectSuggestedConversationCommand.Execute(parameter: args.ChosenSuggestion);
+        if (args.ChosenSuggestion is ConversationViewModel conversation)
+        {
+            sender.Text = string.Empty;
+            ViewModel!.FilteredConversations = [];
+            OpenConversation(conversation);
+        }
     }
 
     private void PageButton_Click(object sender, RoutedEventArgs e)
