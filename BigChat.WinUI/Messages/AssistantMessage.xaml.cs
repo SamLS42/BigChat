@@ -11,7 +11,7 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace BigChat.Messages;
 
-internal class ReactiveAssistantMessage : ReactiveUserControl<MessageViewModel>;
+internal partial class ReactiveAssistantMessage : ReactiveUserControl<MessageViewModel>;
 internal sealed partial class AssistantMessage : ReactiveAssistantMessage
 {
     private readonly Compositor _compositor = CompositionTarget.GetCompositorForCurrentThread();

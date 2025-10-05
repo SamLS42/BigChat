@@ -10,7 +10,9 @@ namespace BigChat.AppCore.ViewModel;
 
 public partial class MessageViewModel : ReactiveObject
 {
+    [Reactive]
     public int Id { get; set; }
+    [Reactive]
     public int ConversationId { get; set; }
 
     Subject<Unit> MessageUpdatesSource { get; } = new();
@@ -18,7 +20,9 @@ public partial class MessageViewModel : ReactiveObject
 
     [Reactive]
     public partial string Text { get; set; } = string.Empty;
+    [Reactive]
     public ChatRole Role { get; set; }
+    [Reactive]
     public DateTime CreatedAt { get; set; }
 
     [Reactive]

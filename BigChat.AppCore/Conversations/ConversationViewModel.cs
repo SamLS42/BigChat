@@ -40,6 +40,8 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
     [Reactive]
     public partial int Id { get; set; }
+
+    [Reactive]
     public DateTime CreatedAt { get; set; }
 
     [Reactive]
@@ -59,7 +61,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     }
 
     private readonly SubjectResolver subjectResolver = ServiceLocator.GetRequiredService<SubjectResolver>();
-
+    private StringBuilder AIResponseStringBuilder { get; } = new();
 
     [ReactiveCommand]
     private async Task AddMessageAsync(string inputText, CancellationToken cancellationToken)
@@ -101,30 +103,29 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     {
         Observable.FromAsync(CheckSubjectAsync).Subscribe();
 
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync();
+
+        ChatMessage[] messages = await db.Messages.Where(m => m.ConversationId == Id)
+            .Select(m => new ChatMessage(ChatRole.Parse(m.Role), m.Text))
+            .ToArrayAsync();
+
         MessageViewModel vm = (await CreateAssistantMessageAsync()).ToMessageViewModel();
 
         MessageSource.AddOrUpdate(vm);
-
-        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync();
-
-        ChatMessage[] messages = await db.Messages.Select(m => new ChatMessage(ChatRole.Parse(m.Role), m.Text))
-            .ToArrayAsync();
 
         AiIsResponding = true;
 
         try
         {
-            StringBuilder stringBuilder = new();
-
             await ChatClient.GetStreamingResponseAsync(messages, cancellationToken: StopResponseCts.Token)
                 .ToObservable()
-                .SubscribeOn(RxApp.TaskpoolScheduler)
-                .Do(update =>
+                .Select(u => u.Text)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .ForEachAsync(text =>
                 {
-                    stringBuilder.Append(update.Text);
+                    AIResponseStringBuilder.Append(text); // mutate on main thread
+                    vm.Text = AIResponseStringBuilder.ToString();
                 });
-
-            vm.Text = stringBuilder.ToString();
 
             await db.Messages.Where(m => m.Id == vm.Id)
                 .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, vm.Text).SetProperty(m => m.ModifiedAt, DateTime.UtcNow));
@@ -135,12 +136,10 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
             vm.Text = $"The AI provider appears to not be correctly configured. Error message: {e.Message}";
             await db.Messages.Where(m => m.Id == vm.Id).ExecuteDeleteAsync();
         }
-        catch (TaskCanceledException)
-        {
-        }
         finally
         {
             AiIsResponding = false;
+            AIResponseStringBuilder.Clear();
         }
     }
 
