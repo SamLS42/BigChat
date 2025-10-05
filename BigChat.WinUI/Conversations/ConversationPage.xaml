@@ -71,10 +71,10 @@
                     VerticalAlignment="Top"
                     Orientation="Horizontal">
                     <Button x:Name="SendBtn" Style="{ThemeResource AccentButtonStyle}">
-                        <SymbolIcon Symbol="Send" />
+                        <FontIcon Glyph="&#xE70F;" />
                     </Button>
                     <Button x:Name="StopBtn" Style="{ThemeResource AccentButtonStyle}">
-                        <SymbolIcon Symbol="Stop" />
+                        <FontIcon Glyph="&#xE71A;" />
                     </Button>
                 </StackPanel>
             </Grid>

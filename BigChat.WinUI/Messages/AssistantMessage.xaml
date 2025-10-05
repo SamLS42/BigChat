@@ -33,10 +33,10 @@
             Opacity="0"
             Orientation="Horizontal"
             Spacing="4">
-            <!--<Button Style="{StaticResource TransparentButton}">
+            <!--<Button Style="{ThemeResource SubtleButtonStyle}">
                 <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE777;" />
             </Button>-->
-            <Button x:Name="CopyBtn" Style="{StaticResource TransparentButton}">
+            <Button x:Name="CopyBtn" Style="{ThemeResource SubtleButtonStyle}">
                 <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE8C8;" />
             </Button>
         </StackPanel>

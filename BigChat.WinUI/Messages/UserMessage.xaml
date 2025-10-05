@@ -61,13 +61,13 @@
             Orientation="Horizontal"
             Spacing="4"
             Visibility="{x:Bind ViewModel.IsEditable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}">
-            <!--<Button Style="{StaticResource TransparentButton}">
+            <!--<Button Style="{ThemeResource SubtleButtonStyle}">
                 <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE777;" />
             </Button>-->
-            <Button x:Name="EnableEditBtn" Style="{StaticResource TransparentButton}">
+            <Button x:Name="EnableEditBtn" Style="{ThemeResource SubtleButtonStyle}">
                 <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE70F;" />
             </Button>
-            <Button x:Name="CopyBtn" Style="{StaticResource TransparentButton}">
+            <Button x:Name="CopyBtn" Style="{ThemeResource SubtleButtonStyle}">
                 <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE8C8;" />
             </Button>
         </StackPanel>
@@ -79,11 +79,11 @@
             Orientation="Horizontal"
             Spacing="4"
             Visibility="{x:Bind ViewModel.IsEditable, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Button x:Name="CancelEditBtn" Style="{StaticResource TransparentButton}">
-                <SymbolIcon Symbol="Cancel" />
+            <Button x:Name="CancelEditBtn" Style="{ThemeResource SubtleButtonStyle}">
+                <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE711;" />
             </Button>
-            <Button x:Name="ConfirmEditBtn" Style="{StaticResource TransparentButton}">
-                <SymbolIcon Symbol="Send" />
+            <Button x:Name="ConfirmEditBtn" Style="{ThemeResource SubtleButtonStyle}">
+                <FontIcon FontSize="{ThemeResource SmallIconSize}" Glyph="&#xE724;" />
             </Button>
         </StackPanel>
     </Grid>

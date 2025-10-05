@@ -35,7 +35,7 @@
                         x:Name="SendBtn"
                         Click="SendBtn_Click"
                         Style="{ThemeResource AccentButtonStyle}">
-                        <SymbolIcon Symbol="Send" />
+                        <FontIcon Glyph="&#xE70F;" />
                     </Button>
                 </StackPanel>
             </Grid>
