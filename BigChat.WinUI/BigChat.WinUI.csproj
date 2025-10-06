@@ -7,6 +7,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Platforms>x64;ARM64</Platforms>
 		<RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -47,6 +48,7 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" />
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" />
 		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI.Managed" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

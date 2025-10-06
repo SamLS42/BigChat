@@ -1,4 +1,6 @@
-﻿using BigChat.AppCore.Settings;
+﻿using BigChat.AppCore.Settings.AzureAIInference;
+using BigChat.AppCore.Settings.Ollama;
+using BigChat.AppCore.Settings.Onnx;
 
 namespace BigChat.Settings;
 
@@ -6,6 +8,8 @@ internal sealed class LocalSettings
 {
     public string? AppTheme { get; set; }
     public string? SelectedClient { get; set; }
-    public ChatCompletionsClientSettings? ChatCompletionsClientSettings { get; set; }
+    public string? OnnxModelDir { get; set; }
+    public required AzureAIInferenceClientSettings AzureAIInferenceClientSettings { get; set; }
     public required OllamaChatClientSettings OllamaChatClientSettings { get; set; }
+    public required OnnxChatClientSettings OnnxChatClientSettings { get; set; }
 }

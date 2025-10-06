@@ -10,10 +10,10 @@ namespace BigChat.AppCore;
 
 public static class ViewModelRegistrationExtensions
 {
-    public static IServiceCollection AddViewModels(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddCoreServices(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddKeyedSingleton<IChatClient, ConfiguredChatCompletionsClient>(nameof(ConfiguredChatCompletionsClient))
+            .AddKeyedSingleton<IChatClient, ConfiguredAzureAIInferenceClient>(nameof(ConfiguredAzureAIInferenceClient))
             .AddKeyedSingleton<IChatClient, ConfiguredOllamaChatClient>(nameof(ConfiguredOllamaChatClient))
             .AddTransient(services =>
             {
@@ -21,9 +21,9 @@ public static class ViewModelRegistrationExtensions
 
                 return settings.GetSelectedClient() switch
                 {
-                    SupportedClients.AzureAIInference => services.GetKeyedService<IChatClient>(nameof(ConfiguredChatCompletionsClient))!,
+                    SupportedClients.AzureAIInference => services.GetKeyedService<IChatClient>(nameof(ConfiguredAzureAIInferenceClient))!,
                     SupportedClients.Ollama => services.GetKeyedService<IChatClient>(nameof(ConfiguredOllamaChatClient))!,
-                    _ => services.GetKeyedService<IChatClient>(nameof(SupportedClients.ONNXChatClient))!
+                    _ => services.GetKeyedService<IChatClient>(nameof(SupportedClients.Onnx))!
                 };
             })
             .AddSingleton<SubjectResolver>()
@@ -31,7 +31,7 @@ public static class ViewModelRegistrationExtensions
             .AddTransient<MainPageViewModel>()
             .AddTransient<ConversationViewModel>()
             .AddSingleton<SettingsViewModel>()
-            .AddTransient<ChatCompletionsSettingsViewModel>()
+            .AddTransient<AzureAIInferenceSettingsViewModel>()
             .AddTransient<OllamaChatSettingsViewModel>();
     }
 }

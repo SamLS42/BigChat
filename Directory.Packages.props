@@ -16,13 +16,14 @@
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.0-rc.1.25451.107" />
     <PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.0-rc.1.25451.107" />
+    <PackageVersion Include="Microsoft.ML.OnnxRuntimeGenAI.Managed" Version="0.10.0" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.57.0-alpha" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.20250829.1" />
     <PackageVersion Include="OllamaSharp" Version="5.4.7" />
     <PackageVersion Include="ReactiveUI" Version="22.0.1" />
     <PackageVersion Include="ReactiveUI.SourceGenerators" Version="2.4.1" />
     <PackageVersion Include="ReactiveUI.WinUI" Version="22.0.1" />
-    <PackageVersion Include="Roslynator.Analyzers" Version="4.14.0" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.14.1" />
     <PackageVersion Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageVersion Include="Microsoft.Extensions.AI" Version="9.9.1" />
     <PackageVersion Include="Microsoft.Extensions.AI.Ollama" Version="9.5.0-preview.1.25265.7" />

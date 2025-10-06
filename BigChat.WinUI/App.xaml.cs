@@ -1,11 +1,14 @@
 ﻿using BigChat.AppCore;
-using BigChat.Infrastructure;
+using BigChat.AppCore.ChatClient;
+using BigChat.AppCore.Settings;
 using BigChat.Infrastructure.Data;
+using BigChat.Onnx;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
+using System.Reactive;
 using System.Reactive.Linq;
 
 namespace BigChat;
@@ -23,14 +26,28 @@ public partial class App : Application
         IDbContextFactory<MyDbContext> dbContextFactory = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
 
         Observable.FromAsync(dbContextFactory.CreateDbContextAsync)
-            .Subscribe(async db =>
+            .SelectMany(db => Observable.FromAsync(async () =>
             {
                 await db.Database.MigrateAsync();
                 await db.DisposeAsync();
-
+                return Unit.Default;
+            }))
+            .Subscribe(_ =>
+            {
                 m_window = ServiceLocator.GetRequiredService<MainWindow>();
                 m_window.Activate();
             });
+
+
+        ISettingsService settingsService = ServiceLocator.GetRequiredService<ISettingsService>();
+
+        Task.Run(async () => await ServiceLocator.GetRequiredService<OnnxSetupService>().InitializeAsync());
+
+        if (settingsService.GetSelectedClient() == SupportedClients.Onnx)
+        {
+            //Initialize in the background
+            Task.Run(async () => await ServiceLocator.GetRequiredService<OnnxSetupService>().InitializeAsync());
+        }
     }
 
     private void ConfigureServices()
@@ -45,19 +62,20 @@ public partial class App : Application
             });
 
             services.AddTransient<MainWindow>()
-                .AddServices()
+                .AddPooledDbContextFactory<MyDbContext>(optionsAction =>
+                {
+                    string cs = $"Data Source={Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MyDB.db")}";
+                    optionsAction.UseSqlite(cs)
+                                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                })
                 .AddLogging(builder =>
                 {
                     builder.SetMinimumLevel(LogLevel.Error);
                     builder.AddEventLog();
                 })
+                .AddSingleton<OnnxSetupService>()
                 .AddPlatformServices()
-                .AddViewModels()
-                .AddMemoryCache(setup =>
-                {
-                    setup.SizeLimit = 100;
-                    setup.TrackLinkedCacheEntries = true;
-                });
+                .AddCoreServices();
         }).Build();
 
         ServiceLocator.SetLocator(_host.Services);

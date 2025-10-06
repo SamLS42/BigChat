@@ -1,24 +1,23 @@
 ﻿using Azure;
 using Azure.AI.Inference;
 using BigChat.AppCore.Settings;
+using BigChat.AppCore.Settings.AzureAIInference;
 using Microsoft.Extensions.AI;
 
 namespace BigChat.AppCore.ChatClient;
 
-internal sealed class ConfiguredChatCompletionsClient : IChatClient
+internal sealed class ConfiguredAzureAIInferenceClient : IChatClient
 {
-    private ISettingsService SettingsService { get; }
+    private ISettingsService SettingsService { get; } = ServiceLocator.GetRequiredService<ISettingsService>();
     private int EndpointHash { get; set; }
     private int ApiKeyHash { get; set; }
-    private string? Endpoint => SettingsService.GetChatCompletionsSettings()?.Endpoint;
-    private string? Key => SettingsService.GetChatCompletionsSettings()?.APIKey;
+    private string? Endpoint => SettingsService.GetAzureAIInferenceSettings()?.Endpoint;
+    private string? Key => SettingsService.GetAzureAIInferenceSettings()?.APIKey;
     private IChatClient? ChatClient { get; set; }
     private ChatOptions ChatOptions { get; } = new ChatOptions();
 
-    public ConfiguredChatCompletionsClient(ISettingsService settingsService)
+    public ConfiguredAzureAIInferenceClient()
     {
-        SettingsService = settingsService;
-
         if (Endpoint is not null)
         {
             EndpointHash = StringComparer.Ordinal.GetHashCode(Endpoint);
@@ -49,6 +48,8 @@ internal sealed class ConfiguredChatCompletionsClient : IChatClient
 
         if (EndpointHash != StringComparer.Ordinal.GetHashCode(Endpoint) || ApiKeyHash != StringComparer.Ordinal.GetHashCode(Key) || ChatClient is null)
         {
+            ChatClient?.Dispose();
+
             ChatClient = new ChatClientBuilder(new ChatCompletionsClient(endpoint: new Uri(Endpoint), credential: new AzureKeyCredential(Key)).AsIChatClient())
                 .Build();
 
@@ -80,7 +81,7 @@ internal sealed class ConfiguredChatCompletionsClient : IChatClient
 
     private ChatOptions GetChatOptions()
     {
-        if (SettingsService.GetChatCompletionsSettings() is ChatCompletionsClientSettings settings)
+        if (SettingsService.GetAzureAIInferenceSettings() is AzureAIInferenceClientSettings settings)
         {
             ChatOptions.ModelId = settings.ModelId;
             ChatOptions.Temperature = (float?)settings.Temperature;

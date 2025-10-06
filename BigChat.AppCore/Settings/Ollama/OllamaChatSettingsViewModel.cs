@@ -1,12 +1,12 @@
-﻿using ReactiveUI;
+﻿using BigChat.AppCore.Settings.Ollama;
+using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 
 namespace BigChat.AppCore.Settings;
 
-public partial class ChatCompletionsSettingsViewModel : ReactiveObject
+public partial class OllamaChatSettingsViewModel : ReactiveObject
 {
     [Reactive] public partial string Endpoint { get; set; }
-    [Reactive] public partial string APIKey { get; set; }
     [Reactive] public partial string ModelId { get; set; }
     [Reactive] public partial double Temperature { get; set; }
     [Reactive] public partial int MaxOutputTokens { get; set; }
@@ -14,17 +14,17 @@ public partial class ChatCompletionsSettingsViewModel : ReactiveObject
     [Reactive] public partial double FrequencyPenalty { get; set; }
     [Reactive] public partial double PresencePenalty { get; set; }
 
-    private ChatCompletionsClientSettings ChatSettings { get; }
+    private OllamaChatClientSettings ChatSettings { get; }
 
     private ISettingsService SettingsService { get; }
 
-    public ChatCompletionsSettingsViewModel(ISettingsService settingsService)
+    public OllamaChatSettingsViewModel(ISettingsService settingsService)
     {
         SettingsService = settingsService;
 
-        ChatSettings = SettingsService.GetChatCompletionsSettings() ?? new();
+        ChatSettings = SettingsService.GetOllamaChatSettings();
+
         Endpoint = ChatSettings.Endpoint;
-        APIKey = ChatSettings.APIKey;
         ModelId = ChatSettings.ModelId;
 
         LoadSettings();
@@ -54,7 +54,6 @@ public partial class ChatCompletionsSettingsViewModel : ReactiveObject
     public void Save()
     {
         ChatSettings.Endpoint = Endpoint;
-        ChatSettings.APIKey = APIKey;
         ChatSettings.ModelId = ModelId;
         ChatSettings.Temperature = Temperature;
         ChatSettings.MaxOutputTokens = MaxOutputTokens;
@@ -62,7 +61,12 @@ public partial class ChatCompletionsSettingsViewModel : ReactiveObject
         ChatSettings.FrequencyPenalty = FrequencyPenalty;
         ChatSettings.PresencePenalty = PresencePenalty;
 
-        SettingsService.SetChatCompletionsClientSettings(ChatSettings);
+        if (string.IsNullOrWhiteSpace(ChatSettings.Endpoint))
+        {
+            ChatSettings.Endpoint = "http://localhost:11434";
+        }
+
+        SettingsService.SetOllamaChatClientSettings(ChatSettings);
 
         LoadSettings();
     }

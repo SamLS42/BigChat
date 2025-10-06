@@ -9,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace BigChat;
 
-internal static class ServiceRegistrationExtensions
+internal static partial class ServiceRegistrationExtensions
 {
     public static IServiceCollection AddPlatformServices(this IServiceCollection serviceCollection)
     {
