@@ -26,7 +26,7 @@ public partial class MessageViewModel : ReactiveObject
     public DateTime CreatedAt { get; set; }
 
     [Reactive]
-    public partial string ThinkContent { get; private set; } = string.Empty;
+    public partial string ThinkContent { get; set; } = string.Empty;
 
     [Reactive]
     public partial bool IsPending { get; set; }

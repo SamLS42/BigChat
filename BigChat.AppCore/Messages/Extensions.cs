@@ -14,9 +14,9 @@ public static class MessageExtensions
             {
                 Id = message.Id,
                 Content = message.Content,
+                ThinkContent = message.ThinkContent,
                 Role = ChatRole.Parse(message.Role),
                 ConversationId = message.ConversationId,
-                CreatedAt = message.CreatedAt.ToLocalTime(),
             };
         }
     }

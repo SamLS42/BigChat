@@ -23,9 +23,9 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
 
         this.WhenActivated(d =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Text, v => v.AssistantResponse.Text).DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.DisplayContent, v => v.AssistantResponse.Text).DisposeWith(d);
 
-            this.WhenAnyValue(x => x.ViewModel!.Text)
+            this.WhenAnyValue(x => x.ViewModel!.DisplayContent)
                 .Select(text => string.IsNullOrWhiteSpace(text))
                 .Subscribe(textIsEmpty =>
                 {
@@ -49,7 +49,7 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
                     {
                         RequestedOperation = DataPackageOperation.Move,
                     };
-                    dataPackage.SetText(ViewModel?.Text);
+                    dataPackage.SetText(ViewModel?.DisplayContent);
                     Clipboard.SetContent(dataPackage);
                 })
                 .DisposeWith(d);
