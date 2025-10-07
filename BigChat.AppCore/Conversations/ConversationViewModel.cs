@@ -43,6 +43,9 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     public DateTime CreatedAt { get; set; }
 
     [Reactive]
+    public bool AiIsResponding { get; set; }
+
+    [Reactive]
     public partial string InputBoxText { get; set; } = string.Empty;
     private Subject<string> UserInputSource { get; } = new();
     public IObservable<string> UserInputs => UserInputSource.Where(s => !string.IsNullOrWhiteSpace(s)).AsObservable();
@@ -111,6 +114,8 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
         MessageSource.AddOrUpdate(vm);
 
+        AiIsResponding = true;
+
         try
         {
             await ChatClient.GetStreamingResponseAsync(messages, cancellationToken: StopResponseCts.Token)
@@ -134,6 +139,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         }
         finally
         {
+            AiIsResponding = false;
             AIResponseStringBuilder.Clear();
         }
     }

@@ -12,7 +12,7 @@ using Windows.UI.Core;
 
 namespace BigChat.Messages;
 
-internal class ReactiveUserMessage : ReactiveUserControl<MessageViewModel>;
+internal partial class ReactiveUserMessage : ReactiveUserControl<MessageViewModel>;
 internal sealed partial class UserMessage : ReactiveUserMessage
 {
     private readonly Compositor _compositor = Microsoft.UI.Xaml.Media.CompositionTarget.GetCompositorForCurrentThread();
@@ -54,7 +54,7 @@ internal sealed partial class UserMessage : ReactiveUserMessage
                     {
                         RequestedOperation = DataPackageOperation.Move,
                     };
-                    dataPackage.SetText(ViewModel?.Text);
+                    dataPackage.SetText(ViewModel?.DisplayContent);
                     Clipboard.SetContent(dataPackage);
                 }).DisposeWith(d);
 

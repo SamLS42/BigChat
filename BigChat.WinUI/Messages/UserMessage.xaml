@@ -35,7 +35,7 @@
                 <TextBlock
                     HorizontalAlignment="Right"
                     IsTextSelectionEnabled="True"
-                    Text="{x:Bind ViewModel.Text, Mode=OneWay}"
+                    Text="{x:Bind ViewModel.DisplayContent, Mode=OneWay}"
                     TextWrapping="Wrap" />
             </StackPanel>
             <TextBox

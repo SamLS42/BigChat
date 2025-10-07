@@ -18,10 +18,10 @@ using WinRT;
 
 namespace BigChat.Conversations;
 
-internal class ReactiveConversationPage : ReactivePage<ConversationViewModel>;
+internal partial class ReactiveConversationPage : ReactivePage<ConversationViewModel>;
 internal sealed partial class ConversationPage : ReactiveConversationPage, IDisposable
 {
-    private ReadOnlyObservableCollection<MessageViewModel>? Messages;
+    private readonly ReadOnlyObservableCollection<MessageViewModel> Messages;
     private CompositeDisposable Disposables { get; } = [];
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
 
