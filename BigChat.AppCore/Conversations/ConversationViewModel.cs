@@ -1,5 +1,6 @@
 ﻿using BigChat.AppCore.Localization;
 using BigChat.AppCore.Messages;
+using BigChat.AppCore.Services;
 using BigChat.AppCore.ViewModel;
 using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
@@ -61,17 +62,22 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         return Subject;
     }
 
-    private readonly SubjectResolver subjectResolver = ServiceLocator.GetRequiredService<SubjectResolver>();
+    private SubjectResolver SubjectResolver { get; } = ServiceLocator.GetRequiredService<SubjectResolver>();
+    private DataService DataService { get; } = ServiceLocator.GetRequiredService<DataService>();
     private StringBuilder AIResponseStringBuilder { get; } = new();
 
     [ReactiveCommand]
     private async Task AddMessageAsync(string inputText, CancellationToken cancellationToken)
     {
-        await AddUserMessageAsync(inputText, cancellationToken);
+        Message message = await DataService.AddMessageAsync(conversationId: Id, chatRole: ChatRole.User, content: inputText, cancellationToken);
+
+        MessageViewModel messageViewModel = message.ToMessageViewModel();
+
+        MessageSource.AddOrUpdate(messageViewModel);
 
         InputBoxText = string.Empty;
 
-        await AddAIResponseMessage();
+        await AddAIResponseMessageAsync();
     }
 
     [ReactiveCommand]
@@ -88,8 +94,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        await db.Messages.Where(m => m.Id == message.Id)
-            .ExecuteUpdateAsync(m => m.SetProperty(m => m.Content, message.Content).SetProperty(m => m.ModifiedAt, DateTime.Now), cancellationToken: cancellationToken);
+        await DataService.UpdateMessageAsync(message.Id, message.Content, cancellationToken: cancellationToken);
 
         // Delete messages after the one updated, the conversation is reset from here
         await db.Messages.Where(m => m.Id > message.Id)
@@ -97,10 +102,10 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
         MessageSource.RemoveKeys(MessageSource.Keys.Where(k => k > message.Id));
 
-        await AddAIResponseMessage();
+        await AddAIResponseMessageAsync();
     }
 
-    private async Task AddAIResponseMessage()
+    private async Task AddAIResponseMessageAsync()
     {
         Observable.FromAsync(CheckSubjectAsync).Subscribe();
 
@@ -110,32 +115,41 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
             .Select(m => new ChatMessage(ChatRole.Parse(m.Role), m.Content))
             .ToArrayAsync();
 
-        MessageViewModel vm = (await CreateAssistantMessageAsync()).ToMessageViewModel();
+        Message message = await DataService.AddMessageAsync(conversationId: Id, ChatRole.Assistant);
+        MessageViewModel responseMessage = message.ToMessageViewModel();
 
-        MessageSource.AddOrUpdate(vm);
+        responseMessage.IsPending = true;
+
+        MessageSource.AddOrUpdate(responseMessage);
 
         AiIsResponding = true;
+        int currentThinkTagIndex = -1; // -1 means not inside any think/auxiliary section
+        string rolling = string.Empty;
 
         try
         {
             await ChatClient.GetStreamingResponseAsync(messages, cancellationToken: StopResponseCts.Token)
                 .ToObservable()
-                .Select(u => u.Text)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .ForEachAsync(text =>
+                .ForEachAsync(update =>
                 {
-                    AIResponseStringBuilder.Append(text); // mutate on main thread
-                    vm.Content = AIResponseStringBuilder.ToString();
+                    if (responseMessage.IsPending)
+                    {
+                        responseMessage.IsPending = false;
+                    }
+
+                    (string rolling, int currentThinkTagIndex) result = ThinkParserHelpers.ApplyPartToResponse(responseMessage, rolling, currentThinkTagIndex, update.ToString());
+                    rolling = result.rolling;
+                    currentThinkTagIndex = result.currentThinkTagIndex;
                 });
 
-            await db.Messages.Where(m => m.Id == vm.Id)
-                .ExecuteUpdateAsync(m => m.SetProperty(m => m.Content, vm.Content).SetProperty(m => m.ModifiedAt, DateTime.UtcNow));
+            await DataService.UpdateMessageAsync(responseMessage.Id, responseMessage.Content, responseMessage.ThinkContent);
         }
         catch (HttpRequestException e)
         {
             //TODO: 
-            vm.Content = $"The AI provider appears to not be correctly configured. Error message: {e.Message}";
-            await db.Messages.Where(m => m.Id == vm.Id).ExecuteDeleteAsync();
+            responseMessage.Content = $"Please check if the AI provider is configured, we are getting this error message:\n\n{e.Message}";
+            await db.Messages.Where(m => m.Id == responseMessage.Id).ExecuteDeleteAsync();
         }
         finally
         {
@@ -144,60 +158,19 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         }
     }
 
-    private async Task<Message> CreateAssistantMessageAsync(CancellationToken cancellationToken = default)
-    {
-        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
-
-        Message message = new()
-        {
-            ConversationId = Id,
-            CreatedAt = DateTime.UtcNow,
-            Role = ChatRole.Assistant.Value,
-            Content = string.Empty
-        };
-
-        await db.Messages.AddAsync(message, cancellationToken);
-
-        await db.SaveChangesAsync(cancellationToken);
-
-        return message;
-    }
-
     private async Task CheckSubjectAsync(CancellationToken cancellationToken = default)
     {
         if ((string.IsNullOrWhiteSpace(Subject) || Subject == Loc.NewChatText) && Messages.Count >= 1)
         {
-            string? subject = await subjectResolver.ResolveSubjectAsync(Id, cancellationToken);
+            string? subject = await SubjectResolver.ResolveSubjectAsync(Id, cancellationToken);
             Subject = subject ?? Subject;
         }
-    }
-
-    private async Task AddUserMessageAsync(string text, CancellationToken cancellationToken)
-    {
-        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
-
-        Message message = new()
-        {
-            Content = text,
-            Role = ChatRole.User.Value,
-            ConversationId = Id,
-            CreatedAt = DateTime.UtcNow,
-        };
-
-        await db.Messages.AddAsync(message, cancellationToken);
-
-        await db.SaveChangesAsync(cancellationToken);
-
-        MessageViewModel messageViewModel = message.ToMessageViewModel();
-
-        MessageSource.AddOrUpdate(messageViewModel);
     }
 
     [ReactiveCommand]
     private async Task StopResponseAsync()
     {
         await StopResponseCts.CancelAsync();
-
         StopResponseCts = new CancellationTokenSource();
     }
 

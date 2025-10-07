@@ -2,6 +2,7 @@
 using BigChat.AppCore.Conversations;
 using BigChat.AppCore.MainPage;
 using BigChat.AppCore.Notifications;
+using BigChat.AppCore.Services;
 using BigChat.AppCore.Settings;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,7 @@ public static class ViewModelRegistrationExtensions
             .AddTransient<ConversationViewModel>()
             .AddSingleton<SettingsViewModel>()
             .AddTransient<AzureAIInferenceSettingsViewModel>()
+            .AddTransient<DataService>()
             .AddTransient<OllamaChatSettingsViewModel>();
     }
 }

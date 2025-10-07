@@ -11,6 +11,7 @@
     d:DataContext="{d:DesignInstance Type=viewmodel:MessageViewModel}"
     mc:Ignorable="d">
 
+
     <StackPanel
         x:Name="ActionsGrid"
         HorizontalAlignment="Left"
@@ -19,11 +20,19 @@
         <ProgressRing
             x:Name="ProgressRing"
             IsIndeterminate="True"
-            Visibility="Visible" />
-        <controls:MarkdownTextBlock
-            x:Name="AssistantResponse"
-            Config="{x:Bind MarkdownConfig, Mode=OneTime}"
-            Visibility="Collapsed" />
+            Visibility="{x:Bind ViewModel.IsPending, Mode=OneWay}" />
+        <StackPanel Visibility="{x:Bind ViewModel.IsPending, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}">
+            <Border x:Name="ThinkContainer" x:Load="{x:Bind ViewModel.HasThink, Mode=OneWay}">
+                <controls:MarkdownTextBlock
+                    Config="{x:Bind MarkdownConfig, Mode=OneTime}"
+                    IsTextSelectionEnabled="True"
+                    Text="{x:Bind ViewModel.ThinkContent, Mode=OneWay}" />
+            </Border>
+            <controls:MarkdownTextBlock
+                Config="{x:Bind MarkdownConfig, Mode=OneTime}"
+                IsTextSelectionEnabled="True"
+                Text="{x:Bind ViewModel.DisplayContent, Mode=OneWay}" />
+        </StackPanel>
         <StackPanel
             x:Name="ActionButtonsPanel"
             Grid.Row="1"

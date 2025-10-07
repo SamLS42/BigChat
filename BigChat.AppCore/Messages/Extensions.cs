@@ -14,7 +14,7 @@ public static class MessageExtensions
             {
                 Id = message.Id,
                 Content = message.Content,
-                ThinkContent = message.ThinkContent,
+                ThinkContent = message.ThinkContent ?? string.Empty,
                 Role = ChatRole.Parse(message.Role),
                 ConversationId = message.ConversationId,
             };
