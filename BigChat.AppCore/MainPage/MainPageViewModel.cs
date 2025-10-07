@@ -16,22 +16,25 @@ namespace BigChat.AppCore.MainPage;
 public sealed partial class MainPageViewModel : ReactiveObject,
     IDisposable
 {
+    // Private fields
     private readonly CompositeDisposable Disposables = [];
+    private SourceCache<ConversationViewModel, int> ConversationSource { get; } = new(c => c.Id);
+    private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
+
+    // Public interactions and observable caches
     public Interaction<ConversationViewModel, bool> ConfirmDeleteInteraction { get; } = new();
     public Interaction<string, string?> ConfirmSubjectInteraction { get; } = new();
-    private SourceCache<ConversationViewModel, int> ConversationSource { get; } = new(c => c.Id);
     public IObservableCache<ConversationViewModel, int> Conversations => ConversationSource.AsObservableCache();
 
-    private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
-
+    // Reactive properties
     [Reactive]
     public partial string AutoSuggestBoxText { get; set; } = string.Empty;
 
     [Reactive]
     public partial ReadOnlyCollection<ConversationViewModel> FilteredConversations { get; set; } = ReadOnlyCollection<ConversationViewModel>.Empty;
-    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
 
-
+    // Constructor
     public MainPageViewModel()
     {
         ConversationSource.Connect()
@@ -47,6 +50,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
             .DisposeWith(Disposables);
     }
 
+    // Public API
     [ReactiveCommand]
     private async Task LoadConversations(CancellationToken cancellationToken = default)
     {
@@ -113,6 +117,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
         FilteredConversations = new([.. Conversations.Items.Where(c => c.Subject.Contains(AutoSuggestBoxText, StringComparison.OrdinalIgnoreCase))]);
     }
 
+    // Private helpers
     private async Task<Conversation> CreateConversationAsync(CancellationToken cancellationToken = default)
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);

@@ -10,7 +10,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
-  <Project Path="BenchmarkSuite1/BenchmarkSuite1.csproj" />
+  <Project Path="BenchmarkSuite1/BigChat.AppCore.Benchmarks.csproj" />
   <Project Path="BigChat.AppCore/BigChat.AppCore.csproj" />
   <Project Path="BigChat.Infrastructure/BigChat.Infrastructure.csproj" />
   <Project Path="BigChat.WinUI/BigChat.WinUI.csproj">

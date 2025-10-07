@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BigChat.AppCore.Conversations;
 using BigChat.AppCore.ViewModel;
@@ -10,7 +7,7 @@ namespace BigChat.AppCore.Benchmarks
     [MemoryDiagnoser]
     public class ThinkParserBenchmarks
     {
-        private List<string> _fragments = new();
+        private readonly List<string> _fragments = [];
 
         [GlobalSetup]
         public void Setup()
@@ -21,7 +18,7 @@ namespace BigChat.AppCore.Benchmarks
                             "We also include some edge cases where tags are split across fragments so the parser must keep a rolling buffer.\n";
 
             // Repeat to make message larger
-            var full = string.Concat(Enumerable.Repeat(sample, 50));
+            string full = string.Concat(Enumerable.Repeat(sample, 50));
 
             // Create many small fragments to simulate streaming (fixed small chunk sizes to avoid CA5394 warnings)
             for (int i = 0; i < full.Length; i += 12)
@@ -34,11 +31,11 @@ namespace BigChat.AppCore.Benchmarks
         [Benchmark]
         public void ApplyPartsStreamedFragments()
         {
-            var message = new MessageViewModel();
+            MessageViewModel message = new();
             string rolling = string.Empty;
             int currentThinkTagIndex = -1;
 
-            foreach (var frag in _fragments)
+            foreach (string frag in _fragments)
             {
                 var res = ThinkParserHelpers.ApplyPartToResponse(message, rolling, currentThinkTagIndex, frag);
                 rolling = res.rolling;

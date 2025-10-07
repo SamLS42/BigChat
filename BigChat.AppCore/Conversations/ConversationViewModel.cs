@@ -13,27 +13,27 @@ using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 
 namespace BigChat.AppCore.Conversations;
 
 public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 {
+    // Private fields
     IChatClient ChatClient => ServiceLocator.GetRequiredService<IChatClient>();
     private CompositeDisposable Disposables { get; } = [];
     private SourceCache<MessageViewModel, int> MessageSource { get; } = new(vm => vm.Id);
-    public IObservableCache<MessageViewModel, int> Messages => MessageSource.AsObservableCache();
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
+    private SubjectResolver SubjectResolver { get; } = ServiceLocator.GetRequiredService<SubjectResolver>();
+    private DataService DataService { get; } = ServiceLocator.GetRequiredService<DataService>();
     private CancellationTokenSource StopResponseCts { get; set; } = new();
-    public ConversationViewModel()
-    {
-        MessageSource.Connect()
-            .MergeMany(m => m.MessageUpdated.Select(_ => m))
-            .Subscribe(async m => await UpdateMessageAsync(m))
-            .DisposeWith(Disposables);
-    }
+    private Subject<string> UserInputSource { get; } = new();
 
+    // Public observables
+    public IObservableCache<MessageViewModel, int> Messages => MessageSource.AsObservableCache();
+    public IObservable<string> UserInputs => UserInputSource.Where(s => !string.IsNullOrWhiteSpace(s)).AsObservable();
+
+    // Reactive properties
     [Reactive]
     public partial string Subject { get; set; } = string.Empty;
 
@@ -48,9 +48,17 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
     [Reactive]
     public partial string InputBoxText { get; set; } = string.Empty;
-    private Subject<string> UserInputSource { get; } = new();
-    public IObservable<string> UserInputs => UserInputSource.Where(s => !string.IsNullOrWhiteSpace(s)).AsObservable();
 
+    // Constructor
+    public ConversationViewModel()
+    {
+        MessageSource.Connect()
+            .MergeMany(m => m.MessageUpdated.Select(_ => m))
+            .Subscribe(async m => await UpdateMessageAsync(m))
+            .DisposeWith(Disposables);
+    }
+
+    // Commands and public methods
     [ReactiveCommand]
     private void Delete() { }
 
@@ -61,10 +69,6 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     {
         return Subject;
     }
-
-    private SubjectResolver SubjectResolver { get; } = ServiceLocator.GetRequiredService<SubjectResolver>();
-    private DataService DataService { get; } = ServiceLocator.GetRequiredService<DataService>();
-    private StringBuilder AIResponseStringBuilder { get; } = new();
 
     [ReactiveCommand]
     private async Task AddMessageAsync(string inputText, CancellationToken cancellationToken)
@@ -90,6 +94,14 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         MessageSource.EditDiff(messages, areItemsEqual: (m1, m2) => m1.Id == m2.Id);
     }
 
+    [ReactiveCommand]
+    private async Task StopResponseAsync()
+    {
+        await StopResponseCts.CancelAsync();
+        StopResponseCts = new CancellationTokenSource();
+    }
+
+    // Private helpers
     private async Task UpdateMessageAsync(MessageViewModel message, CancellationToken cancellationToken = default)
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
@@ -154,7 +166,6 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         finally
         {
             AiIsResponding = false;
-            AIResponseStringBuilder.Clear();
         }
     }
 
@@ -167,15 +178,10 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         }
     }
 
-    [ReactiveCommand]
-    private async Task StopResponseAsync()
-    {
-        await StopResponseCts.CancelAsync();
-        StopResponseCts = new CancellationTokenSource();
-    }
-
+    // Dispose
     public void Dispose()
     {
         MessageSource.Dispose();
+        Disposables.Dispose();
     }
 }

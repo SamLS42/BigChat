@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 
 namespace BigChat.AppCore.Conversations;
 
-internal static class ThinkParserHelpers
+public static class ThinkParserHelpers
 {
 
     // Markers for the assistant's think area (displayed in a dedicated UI region).

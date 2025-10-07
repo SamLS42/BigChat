@@ -8,6 +8,7 @@ namespace BigChat.AppCore.Conversations;
 
 public partial class SubjectResolver(IDbContextFactory<MyDbContext> dbContextFactory)
 {
+    // Private properties/fields
     IChatClient ChatClient => ServiceLocator.GetRequiredService<IChatClient>();
 
     private const string DetermineSubjectOrder = """
@@ -23,6 +24,7 @@ public partial class SubjectResolver(IDbContextFactory<MyDbContext> dbContextFac
             """;
     private const int ContextLength = 4;
 
+    // Public API
     public async Task<string?> ResolveSubjectAsync(int conversationId, CancellationToken cancellationToken = default)
     {
         List<Message> tempResults = new(ContextLength);
@@ -57,6 +59,7 @@ public partial class SubjectResolver(IDbContextFactory<MyDbContext> dbContextFac
         return null;
     }
 
+    // Private helpers
     [GeneratedRegex(@"SUBJECT:\s*(?<subject>.+)$", RegexOptions.ExplicitCapture, 500)]
     private static partial Regex SubjectMatcher();
 }
