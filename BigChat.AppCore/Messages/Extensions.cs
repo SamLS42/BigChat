@@ -13,7 +13,7 @@ public static class MessageExtensions
             return new MessageViewModel
             {
                 Id = message.Id,
-                Text = message.Text,
+                Content = message.Content,
                 Role = ChatRole.Parse(message.Role),
                 ConversationId = message.ConversationId,
                 CreatedAt = message.CreatedAt.ToLocalTime(),

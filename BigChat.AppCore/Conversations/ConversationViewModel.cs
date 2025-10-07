@@ -24,8 +24,6 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     public IObservableCache<MessageViewModel, int> Messages => MessageSource.AsObservableCache();
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
-    [Reactive]
-    public partial bool AiIsResponding { get; set; }
     private CancellationTokenSource StopResponseCts { get; set; } = new();
     public ConversationViewModel()
     {
@@ -88,7 +86,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
         await db.Messages.Where(m => m.Id == message.Id)
-            .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, message.Text).SetProperty(m => m.ModifiedAt, DateTime.Now), cancellationToken: cancellationToken);
+            .ExecuteUpdateAsync(m => m.SetProperty(m => m.Content, message.Content).SetProperty(m => m.ModifiedAt, DateTime.Now), cancellationToken: cancellationToken);
 
         // Delete messages after the one updated, the conversation is reset from here
         await db.Messages.Where(m => m.Id > message.Id)
@@ -106,14 +104,12 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync();
 
         ChatMessage[] messages = await db.Messages.Where(m => m.ConversationId == Id)
-            .Select(m => new ChatMessage(ChatRole.Parse(m.Role), m.Text))
+            .Select(m => new ChatMessage(ChatRole.Parse(m.Role), m.Content))
             .ToArrayAsync();
 
         MessageViewModel vm = (await CreateAssistantMessageAsync()).ToMessageViewModel();
 
         MessageSource.AddOrUpdate(vm);
-
-        AiIsResponding = true;
 
         try
         {
@@ -124,21 +120,20 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
                 .ForEachAsync(text =>
                 {
                     AIResponseStringBuilder.Append(text); // mutate on main thread
-                    vm.Text = AIResponseStringBuilder.ToString();
+                    vm.Content = AIResponseStringBuilder.ToString();
                 });
 
             await db.Messages.Where(m => m.Id == vm.Id)
-                .ExecuteUpdateAsync(m => m.SetProperty(m => m.Text, vm.Text).SetProperty(m => m.ModifiedAt, DateTime.UtcNow));
+                .ExecuteUpdateAsync(m => m.SetProperty(m => m.Content, vm.Content).SetProperty(m => m.ModifiedAt, DateTime.UtcNow));
         }
         catch (HttpRequestException e)
         {
             //TODO: 
-            vm.Text = $"The AI provider appears to not be correctly configured. Error message: {e.Message}";
+            vm.Content = $"The AI provider appears to not be correctly configured. Error message: {e.Message}";
             await db.Messages.Where(m => m.Id == vm.Id).ExecuteDeleteAsync();
         }
         finally
         {
-            AiIsResponding = false;
             AIResponseStringBuilder.Clear();
         }
     }
@@ -152,7 +147,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
             ConversationId = Id,
             CreatedAt = DateTime.UtcNow,
             Role = ChatRole.Assistant.Value,
-            Text = string.Empty
+            Content = string.Empty
         };
 
         await db.Messages.AddAsync(message, cancellationToken);
@@ -177,7 +172,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
         Message message = new()
         {
-            Text = text,
+            Content = text,
             Role = ChatRole.User.Value,
             ConversationId = Id,
             CreatedAt = DateTime.UtcNow,

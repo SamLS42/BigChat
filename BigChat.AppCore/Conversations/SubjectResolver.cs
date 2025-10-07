@@ -35,7 +35,7 @@ public partial class SubjectResolver(IDbContextFactory<MyDbContext> dbContextFac
         }
 
         ChatMessage[] LastestMessages = [
-            .. tempResults.Select(x => new ChatMessage(role: new ChatRole(x.Role), content: x.Text)),
+            .. tempResults.Select(x => new ChatMessage(role: new ChatRole(x.Role), content: x.Content)),
             new ChatMessage (role : ChatRole.User, content : DetermineSubjectOrder),
         ];
 

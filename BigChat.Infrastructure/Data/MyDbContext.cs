@@ -53,7 +53,7 @@ public class MyDbContext : DbContext
             entity.Property(e => e.CreatedAt).HasColumnType("DateTime2");
             entity.Property(e => e.ModifiedAt).HasColumnType("DateTime2");
             entity.Property(e => e.Role).HasColumnType("NVarChar(255)");
-            entity.Property(e => e.Text).HasColumnType("TEXT");
+            entity.Property(e => e.Content).HasColumnType("TEXT");
 
             entity.HasOne(d => d.Conversation).WithMany(p => p.Messages)
                 .HasForeignKey(d => d.ConversationId)
