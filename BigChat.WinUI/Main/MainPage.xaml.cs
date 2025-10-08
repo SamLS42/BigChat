@@ -22,7 +22,7 @@ using WinRT;
 
 namespace BigChat.Main;
 
-internal class ReactiveMainPageView : ReactivePage<MainPageViewModel>;
+internal partial class ReactiveMainPageView : ReactivePage<MainPageViewModel>;
 internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
 {
     public UIElement PageTitleBar => TitleBar;
@@ -30,7 +30,7 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
     private DialogService DialogService { get; } = ServiceLocator.GetRequiredService<DialogService>();
 
-    private ReadOnlyObservableCollection<ConversationViewModel> Conversations = null!;
+    private readonly ReadOnlyObservableCollection<ConversationViewModel> Conversations = null!;
     private IDisposable? UserInputsSubscription;
     public MainPage()
     {

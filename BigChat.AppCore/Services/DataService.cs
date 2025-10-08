@@ -1,4 +1,5 @@
-﻿using BigChat.Infrastructure.Data;
+﻿using BigChat.AppCore.Localization;
+using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
@@ -8,6 +9,7 @@ namespace BigChat.AppCore.Services;
 public class DataService
 {
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
 
     public async Task<Message> AddMessageAsync(int conversationId, ChatRole chatRole, string? content = null, CancellationToken cancellationToken = default)
     {
@@ -46,5 +48,22 @@ public class DataService
                 }
                 u.SetProperty(t => t.ModifiedAt, DateTime.UtcNow);
             }, cancellationToken: cancellationToken);
+    }
+
+    public async Task<Conversation> CreateConversationAsync(CancellationToken cancellationToken = default)
+    {
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        Conversation newConversation = new()
+        {
+            CreatedAt = DateTime.UtcNow,
+            Subject = Loc.NewChatText,
+        };
+
+        await db.Conversations.AddAsync(newConversation, cancellationToken);
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return newConversation;
     }
 }

@@ -1,5 +1,5 @@
 ﻿using BigChat.AppCore.Conversations;
-using BigChat.AppCore.Localization;
+using BigChat.AppCore.Services;
 using BigChat.Infrastructure.Data;
 using BigChat.Infrastructure.Data.Models;
 using DynamicData;
@@ -20,7 +20,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     private readonly CompositeDisposable Disposables = [];
     private SourceCache<ConversationViewModel, int> ConversationSource { get; } = new(c => c.Id);
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
-    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
+    private DataService DataService { get; } = ServiceLocator.GetRequiredService<DataService>();
 
     // Public interactions and observable caches
     public Interaction<ConversationViewModel, bool> ConfirmDeleteInteraction { get; } = new();
@@ -118,26 +118,10 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     }
 
     // Private helpers
-    private async Task<Conversation> CreateConversationAsync(CancellationToken cancellationToken = default)
-    {
-        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
-
-        Conversation newConversation = new()
-        {
-            CreatedAt = DateTime.UtcNow,
-            Subject = Loc.NewChatText,
-        };
-
-        await db.Conversations.AddAsync(newConversation, cancellationToken);
-
-        await db.SaveChangesAsync(cancellationToken);
-
-        return newConversation;
-    }
 
     public async Task<ConversationViewModel> GetNewConversationAsync()
     {
-        Conversation conversation = await CreateConversationAsync();
+        Conversation conversation = await DataService.CreateConversationAsync();
 
         ConversationViewModel vm = conversation.ToConversationViewModel();
 
