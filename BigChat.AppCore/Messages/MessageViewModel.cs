@@ -11,19 +11,19 @@ public partial class MessageViewModel : ReactiveObject
 {
 
     [Reactive]
-    public int Id { get; set; }
+    public partial int Id { get; set; }
 
     [Reactive]
-    public int ConversationId { get; set; }
+    public partial int ConversationId { get; set; }
 
     [Reactive]
     public partial string Content { get; set; } = string.Empty;
 
     [Reactive]
-    public ChatRole Role { get; set; }
+    public partial ChatRole Role { get; set; }
 
     [Reactive]
-    public DateTime CreatedAt { get; set; }
+    public partial DateTime CreatedAt { get; set; }
 
     [Reactive]
     public partial string ThinkContent { get; set; } = string.Empty;

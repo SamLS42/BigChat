@@ -32,13 +32,13 @@
 
         <ListView
             x:Name="MessageListView"
+            Padding="0,0,0,200"
             ItemTemplateSelector="{StaticResource ChatTemplateSelector}"
             ItemsSource="{x:Bind Messages}"
-            ScrollViewer.VerticalScrollBarVisibility="Auto"
             SelectionMode="None">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsStackPanel VerticalAlignment="Bottom" ItemsUpdatingScrollMode="KeepLastItemInView" />
+                    <ItemsStackPanel VerticalAlignment="Top" ItemsUpdatingScrollMode="KeepScrollOffset" />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>
@@ -71,7 +71,7 @@
                     VerticalAlignment="Top"
                     Orientation="Horizontal">
                     <Button x:Name="SendBtn" Style="{ThemeResource AccentButtonStyle}">
-                        <FontIcon Glyph="&#xE70F;" />
+                        <FontIcon Glyph="&#xE724;" />
                     </Button>
                     <Button x:Name="StopBtn" Style="{ThemeResource AccentButtonStyle}">
                         <FontIcon Glyph="&#xE71A;" />

@@ -41,10 +41,10 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     public partial int Id { get; set; }
 
     [Reactive]
-    public DateTime CreatedAt { get; set; }
+    public partial DateTime CreatedAt { get; set; }
 
     [Reactive]
-    public bool AiIsResponding { get; set; }
+    public partial bool AiIsResponding { get; set; }
 
     [Reactive]
     public partial string InputBoxText { get; set; } = string.Empty;

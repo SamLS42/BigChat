@@ -3,7 +3,9 @@ using BigChat.AppCore.Conversations;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.ViewModel;
 using DynamicData;
+using Microsoft.Extensions.AI;
 using Microsoft.UI.Input;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Navigation;
 using ReactiveUI;
@@ -47,6 +49,16 @@ internal sealed partial class ConversationPage : ReactiveConversationPage, IDisp
             })
             .Switch()
             .Bind(out Messages)
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .OnItemAdded(async lastAdd =>
+            {
+                if (lastAdd.Role == ChatRole.User)
+                {
+                    await Task.Yield();
+                    MessageListView.UpdateLayout();
+                    MessageListView.ScrollIntoView(lastAdd, ScrollIntoViewAlignment.Leading);
+                }
+            })
             .Subscribe()
             .DisposeWith(Disposables);
 
