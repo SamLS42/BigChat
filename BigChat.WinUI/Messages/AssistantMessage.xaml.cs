@@ -1,3 +1,5 @@
+using BigChat.AppCore;
+using BigChat.AppCore.Localization;
 using BigChat.AppCore.ViewModel;
 using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Composition;
@@ -14,8 +16,9 @@ namespace BigChat.Messages;
 internal partial class ReactiveAssistantMessage : ReactiveUserControl<MessageViewModel>;
 internal sealed partial class AssistantMessage : ReactiveAssistantMessage
 {
-    private readonly Compositor _compositor = CompositionTarget.GetCompositorForCurrentThread();
-    private SpringScalarNaturalMotionAnimation? _springAnimation;
+    private Compositor Compositor { get; } = CompositionTarget.GetCompositorForCurrentThread();
+    private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
+    private SpringScalarNaturalMotionAnimation? SpringAnimation { get; set; }
     private MarkdownConfig MarkdownConfig => MarkdownConfig.Default;
     public AssistantMessage()
     {
@@ -39,7 +42,7 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
                 .Subscribe(_ =>
                 {
                     CreateOrUpdateAppearingAnimation(1f);
-                    ActionButtonsPanel.StartAnimation(_springAnimation);
+                    ActionButtonsPanel.StartAnimation(SpringAnimation);
                 })
                 .DisposeWith(d);
 
@@ -47,7 +50,7 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
                 .Subscribe(_ =>
                 {
                     CreateOrUpdateAppearingAnimation(0f);
-                    ActionButtonsPanel.StartAnimation(_springAnimation);
+                    ActionButtonsPanel.StartAnimation(SpringAnimation);
                 })
                 .DisposeWith(d);
         });
@@ -55,12 +58,12 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
 
     private void CreateOrUpdateAppearingAnimation(float finalValue)
     {
-        if (_springAnimation == null)
+        if (SpringAnimation == null)
         {
-            _springAnimation = _compositor.CreateSpringScalarAnimation();
-            _springAnimation.Target = "Opacity";
+            SpringAnimation = Compositor.CreateSpringScalarAnimation();
+            SpringAnimation.Target = "Opacity";
         }
 
-        _springAnimation.FinalValue = finalValue;
+        SpringAnimation.FinalValue = finalValue;
     }
 }

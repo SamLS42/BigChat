@@ -192,4 +192,7 @@
   <data name="MissingSettingsMessage" xml:space="preserve">
     <value>Please fill the {0} in the Settings</value>
   </data>
+  <data name="Thought" xml:space="preserve">
+    <value>Thought</value>
+  </data>
 </root>

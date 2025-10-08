@@ -7,40 +7,37 @@ namespace BigChat.AppCore.Localization;
 public sealed partial class LocalizedTexts : ReactiveObject
 {
     private IStringLocalizer StringLocalizer { get; set; }
-    [Reactive] public partial string SettingsText { get; private set; } = null!;
-    [Reactive] public partial string ApiEndpointText { get; private set; } = null!;
-    [Reactive] public partial string APIKeyText { get; private set; } = null!;
-    [Reactive] public partial string APIKeyToolTipText { get; private set; } = null!;
-    [Reactive] public partial string ModelIdText { get; private set; } = null!;
-    [Reactive] public partial string ModelIdToolTipText { get; private set; } = null!;
-    [Reactive] public partial string RestoreDefaultsText { get; private set; } = null!;
-    [Reactive] public partial string TemperatureText { get; private set; } = null!;
-    [Reactive] public partial string MaxOutputTokensText { get; private set; } = null!;
-    [Reactive] public partial string TopPText { get; private set; } = null!;
-    [Reactive] public partial string FrequencyPenaltyText { get; private set; } = null!;
-    [Reactive] public partial string PresencePenaltyText { get; private set; } = null!;
-    [Reactive] public partial string TemperatureToolTipText { get; private set; } = null!;
-    [Reactive] public partial string MaxOutputTokensToolTipText { get; private set; } = null!;
-    [Reactive] public partial string TopPToolTipText { get; private set; } = null!;
-    [Reactive] public partial string FrequencyPenaltyToolTipText { get; private set; } = null!;
-    [Reactive] public partial string PresencePenaltyToolTipText { get; private set; } = null!;
-    [Reactive] public partial string AppThemeText { get; private set; } = null!;
-    [Reactive] public partial string AppThemeToolTipText { get; private set; } = null!;
-    [Reactive] public partial string NewChatText { get; private set; } = null!;
-    [Reactive] public partial string DeleteText { get; private set; } = null!;
-    [Reactive] public partial string RenameText { get; private set; } = null!;
-    [Reactive] public partial string InputBoxPlaceholderText { get; private set; } = null!;
-    [Reactive] public partial string CancelText { get; internal set; } = null!;
-    [Reactive] public partial string MissingSettingsMessageText { get; internal set; } = null!;
+    [Reactive] public partial string SettingsText { get; private set; }
+    [Reactive] public partial string ApiEndpointText { get; private set; }
+    [Reactive] public partial string APIKeyText { get; private set; }
+    [Reactive] public partial string APIKeyToolTipText { get; private set; }
+    [Reactive] public partial string ModelIdText { get; private set; }
+    [Reactive] public partial string ModelIdToolTipText { get; private set; }
+    [Reactive] public partial string RestoreDefaultsText { get; private set; }
+    [Reactive] public partial string TemperatureText { get; private set; }
+    [Reactive] public partial string MaxOutputTokensText { get; private set; }
+    [Reactive] public partial string TopPText { get; private set; }
+    [Reactive] public partial string FrequencyPenaltyText { get; private set; }
+    [Reactive] public partial string PresencePenaltyText { get; private set; }
+    [Reactive] public partial string TemperatureToolTipText { get; private set; }
+    [Reactive] public partial string MaxOutputTokensToolTipText { get; private set; }
+    [Reactive] public partial string TopPToolTipText { get; private set; }
+    [Reactive] public partial string FrequencyPenaltyToolTipText { get; private set; }
+    [Reactive] public partial string PresencePenaltyToolTipText { get; private set; }
+    [Reactive] public partial string AppThemeText { get; private set; }
+    [Reactive] public partial string AppThemeToolTipText { get; private set; }
+    [Reactive] public partial string NewChatText { get; private set; }
+    [Reactive] public partial string DeleteText { get; private set; }
+    [Reactive] public partial string RenameText { get; private set; }
+    [Reactive] public partial string InputBoxPlaceholderText { get; private set; }
+    [Reactive] public partial string CancelText { get; internal set; }
+    [Reactive] public partial string MissingSettingsMessageText { get; internal set; }
+    [Reactive] public partial string Thought { get; internal set; }
 
     public LocalizedTexts(IStringLocalizer stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
-        Load();
-    }
 
-    public void Load()
-    {
         SettingsText = StringLocalizer[ResourceKeys.Settings];
         APIKeyText = StringLocalizer[ResourceKeys.APIKey];
         APIKeyToolTipText = StringLocalizer[ResourceKeys.APIKeyToolTip];
@@ -66,5 +63,6 @@ public sealed partial class LocalizedTexts : ReactiveObject
         InputBoxPlaceholderText = StringLocalizer[ResourceKeys.InputBoxPlaceholder];
         CancelText = StringLocalizer[ResourceKeys.Cancel];
         MissingSettingsMessageText = StringLocalizer[ResourceKeys.MissingSettingsMessage];
+        Thought = StringLocalizer[ResourceKeys.Thought];
     }
 }
