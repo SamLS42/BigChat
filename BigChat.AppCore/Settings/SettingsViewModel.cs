@@ -13,17 +13,23 @@ public sealed partial class SettingsViewModel : ReactiveObject
         OllamaIsOn = selectedClient is SupportedClients.Ollama;
         AzureAIInferenceIsOn = selectedClient is SupportedClients.AzureAIInference;
 
-        this.WhenAnyValue(x => x.OllamaIsOn, x => x.AzureAIInferenceIsOn)
-            .Where(x => x.Item1 || x.Item2)
+        this.WhenAnyValue(x => x.OllamaIsOn)
             .Subscribe(x =>
             {
-                if (x.Item1)
+                if (x)
                 {
                     SettingsService.SetSelectedClient(SupportedClients.Ollama);
+                    AzureAIInferenceIsOn = false;
                 }
-                else if (x.Item2)
+            });
+
+        this.WhenAnyValue(x => x.AzureAIInferenceIsOn)
+            .Subscribe(x =>
+            {
+                if (x)
                 {
                     SettingsService.SetSelectedClient(SupportedClients.AzureAIInference);
+                    OllamaIsOn = false;
                 }
             });
     }
@@ -32,15 +38,6 @@ public sealed partial class SettingsViewModel : ReactiveObject
     public partial bool OllamaIsOn { get; set; }
     [Reactive]
     public partial bool AzureAIInferenceIsOn { get; set; }
-
-    public double MaxTemperature => Constants.MaxTemperature;
-    public double MinTemperature => Constants.MinTemperature;
-    public double MaxTopP => Constants.MaxTopP;
-    public double MinTopP => Constants.MinTopP;
-    public double MaxFrequencyPenalty => Constants.MaxFrequencyPenalty;
-    public double MinFrequencyPenalty => Constants.MinFrequencyPenalty;
-    public double MaxPresencePenalty => Constants.MaxPresencePenalty;
-    public double MinPresencePenalty => Constants.MinPresencePenalty;
 
     private ISettingsService SettingsService { get; } = ServiceLocator.GetRequiredService<ISettingsService>();
 }

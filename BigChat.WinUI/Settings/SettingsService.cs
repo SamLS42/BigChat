@@ -9,11 +9,11 @@ using Windows.Storage;
 
 namespace BigChat.Settings;
 
-internal sealed class LocalSettingsService : ISettingsService
+internal sealed class SettingsService : ISettingsService
 {
     public AzureAIInferenceClientSettings GetAzureAIInferenceSettings()
     {
-        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(LocalSettings.AzureAIInferenceClientSettings), out object? item) && item is string value
+        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.AzureAIInferenceClientSettings), out object? item) && item is string value
             && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.AzureAIInferenceClientSettings) is AzureAIInferenceClientSettings deserialized)
         {
             return deserialized;
@@ -26,12 +26,12 @@ internal sealed class LocalSettingsService : ISettingsService
     public void SetAzureAIInferenceClientSettings(AzureAIInferenceClientSettings value)
     {
         string jsonValue = JsonSerializer.Serialize(value, SourceGenerationContext.Default.AzureAIInferenceClientSettings);
-        ApplicationData.Current.LocalSettings.Values[nameof(LocalSettings.AzureAIInferenceClientSettings)] = jsonValue;
+        ApplicationData.Current.LocalSettings.Values[nameof(Settings.AzureAIInferenceClientSettings)] = jsonValue;
     }
 
     public OllamaChatClientSettings GetOllamaChatSettings()
     {
-        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(LocalSettings.OllamaChatClientSettings), out object? item) && item is string value
+        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.OllamaChatClientSettings), out object? item) && item is string value
             && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.OllamaChatClientSettings) is OllamaChatClientSettings deserialized)
         {
             return deserialized;
@@ -44,22 +44,22 @@ internal sealed class LocalSettingsService : ISettingsService
     public void SetOllamaChatClientSettings(OllamaChatClientSettings value)
     {
         string jsonValue = JsonSerializer.Serialize(value, SourceGenerationContext.Default.OllamaChatClientSettings);
-        ApplicationData.Current.LocalSettings.Values[nameof(LocalSettings.OllamaChatClientSettings)] = jsonValue;
+        ApplicationData.Current.LocalSettings.Values[nameof(Settings.OllamaChatClientSettings)] = jsonValue;
     }
 
     public string GetAppTheme()
     {
-        return GetStringValue(nameof(LocalSettings.AppTheme));
+        return GetStringValue(nameof(Settings.AppTheme));
     }
 
     public void SetAppTheme(string value)
     {
-        ApplicationData.Current.LocalSettings.Values[nameof(LocalSettings.AppTheme)] = value;
+        ApplicationData.Current.LocalSettings.Values[nameof(Settings.AppTheme)] = value;
     }
 
     public SupportedClients GetSelectedClient()
     {
-        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(LocalSettings.SelectedClient), out object? item) && item is string value
+        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.SelectedClient), out object? item) && item is string value
             && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.SupportedClients) is SupportedClients deserialized)
         {
             return deserialized;
@@ -71,7 +71,7 @@ internal sealed class LocalSettingsService : ISettingsService
 
     public void SetSelectedClient(SupportedClients value)
     {
-        ApplicationData.Current.LocalSettings.Values[nameof(LocalSettings.SelectedClient)] = JsonSerializer.Serialize(value, SourceGenerationContext.Default.SupportedClients);
+        ApplicationData.Current.LocalSettings.Values[nameof(Settings.SelectedClient)] = JsonSerializer.Serialize(value, SourceGenerationContext.Default.SupportedClients);
     }
 
 
@@ -89,7 +89,7 @@ internal sealed class LocalSettingsService : ISettingsService
 
     public OnnxChatClientSettings GetOnnxChatSettings()
     {
-        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(LocalSettings.OnnxChatClientSettings), out object? item) && item is string value
+        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.OnnxChatClientSettings), out object? item) && item is string value
             && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.OnnxChatClientSettings) is OnnxChatClientSettings deserialized)
         {
             return deserialized;
@@ -103,6 +103,6 @@ internal sealed class LocalSettingsService : ISettingsService
     public void SetOnnxChatClientSettings(OnnxChatClientSettings value)
     {
         string jsonValue = JsonSerializer.Serialize(value, SourceGenerationContext.Default.OnnxChatClientSettings);
-        ApplicationData.Current.LocalSettings.Values[nameof(LocalSettings.OnnxChatClientSettings)] = jsonValue;
+        ApplicationData.Current.LocalSettings.Values[nameof(Settings.OnnxChatClientSettings)] = jsonValue;
     }
 }

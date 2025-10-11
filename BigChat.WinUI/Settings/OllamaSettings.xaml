@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="BigChat.Settings.OllamaSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:BigChat.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d">
+
+    <StackPanel>
+        <toolkit:SettingsCard Header="{x:Bind Loc.ApiEndpointText}">
+            <TextBox Style="{StaticResource TextBlockStyle}" Text="{x:Bind ViewModel.Endpoint, Mode=TwoWay}" />
+        </toolkit:SettingsCard>
+        <toolkit:SettingsCard>
+            <toolkit:SettingsCard.Header>
+                <TextBlock Text="{x:Bind Loc.ModelIdText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.ModelIdToolTipText, Mode=OneWay}" />
+            </toolkit:SettingsCard.Header>
+            <TextBox Style="{StaticResource TextBlockStyle}" Text="{x:Bind ViewModel.ModelId, Mode=TwoWay}" />
+        </toolkit:SettingsCard>
+        <toolkit:SettingsExpander
+            x:Name="OllamaAdvanceSettings"
+            Description="Do not change unless you know what you are doing"
+            Header="Advanced configuration">
+            <Button Command="{x:Bind ViewModel.RestoreDefaultsCommand}" IsEnabled="{x:Bind OllamaAdvanceSettings.IsExpanded, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE777;" />
+                    <TextBlock Text="{x:Bind Loc.RestoreDefaultsText, Mode=OneWay}" />
+                </StackPanel>
+            </Button>
+            <toolkit:SettingsExpander.Items>
+                <toolkit:SettingsCard>
+                    <toolkit:SettingsCard.Header>
+                        <TextBlock Text="{x:Bind Loc.TemperatureText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.TemperatureToolTipText, Mode=OneWay}" />
+                    </toolkit:SettingsCard.Header>
+                    <Slider
+                        Maximum="{x:Bind ViewModel.MaxTemperature}"
+                        Minimum="{x:Bind ViewModel.MinTemperature}"
+                        Style="{StaticResource SmallerStep}"
+                        Value="{x:Bind ViewModel.Temperature, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard>
+                    <toolkit:SettingsCard.Header>
+                        <TextBlock Text="{x:Bind Loc.MaxOutputTokensText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.MaxOutputTokensToolTipText, Mode=OneWay}" />
+                    </toolkit:SettingsCard.Header>
+                    <NumberBox AcceptsExpression="True" Value="{x:Bind ViewModel.MaxOutputTokens, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard>
+                    <toolkit:SettingsCard.Header>
+                        <TextBlock Text="{x:Bind Loc.TopPText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.TopPToolTipText, Mode=OneWay}" />
+                    </toolkit:SettingsCard.Header>
+                    <Slider
+                        Maximum="{x:Bind ViewModel.MaxTopP}"
+                        Minimum="{x:Bind ViewModel.MinTopP}"
+                        Style="{StaticResource SmallerStep}"
+                        Value="{x:Bind ViewModel.TopP, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard>
+                    <toolkit:SettingsCard.Header>
+                        <TextBlock Text="{x:Bind Loc.FrequencyPenaltyText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.FrequencyPenaltyToolTipText, Mode=OneWay}" />
+                    </toolkit:SettingsCard.Header>
+                    <Slider
+                        Maximum="{x:Bind ViewModel.MaxFrequencyPenalty}"
+                        Minimum="{x:Bind ViewModel.MinFrequencyPenalty}"
+                        Style="{StaticResource SmallerStep}"
+                        Value="{x:Bind ViewModel.FrequencyPenalty, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+
+                <toolkit:SettingsCard>
+                    <toolkit:SettingsCard.Header>
+                        <TextBlock Text="{x:Bind Loc.PresencePenaltyText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.PresencePenaltyToolTipText, Mode=OneWay}" />
+                    </toolkit:SettingsCard.Header>
+                    <Slider
+                        Maximum="{x:Bind ViewModel.MaxPresencePenalty}"
+                        Minimum="{x:Bind ViewModel.MinPresencePenalty}"
+                        Style="{StaticResource SmallerStep}"
+                        Value="{x:Bind ViewModel.PresencePenalty, Mode=TwoWay}" />
+                </toolkit:SettingsCard>
+            </toolkit:SettingsExpander.Items>
+        </toolkit:SettingsExpander>
+    </StackPanel>
+</UserControl>

@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BigChat.AppCore;
 
-public static class ViewModelRegistrationExtensions
+public static class RegistrationExtensions
 {
     public static IServiceCollection AddCoreServices(this IServiceCollection serviceCollection)
     {
@@ -34,6 +34,6 @@ public static class ViewModelRegistrationExtensions
             .AddSingleton<SettingsViewModel>()
             .AddTransient<AzureAIInferenceSettingsViewModel>()
             .AddTransient<DataService>()
-            .AddTransient<OllamaChatSettingsViewModel>();
+            .AddTransient<OllamaSettingsViewModel>();
     }
 }

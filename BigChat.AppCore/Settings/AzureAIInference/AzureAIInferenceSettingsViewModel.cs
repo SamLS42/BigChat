@@ -67,4 +67,13 @@ public partial class AzureAIInferenceSettingsViewModel : ReactiveObject
 
         LoadSettings();
     }
+
+    public double MaxTemperature => Constants.MaxTemperature;
+    public double MinTemperature => Constants.MinTemperature;
+    public double MaxTopP => Constants.MaxTopP;
+    public double MinTopP => Constants.MinTopP;
+    public double MaxFrequencyPenalty => Constants.MaxFrequencyPenalty;
+    public double MinFrequencyPenalty => Constants.MinFrequencyPenalty;
+    public double MaxPresencePenalty => Constants.MaxPresencePenalty;
+    public double MinPresencePenalty => Constants.MinPresencePenalty;
 }

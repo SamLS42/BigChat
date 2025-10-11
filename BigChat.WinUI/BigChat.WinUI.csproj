@@ -18,6 +18,8 @@
 		<None Remove="Pages\ConversationPage.xaml" />
 		<None Remove="Pages\MainPage.xaml" />
 		<None Remove="Pages\SettingsPage.xaml" />
+		<None Remove="Settings\AzureAIInferenceSettings.xaml" />
+		<None Remove="Settings\OllamaSettings.xaml" />
 		<None Remove="UserControls\ChatNavigationViewItem.xaml" />
 		<None Remove="UserControls\UserInput.xaml" />
 		<None Remove="UserControls\UserMessage.xaml" />
@@ -48,7 +50,6 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" />
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" />
 		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
-		<PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI.Managed" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -68,6 +69,16 @@
 	<ItemGroup>
 	<ProjectReference Include="..\BigChat.AppCore\BigChat.AppCore.csproj" />
 </ItemGroup>	  
+	<ItemGroup>
+	  <Page Update="Settings\AzureAIInferenceSettings.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>	  
+	<ItemGroup>
+	  <Page Update="Settings\OllamaSettings.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>	  
 	<ItemGroup>
 	  <Page Update="CustomStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>

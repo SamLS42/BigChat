@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.AI;
 using System.Text;
 
-namespace BigChat.Onnx;
+namespace BigChat.Embbeding.ChatClient;
 
-internal static class ConfiguredOnnxChatClientHelpers
+public static class ConfiguredOnnxChatClientHelpers
 {
-
-    public const string TEMPLATE_PLACEHOLDER = "{{CONTENT}}";
+    public const string TEMPLATEPLACEHOLDER = "{{CONTENT}}";
     public static readonly LlmPromptTemplate template = new()
     {
         System = "<|system|>\n{{CONTENT}}<|end|>\n",
@@ -45,7 +44,7 @@ internal static class ConfiguredOnnxChatClientHelpers
                     }
                     else
                     {
-                        prompt.Append(template.System.Replace(TEMPLATE_PLACEHOLDER, message.Text, StringComparison.InvariantCulture));
+                        prompt.Append(template.System.Replace(TEMPLATEPLACEHOLDER, message.Text, StringComparison.InvariantCulture));
                     }
                 }
             }
@@ -59,19 +58,19 @@ internal static class ConfiguredOnnxChatClientHelpers
 
                 prompt.Append(string.IsNullOrWhiteSpace(template.User) ?
                     msgText :
-                    template.User.Replace(TEMPLATE_PLACEHOLDER, msgText, StringComparison.InvariantCulture));
+                    template.User.Replace(TEMPLATEPLACEHOLDER, msgText, StringComparison.InvariantCulture));
             }
             else if (message.Role == ChatRole.Assistant)
             {
                 prompt.Append(string.IsNullOrWhiteSpace(template.Assistant) ?
                     message.Text :
-                    template.Assistant.Replace(TEMPLATE_PLACEHOLDER, message.Text, StringComparison.InvariantCulture));
+                    template.Assistant.Replace(TEMPLATEPLACEHOLDER, message.Text, StringComparison.InvariantCulture));
             }
         }
 
         if (!string.IsNullOrWhiteSpace(template.Assistant))
         {
-            int substringIndex = template.Assistant.IndexOf(TEMPLATE_PLACEHOLDER, StringComparison.InvariantCulture);
+            int substringIndex = template.Assistant.IndexOf(TEMPLATEPLACEHOLDER, StringComparison.InvariantCulture);
             prompt.Append(template.Assistant[..substringIndex]);
         }
 

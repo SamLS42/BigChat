@@ -5,11 +5,6 @@ namespace BigChat.Infrastructure.Data;
 
 public class MyDbContext : DbContext
 {
-    public float VecDistanceCosine(IList<float> a, IList<float> b)
-    {
-        throw new NotSupportedException(nameof(VecDistanceCosine));
-    }
-
     public static readonly Func<MyDbContext, int, int, int, IAsyncEnumerable<Message>> RecentMessagesQuery =
         EF.CompileAsyncQuery((MyDbContext db, int conversationId, int afterId, int count) => db.Messages
         .Where(m => m.ConversationId == conversationId && m.Id > afterId)
@@ -33,10 +28,6 @@ public class MyDbContext : DbContext
 
     public virtual DbSet<Message> Messages { get; set; }
 
-    public virtual DbSet<UserFile> UserFiles { get; set; }
-
-    public virtual DbSet<FileEmbedding> FileEmbeddings { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 #pragma warning disable CA1062 // Validate arguments of public methods
@@ -59,27 +50,5 @@ public class MyDbContext : DbContext
                 .HasForeignKey(d => d.ConversationId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-
-        modelBuilder.Entity<FileEmbedding>(entity =>
-        {
-            entity.Property(e => e.CreatedAt).HasColumnType("DateTime2");
-            entity.Property(e => e.Contents).HasColumnType("TEXT");
-            entity.Property(e => e.ContentsEmbedding).HasColumnType("Blob")
-                .HasMaxLength(384);
-
-            entity.HasOne(d => d.UserFile).WithMany(p => p.FileEmbeddings)
-                .HasForeignKey(d => d.UserFileId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        modelBuilder.Entity<UserFile>(entity =>
-        {
-            entity.Property(e => e.CreatedAt).HasColumnType("DateTime2");
-            entity.Property(e => e.ModifiedAt).HasColumnType("DateTime2");
-            entity.Property(e => e.Name).HasColumnType("NVarChar(255)");
-        });
-
-        modelBuilder.HasDbFunction(typeof(MyDbContext).GetMethod(nameof(VecDistanceCosine), [typeof(IList<float>), typeof(IList<float>)])!)
-            .HasName("vec_distance_cosine");
     }
 }

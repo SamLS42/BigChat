@@ -1,12 +1,12 @@
-﻿using BigChat.AppCore;
-using BigChat.AppCore.Settings;
+﻿using BigChat.AppCore.Settings;
 using BigChat.AppCore.Settings.Onnx;
+using BigChat.Embbeding.ChatClient;
 using Microsoft.Extensions.AI;
 using Microsoft.ML.OnnxRuntimeGenAI;
 
-namespace BigChat.Onnx;
+namespace BigChat.AppCore.ChatClients.Onnx;
 
-internal sealed partial class ConfiguredOnnxChatClient : IChatClient
+public sealed partial class ConfiguredOnnxChatClient : IChatClient
 {
     private ISettingsService SettingsService { get; } = ServiceLocator.GetRequiredService<ISettingsService>();
     private OnnxRuntimeGenAIChatClient? ChatClient { get; set; }

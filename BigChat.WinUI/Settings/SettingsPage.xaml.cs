@@ -15,25 +15,16 @@ namespace BigChat.Settings;
 /// </summary>
 internal sealed partial class SettingsPage : Page
 {
-    private AzureAIInferenceSettingsViewModel ChatCompletionsSettings { get; set; } = ServiceLocator.GetRequiredService<AzureAIInferenceSettingsViewModel>();
-    private OllamaChatSettingsViewModel OllamaChatSettings { get; set; } = ServiceLocator.GetRequiredService<OllamaChatSettingsViewModel>();
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
     private SettingsViewModel ViewModel { get; } = ServiceLocator.GetRequiredService<SettingsViewModel>();
 
     public SettingsPage()
     {
         InitializeComponent();
-        ChatCompletionsSettings.PropertyChanged += SaveChatCompletionsSettings;
-        OllamaChatSettings.PropertyChanged += SaveOllamaChatSettings;
     }
 
     private void SaveChatCompletionsSettings(object? sender, PropertyChangedEventArgs e)
     {
         sender.As<AzureAIInferenceSettingsViewModel>().Save();
-    }
-
-    private void SaveOllamaChatSettings(object? sender, PropertyChangedEventArgs e)
-    {
-        sender.As<OllamaChatSettingsViewModel>().Save();
     }
 }

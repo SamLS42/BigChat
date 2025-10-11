@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\BigChat.Infrastructure\BigChat.Infrastructure.csproj" />
+		<ProjectReference Include="..\BigChat.Embbeding\BigChat.Embbeding.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -361,3 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/BigChat.Embbeding/Models/distiluse-base-multilingual-cased-v2/model.onnx

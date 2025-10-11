@@ -23,6 +23,7 @@ namespace BigChat.Conversations;
 internal partial class ReactiveConversationPage : ReactivePage<ConversationViewModel>;
 internal sealed partial class ConversationPage : ReactiveConversationPage, IDisposable
 {
+    private bool IsInitialiazing { get; set; } = true;
     private readonly ReadOnlyObservableCollection<MessageViewModel> Messages;
     private CompositeDisposable Disposables { get; } = [];
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
@@ -52,11 +53,16 @@ internal sealed partial class ConversationPage : ReactiveConversationPage, IDisp
             .ObserveOn(RxApp.MainThreadScheduler)
             .OnItemAdded(async lastAdd =>
             {
-                if (lastAdd.Role == ChatRole.User)
+                await Task.Yield();
+                MessageListView.UpdateLayout();
+
+                if (lastAdd.Role == ChatRole.User && await ViewModel!.LoadHistoryCommand.CanExecute.FirstAsync())
                 {
-                    await Task.Yield();
-                    MessageListView.UpdateLayout();
                     MessageListView.ScrollIntoView(lastAdd, ScrollIntoViewAlignment.Leading);
+                }
+                else
+                {
+                    MessageListView.ScrollIntoView(lastAdd, ScrollIntoViewAlignment.Default);
                 }
             })
             .Subscribe()
@@ -90,6 +96,8 @@ internal sealed partial class ConversationPage : ReactiveConversationPage, IDisp
             .Switch()
             .Subscribe()
             .DisposeWith(Disposables);
+
+        IsInitialiazing = false;
     }
 
     private void InputBox_PreviewKeyDown(object sender, KeyRoutedEventArgs e)

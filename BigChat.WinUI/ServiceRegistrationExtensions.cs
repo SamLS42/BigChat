@@ -13,7 +13,7 @@ internal static partial class ServiceRegistrationExtensions
 {
     public static IServiceCollection AddPlatformServices(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddSingleton<ISettingsService, LocalSettingsService>()
+        return serviceCollection.AddSingleton<ISettingsService, SettingsService>()
             .AddSingleton<IStringLocalizer, StringLocalizer>()
             .AddSingleton<LocalizedTexts>()
             .AddSingleton<DialogService>();

@@ -4,7 +4,7 @@ using BigChat.AppCore.Settings.Onnx;
 
 namespace BigChat.Settings;
 
-internal sealed class LocalSettings
+internal sealed class Settings
 {
     public string? AppTheme { get; set; }
     public string? SelectedClient { get; set; }

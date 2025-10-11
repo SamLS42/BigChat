@@ -41,8 +41,6 @@ public partial class App : Application
 
         ISettingsService settingsService = ServiceLocator.GetRequiredService<ISettingsService>();
 
-        Task.Run(async () => await ServiceLocator.GetRequiredService<OnnxSetupService>().InitializeAsync());
-
         if (settingsService.GetSelectedClient() == SupportedClients.Onnx)
         {
             //Initialize in the background
@@ -75,7 +73,9 @@ public partial class App : Application
                 })
                 .AddSingleton<OnnxSetupService>()
                 .AddPlatformServices()
-                .AddCoreServices();
+                .AddCoreServices()
+                //.AddEmbeddingServices()
+                ;
         }).Build();
 
         ServiceLocator.SetLocator(_host.Services);
