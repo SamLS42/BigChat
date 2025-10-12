@@ -9,9 +9,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace BigChat.Settings;
 
 public sealed partial class OllamaSettings : ReactiveOllamaSettings, IDisposable
@@ -19,7 +16,6 @@ public sealed partial class OllamaSettings : ReactiveOllamaSettings, IDisposable
     private CompositeDisposable Disposables { get; } = [];
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
     private readonly ReadOnlyObservableCollection<Model> CompletionModels = null!;
-    private readonly ReadOnlyObservableCollection<Model> EmbeddingModels = null!;
     public OllamaSettings()
     {
         InitializeComponent();
@@ -28,7 +24,6 @@ public sealed partial class OllamaSettings : ReactiveOllamaSettings, IDisposable
         this.Bind(ViewModel, x => x.Endpoint, v => v.EndpointBox.Text).DisposeWith(Disposables);
         this.Bind(ViewModel, x => x.Temperature, v => v.TemperatureSlider.Value).DisposeWith(Disposables);
         this.Bind(ViewModel, x => x.CompletionModel, v => v.CompletionModelSelector.SelectedItem).DisposeWith(Disposables);
-        this.Bind(ViewModel, x => x.EmbeddingModel, v => v.EmbeddingModelSelector.SelectedItem).DisposeWith(Disposables);
         this.Bind(ViewModel, x => x.MaxOutputTokens, v => v.MaxOutputTokensBox.Text).DisposeWith(Disposables);
         this.Bind(ViewModel, x => x.TopP, v => v.TopPSlider.Value).DisposeWith(Disposables);
         this.Bind(ViewModel, x => x.FrequencyPenalty, v => v.FrequencyPenaltySlider.Value).DisposeWith(Disposables);
@@ -43,22 +38,11 @@ public sealed partial class OllamaSettings : ReactiveOllamaSettings, IDisposable
                 LoadCompletionModelsProgress.Visibility = isExecuting
                 ? Microsoft.UI.Xaml.Visibility.Visible
                 : Microsoft.UI.Xaml.Visibility.Collapsed;
-
-                EmbeddingModelSelector.IsEnabled = !isExecuting;
-
-                LoadEmbeddingModelsProgress.Visibility = isExecuting
-                ? Microsoft.UI.Xaml.Visibility.Visible
-                : Microsoft.UI.Xaml.Visibility.Collapsed;
             })
             .DisposeWith(Disposables);
 
         ViewModel.CompletionModels.Connect()
             .Bind(out CompletionModels)
-            .Subscribe()
-            .DisposeWith(Disposables);
-
-        ViewModel.EmbeddingModels.Connect()
-            .Bind(out EmbeddingModels)
             .Subscribe()
             .DisposeWith(Disposables);
 

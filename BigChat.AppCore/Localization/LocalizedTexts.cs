@@ -13,7 +13,6 @@ public sealed partial class LocalizedTexts : ReactiveObject
     [Reactive] public partial string APIKeyText { get; private set; }
     [Reactive] public partial string APIKeyToolTipText { get; private set; }
     [Reactive] public partial string CompletionModelText { get; private set; }
-    [Reactive] public partial string EmbeddingModelText { get; private set; }
     [Reactive] public partial string ModelIdToolTipText { get; private set; }
     [Reactive] public partial string RestoreDefaultsText { get; private set; }
     [Reactive] public partial string TemperatureText { get; private set; }
@@ -52,7 +51,6 @@ public sealed partial class LocalizedTexts : ReactiveObject
         APIKeyText = StringLocalizer[ResourceKeys.APIKey];
         APIKeyToolTipText = StringLocalizer[ResourceKeys.APIKeyToolTip];
         CompletionModelText = StringLocalizer[ResourceKeys.CompletionModelText];
-        EmbeddingModelText = StringLocalizer[ResourceKeys.EmbeddingModelText];
         ModelIdToolTipText = StringLocalizer[ResourceKeys.ModelIdToolTip];
         RestoreDefaultsText = StringLocalizer[ResourceKeys.RestoreDefaults];
         TemperatureText = StringLocalizer[ResourceKeys.Temperature];

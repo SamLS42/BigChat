@@ -36,23 +36,6 @@
                     ShowPaused="False" />
             </Grid>
         </toolkit:SettingsCard>
-        <toolkit:SettingsCard>
-            <toolkit:SettingsCard.Header>
-                <TextBlock Text="{x:Bind Loc.EmbeddingModelText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.ModelIdToolTipText, Mode=OneWay}" />
-            </toolkit:SettingsCard.Header>
-            <Grid>
-                <ComboBox
-                    x:Name="EmbeddingModelSelector"
-                    ItemTemplate="{StaticResource OllamaModelName}"
-                    ItemsSource="{x:Bind EmbeddingModels, Mode=OneWay}" />
-                <ProgressBar
-                    x:Name="LoadEmbeddingModelsProgress"
-                    VerticalAlignment="Bottom"
-                    IsIndeterminate="True"
-                    ShowError="False"
-                    ShowPaused="False" />
-            </Grid>
-        </toolkit:SettingsCard>
         <toolkit:SettingsExpander
             x:Name="OllamaAdvanceSettings"
             Description="Do not change unless you know what you are doing"

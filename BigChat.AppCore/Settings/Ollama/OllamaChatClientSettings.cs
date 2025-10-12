@@ -3,7 +3,6 @@
 public class OllamaChatClientSettings
 {
     public string CompletionModel { get; set; } = string.Empty;
-    public string EmbeddingModel { get; set; } = string.Empty;
     public string Endpoint { get; set; } = "http://localhost:11434";
     public double Temperature { get; set; } = Constants.DefaultTemperature;
     public int MaxOutputTokens { get; set; } = Constants.DefaultMaxOutputTokens;

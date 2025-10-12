@@ -27,4 +27,8 @@
 		<ProjectReference Include="..\BigChat.Infrastructure\BigChat.Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Embeddings\" />
+	</ItemGroup>
+
 </Project>

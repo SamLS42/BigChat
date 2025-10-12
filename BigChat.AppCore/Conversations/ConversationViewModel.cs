@@ -135,11 +135,11 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         MessageSource.AddOrUpdate(responseMessage);
 
         AiIsResponding = true;
-        int currentThinkTagIndex = -1; // -1 means not inside any think/auxiliary section
-        string rolling = string.Empty;
 
         try
         {
+            ChatResponse res = await ChatClient.GetResponseAsync(messages, cancellationToken: StopResponseCts.Token);
+
             await ChatClient.GetStreamingResponseAsync(messages, cancellationToken: StopResponseCts.Token)
                 .ToObservable()
                 .ObserveOn(RxApp.MainThreadScheduler)
@@ -150,9 +150,15 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
                         responseMessage.IsPending = false;
                     }
 
-                    (string rolling, int currentThinkTagIndex) result = ThinkParserHelpers.ApplyPartToResponse(responseMessage, rolling, currentThinkTagIndex, update.ToString());
-                    rolling = result.rolling;
-                    currentThinkTagIndex = result.currentThinkTagIndex;
+                    if (!string.IsNullOrEmpty(update.Text))
+                    {
+                        responseMessage.Content += update.Text;
+                    }
+
+                    foreach (TextReasoningContent reasoningContent in update.Contents.OfType<TextReasoningContent>().Where(c => !string.IsNullOrEmpty(c.Text)))
+                    {
+                        responseMessage.ThinkContent += reasoningContent.Text;
+                    }
                 });
 
             await DataService.UpdateMessageAsync(responseMessage.Id, responseMessage.Content, responseMessage.ThinkContent);

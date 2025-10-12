@@ -15,7 +15,6 @@ public partial class OllamaSettingsViewModel : ReactiveObject
     private bool IsInitialzied { get; set; }
     [Reactive] public partial string Endpoint { get; set; }
     [Reactive] public partial Model? CompletionModel { get; set; }
-    [Reactive] public partial Model? EmbeddingModel { get; set; }
     [Reactive] public partial double Temperature { get; set; }
     [Reactive] public partial int MaxOutputTokens { get; set; }
     [Reactive] public partial double TopP { get; set; }
@@ -23,8 +22,6 @@ public partial class OllamaSettingsViewModel : ReactiveObject
     [Reactive] public partial double PresencePenalty { get; set; }
     private SourceList<Model> CompletionModelsSource { get; } = new();
     public IObservableList<Model> CompletionModels => CompletionModelsSource.AsObservableList();
-    private SourceList<Model> EmbeddingModelsSource { get; } = new();
-    public IObservableList<Model> EmbeddingModels => EmbeddingModelsSource.AsObservableList();
     private OllamaChatClientSettings ChatSettings { get; }
     private ISettingsService SettingsService { get; } = ServiceLocator.GetRequiredService<ISettingsService>();
 
@@ -69,24 +66,13 @@ public partial class OllamaSettingsViewModel : ReactiveObject
             .Where(r => r.Capabilities.Contains(Constants.CapabilityCompletion))
             .Select(r => r.Model)];
 
-        Model[] embbedingModels = [.. results
-            .Where(r => r.Capabilities.Contains(Constants.CapabilityEmbedding))
-            .Select(r => r.Model)];
-
         CompletionModelsSource.Edit(list =>
         {
             list.Clear();
             list.AddRange(completionModels);
         });
 
-        EmbeddingModelsSource.Edit(list =>
-        {
-            list.Clear();
-            list.AddRange(embbedingModels);
-        });
-
         CompletionModel = CompletionModelsSource.Items.SingleOrDefault(n => n.Name == ChatSettings.CompletionModel);
-        EmbeddingModel = EmbeddingModelsSource.Items.SingleOrDefault(n => n.Name == ChatSettings.EmbeddingModel);
 
         IsInitialzied = true;
     }
@@ -118,7 +104,6 @@ public partial class OllamaSettingsViewModel : ReactiveObject
     {
         ChatSettings.Endpoint = Endpoint;
         ChatSettings.CompletionModel = CompletionModel?.Name ?? string.Empty;
-        ChatSettings.EmbeddingModel = EmbeddingModel?.Name ?? string.Empty;
         ChatSettings.Temperature = Temperature;
         ChatSettings.MaxOutputTokens = MaxOutputTokens;
         ChatSettings.TopP = TopP;
