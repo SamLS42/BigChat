@@ -126,8 +126,11 @@
   <data name="MaxOutputTokens" xml:space="preserve">
     <value>Max tokens</value>
   </data>
-  <data name="ModelId" xml:space="preserve">
-    <value>Model</value>
+  <data name="CompletionModelText" xml:space="preserve">
+    <value>Completion Model</value>
+  </data>
+  <data name="EmbeddingModelText" xml:space="preserve">
+    <value>Embedding Model</value>
   </data>
   <data name="ModelIdToolTip" xml:space="preserve">
     <value>ID of the model to use</value>

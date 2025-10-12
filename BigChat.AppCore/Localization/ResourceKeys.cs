@@ -6,7 +6,8 @@ internal static class ResourceKeys
     public static string Settings { get; } = nameof(Settings);
     public static string APIKey { get; } = nameof(APIKey);
     public static string APIKeyToolTip { get; } = nameof(APIKeyToolTip);
-    public static string ModelId { get; } = nameof(ModelId);
+    public static string CompletionModelText { get; } = nameof(CompletionModelText);
+    public static string EmbeddingModelText { get; } = nameof(EmbeddingModelText);
     public static string ModelIdToolTip { get; } = nameof(ModelIdToolTip);
     public static string RestoreDefaults { get; } = nameof(RestoreDefaults);
     public static string Temperature { get; } = nameof(Temperature);

@@ -4,11 +4,11 @@ using BigChat.AppCore.Settings.Ollama;
 using BigChat.AppCore.Settings.Onnx;
 using System.Text.Json.Serialization;
 
-namespace BigChat.Utils;
+namespace BigChat.AppCore.Settings;
 
 
 [JsonSerializable(typeof(AzureAIInferenceClientSettings))]
 [JsonSerializable(typeof(OllamaChatClientSettings))]
 [JsonSerializable(typeof(OnnxChatClientSettings))]
 [JsonSerializable(typeof(SupportedClients))]
-internal sealed partial class SourceGenerationContext : JsonSerializerContext;
+public sealed partial class SourceGenerationContext : JsonSerializerContext;

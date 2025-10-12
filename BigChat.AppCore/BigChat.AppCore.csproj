@@ -6,6 +6,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting" />
+		<PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI.Managed" />
 		<PackageReference Include="DynamicData" />
 		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
 		<PackageReference Include="ReactiveUI" />
@@ -16,14 +17,14 @@
 		<PackageReference Include="Microsoft.Extensions.AI.AzureAIInference" />
 		<PackageReference Include="OllamaSharp" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-		<PackageReference Include="Microsoft.Extensions.AI" />
 		<PackageReference Include="System.Interactive" />
 		<PackageReference Include="System.Interactive.Async" />
+		<PackageReference Include="Microsoft.Extensions.AI" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\BigChat.Embedding\BigChat.Embedding.csproj" />
 		<ProjectReference Include="..\BigChat.Infrastructure\BigChat.Infrastructure.csproj" />
-		<ProjectReference Include="..\BigChat.Embbeding\BigChat.Embbeding.csproj" />
 	</ItemGroup>
 
 </Project>

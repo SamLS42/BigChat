@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BigChat.Infrastructure.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20251011143503_RemovesEmbbedingTables")]
-    partial class RemovesEmbbedingTables
+    [Migration("20251011143503_RemovesEmbeddingTables")]
+    partial class RemovesEmbeddingTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -1,33 +1,94 @@
 ﻿using BigChat.AppCore.Settings.Ollama;
+using DynamicData;
+using DynamicData.Binding;
+using OllamaSharp;
+using OllamaSharp.Models;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using System.Numerics;
+using System.Reactive.Linq;
 
 namespace BigChat.AppCore.Settings;
 
 public partial class OllamaSettingsViewModel : ReactiveObject
 {
+    private bool IsInitialzied { get; set; }
     [Reactive] public partial string Endpoint { get; set; }
-    [Reactive] public partial string ModelId { get; set; }
+    [Reactive] public partial Model? CompletionModel { get; set; }
+    [Reactive] public partial Model? EmbeddingModel { get; set; }
     [Reactive] public partial double Temperature { get; set; }
     [Reactive] public partial int MaxOutputTokens { get; set; }
     [Reactive] public partial double TopP { get; set; }
     [Reactive] public partial double FrequencyPenalty { get; set; }
     [Reactive] public partial double PresencePenalty { get; set; }
-
+    private SourceList<Model> CompletionModelsSource { get; } = new();
+    public IObservableList<Model> CompletionModels => CompletionModelsSource.AsObservableList();
+    private SourceList<Model> EmbeddingModelsSource { get; } = new();
+    public IObservableList<Model> EmbeddingModels => EmbeddingModelsSource.AsObservableList();
     private OllamaChatClientSettings ChatSettings { get; }
+    private ISettingsService SettingsService { get; } = ServiceLocator.GetRequiredService<ISettingsService>();
 
-    private ISettingsService SettingsService { get; }
-
-    public OllamaSettingsViewModel(ISettingsService settingsService)
+    public OllamaSettingsViewModel()
     {
-        SettingsService = settingsService;
-
         ChatSettings = SettingsService.GetOllamaChatSettings();
 
         Endpoint = ChatSettings.Endpoint;
-        ModelId = ChatSettings.ModelId;
 
         LoadSettings();
+
+        this.WhenAnyPropertyChanged()
+            .SkipWhile(_ => !IsInitialzied)
+            .Subscribe(_ => Save());
+    }
+
+    [ReactiveCommand]
+    private async Task LoadModelsAsync()
+    {
+        using OllamaApiClient ollama = new(Endpoint);
+
+        Model[] models = [.. await ollama.ListLocalModelsAsync()];
+        using SemaphoreSlim semaphore = new(initialCount: 8);
+
+        IEnumerable<Task<(Model Model, string[] Capabilities)>> tasks = models.Select(async model =>
+        {
+            await semaphore.WaitAsync();
+            try
+            {
+                ShowModelResponse info = await ollama.ShowModelAsync(new() { Model = model.Name });
+                return (Model: model, Capabilities: info.Capabilities ?? []);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        });
+
+        (Model Model, string[] Capabilities)[] results = await Task.WhenAll(tasks);
+
+        Model[] completionModels = [.. results
+            .Where(r => r.Capabilities.Contains(Constants.CapabilityCompletion))
+            .Select(r => r.Model)];
+
+        Model[] embbedingModels = [.. results
+            .Where(r => r.Capabilities.Contains(Constants.CapabilityEmbedding))
+            .Select(r => r.Model)];
+
+        CompletionModelsSource.Edit(list =>
+        {
+            list.Clear();
+            list.AddRange(completionModels);
+        });
+
+        EmbeddingModelsSource.Edit(list =>
+        {
+            list.Clear();
+            list.AddRange(embbedingModels);
+        });
+
+        CompletionModel = CompletionModelsSource.Items.SingleOrDefault(n => n.Name == ChatSettings.CompletionModel);
+        EmbeddingModel = EmbeddingModelsSource.Items.SingleOrDefault(n => n.Name == ChatSettings.EmbeddingModel);
+
+        IsInitialzied = true;
     }
 
     private void LoadSettings()
@@ -48,13 +109,16 @@ public partial class OllamaSettingsViewModel : ReactiveObject
         ChatSettings.FrequencyPenalty = Constants.DefaultFrequencyPenalty;
         ChatSettings.PresencePenalty = Constants.DefaultPresencePenalty;
 
-        Save();
+        SettingsService.SetOllamaChatClientSettings(ChatSettings);
+
+        LoadSettings();
     }
 
-    public void Save()
+    private void Save()
     {
         ChatSettings.Endpoint = Endpoint;
-        ChatSettings.ModelId = ModelId;
+        ChatSettings.CompletionModel = CompletionModel?.Name ?? string.Empty;
+        ChatSettings.EmbeddingModel = EmbeddingModel?.Name ?? string.Empty;
         ChatSettings.Temperature = Temperature;
         ChatSettings.MaxOutputTokens = MaxOutputTokens;
         ChatSettings.TopP = TopP;
@@ -70,13 +134,4 @@ public partial class OllamaSettingsViewModel : ReactiveObject
 
         LoadSettings();
     }
-
-    public double MaxTemperature => Constants.MaxTemperature;
-    public double MinTemperature => Constants.MinTemperature;
-    public double MaxTopP => Constants.MaxTopP;
-    public double MinTopP => Constants.MinTopP;
-    public double MaxFrequencyPenalty => Constants.MaxFrequencyPenalty;
-    public double MinFrequencyPenalty => Constants.MinFrequencyPenalty;
-    public double MaxPresencePenalty => Constants.MaxPresencePenalty;
-    public double MinPresencePenalty => Constants.MinPresencePenalty;
 }

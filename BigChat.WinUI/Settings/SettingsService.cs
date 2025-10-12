@@ -3,7 +3,6 @@ using BigChat.AppCore.Settings;
 using BigChat.AppCore.Settings.AzureAIInference;
 using BigChat.AppCore.Settings.Ollama;
 using BigChat.AppCore.Settings.Onnx;
-using BigChat.Utils;
 using System.Text.Json;
 using Windows.Storage;
 
@@ -41,6 +40,7 @@ internal sealed class SettingsService : ISettingsService
         SetOllamaChatClientSettings(storedValue);
         return storedValue;
     }
+
     public void SetOllamaChatClientSettings(OllamaChatClientSettings value)
     {
         string jsonValue = JsonSerializer.Serialize(value, SourceGenerationContext.Default.OllamaChatClientSettings);

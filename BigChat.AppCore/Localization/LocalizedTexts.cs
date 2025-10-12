@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using BigChat.AppCore.Settings;
+using Microsoft.Extensions.Localization;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 
@@ -11,7 +12,8 @@ public sealed partial class LocalizedTexts : ReactiveObject
     [Reactive] public partial string ApiEndpointText { get; private set; }
     [Reactive] public partial string APIKeyText { get; private set; }
     [Reactive] public partial string APIKeyToolTipText { get; private set; }
-    [Reactive] public partial string ModelIdText { get; private set; }
+    [Reactive] public partial string CompletionModelText { get; private set; }
+    [Reactive] public partial string EmbeddingModelText { get; private set; }
     [Reactive] public partial string ModelIdToolTipText { get; private set; }
     [Reactive] public partial string RestoreDefaultsText { get; private set; }
     [Reactive] public partial string TemperatureText { get; private set; }
@@ -33,6 +35,14 @@ public sealed partial class LocalizedTexts : ReactiveObject
     [Reactive] public partial string CancelText { get; internal set; }
     [Reactive] public partial string MissingSettingsMessageText { get; internal set; }
     [Reactive] public partial string Thought { get; internal set; }
+    public double MaxTemperature => Constants.MaxTemperature;
+    public double MinTemperature => Constants.MinTemperature;
+    public double MaxTopP => Constants.MaxTopP;
+    public double MinTopP => Constants.MinTopP;
+    public double MaxFrequencyPenalty => Constants.MaxFrequencyPenalty;
+    public double MinFrequencyPenalty => Constants.MinFrequencyPenalty;
+    public double MaxPresencePenalty => Constants.MaxPresencePenalty;
+    public double MinPresencePenalty => Constants.MinPresencePenalty;
 
     public LocalizedTexts(IStringLocalizer stringLocalizer)
     {
@@ -41,7 +51,8 @@ public sealed partial class LocalizedTexts : ReactiveObject
         SettingsText = StringLocalizer[ResourceKeys.Settings];
         APIKeyText = StringLocalizer[ResourceKeys.APIKey];
         APIKeyToolTipText = StringLocalizer[ResourceKeys.APIKeyToolTip];
-        ModelIdText = StringLocalizer[ResourceKeys.ModelId];
+        CompletionModelText = StringLocalizer[ResourceKeys.CompletionModelText];
+        EmbeddingModelText = StringLocalizer[ResourceKeys.EmbeddingModelText];
         ModelIdToolTipText = StringLocalizer[ResourceKeys.ModelIdToolTip];
         RestoreDefaultsText = StringLocalizer[ResourceKeys.RestoreDefaults];
         TemperatureText = StringLocalizer[ResourceKeys.Temperature];

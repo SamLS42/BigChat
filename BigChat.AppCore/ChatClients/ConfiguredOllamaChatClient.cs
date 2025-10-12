@@ -68,7 +68,7 @@ internal sealed class ConfiguredOllamaChatClient : IChatClient
     {
         if (SettingsService.GetOllamaChatSettings() is OllamaChatClientSettings settings)
         {
-            ChatOptions.ModelId = settings.ModelId;
+            ChatOptions.ModelId = settings.CompletionModel;
             ChatOptions.Temperature = (float?)settings.Temperature;
             ChatOptions.MaxOutputTokens = settings.MaxOutputTokens;
             ChatOptions.TopP = (float?)settings.TopP;

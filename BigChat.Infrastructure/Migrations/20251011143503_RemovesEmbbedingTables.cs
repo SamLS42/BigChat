@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BigChat.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class RemovesEmbbedingTables : Migration
+    public partial class RemovesEmbeddingTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

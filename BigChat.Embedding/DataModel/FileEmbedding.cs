@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace BigChat.Embbeding.DataModel;
+namespace BigChat.Embedding.DataModel;
 
 public class FileEmbedding
 {

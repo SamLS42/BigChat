@@ -1,4 +1,4 @@
-﻿namespace BigChat.Embbeding.DataModel;
+﻿namespace BigChat.Embedding.DataModel;
 
 public class UserFile
 {

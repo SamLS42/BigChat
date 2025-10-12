@@ -26,7 +26,7 @@
         </toolkit:SettingsCard>
         <toolkit:SettingsCard>
             <toolkit:SettingsCard.Header>
-                <TextBlock Text="{x:Bind Loc.ModelIdText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.ModelIdToolTipText, Mode=OneWay}" />
+                <TextBlock Text="{x:Bind Loc.CompletionModelText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.ModelIdToolTipText, Mode=OneWay}" />
             </toolkit:SettingsCard.Header>
             <TextBox Style="{StaticResource TextBlockStyle}" Text="{x:Bind ViewModel.ModelId, Mode=TwoWay}" />
         </toolkit:SettingsCard>
