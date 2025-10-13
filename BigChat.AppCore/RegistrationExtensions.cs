@@ -29,11 +29,12 @@ public static class RegistrationExtensions
             })
             .AddSingleton<SubjectResolver>()
             .AddSingleton<NotificationService>()
+            .AddSingleton<SettingsViewModel>()
+            .AddSingleton<DataService>()
+            .AddSingleton<ConversationOperationsService>()
             .AddTransient<MainPageViewModel>()
             .AddTransient<ConversationViewModel>()
-            .AddSingleton<SettingsViewModel>()
             .AddTransient<AzureAIInferenceSettingsViewModel>()
-            .AddTransient<DataService>()
             .AddTransient<OllamaSettingsViewModel>();
     }
 }

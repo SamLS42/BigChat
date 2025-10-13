@@ -1,4 +1,5 @@
 ﻿using BigChat.AppCore.Localization;
+using BigChat.AppCore.MainPage;
 using BigChat.AppCore.Messages;
 using BigChat.AppCore.Services;
 using BigChat.AppCore.ViewModel;
@@ -23,6 +24,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     private CompositeDisposable Disposables { get; } = [];
     private SourceCache<MessageViewModel, int> MessageSource { get; } = new(vm => vm.Id);
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
+    private ConversationOperationsService ConversationOperations { get; } = ServiceLocator.GetRequiredService<ConversationOperationsService>();
     private LocalizedTexts Loc { get; } = ServiceLocator.GetRequiredService<LocalizedTexts>();
     private SubjectResolver SubjectResolver { get; } = ServiceLocator.GetRequiredService<SubjectResolver>();
     private DataService DataService { get; } = ServiceLocator.GetRequiredService<DataService>();
@@ -50,8 +52,10 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     public partial string InputBoxText { get; set; } = string.Empty;
 
     // Constructor
-    public ConversationViewModel()
+    public ConversationViewModel(int id)
     {
+        Id = id;
+
         MessageSource.Connect()
             .MergeMany(m => m.MessageUpdated.Select(_ => m))
             .Subscribe(async m => await UpdateMessageAsync(m))
@@ -60,10 +64,16 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
 
     // Commands and public methods
     [ReactiveCommand]
-    private void Delete() { }
+    private void Delete()
+    {
+        ConversationOperations.RequestDeletion(this);
+    }
 
     [ReactiveCommand]
-    public void Rename() { }
+    public void Rename()
+    {
+        ConversationOperations.RequestRename(this);
+    }
 
     public override string ToString()
     {

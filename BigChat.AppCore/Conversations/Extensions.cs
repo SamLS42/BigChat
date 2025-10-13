@@ -8,9 +8,8 @@ internal static class Extensions
     {
         internal ConversationViewModel ToConversationViewModel()
         {
-            return new()
+            return new(conversation.Id)
             {
-                Id = conversation.Id,
                 Subject = conversation.Subject,
                 CreatedAt = conversation.CreatedAt.ToLocalTime(),
             };

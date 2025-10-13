@@ -20,6 +20,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     private readonly CompositeDisposable Disposables = [];
     private SourceCache<ConversationViewModel, int> ConversationSource { get; } = new(c => c.Id);
     private IDbContextFactory<MyDbContext> DbContextFactory { get; } = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
+    private ConversationOperationsService ConversationOperations { get; } = ServiceLocator.GetRequiredService<ConversationOperationsService>();
     private DataService DataService { get; } = ServiceLocator.GetRequiredService<DataService>();
 
     // Public interactions and observable caches
@@ -37,16 +38,12 @@ public sealed partial class MainPageViewModel : ReactiveObject,
     // Constructor
     public MainPageViewModel()
     {
-        ConversationSource.Connect()
-            .MergeMany(c => c.DeleteCommand.Select(_ => c))
-            .SelectMany(c => Observable.FromAsync(() => DeleteConversationAsync(c)))
-            .Subscribe()
+        ConversationOperations.DeletionRequests
+            .Subscribe(async c => await DeleteConversationAsync(c))
             .DisposeWith(Disposables);
 
-        ConversationSource.Connect()
-            .MergeMany(c => c.RenameCommand.Select(_ => c))
-            .SelectMany(c => Observable.FromAsync(() => UpdateConversationSubjectAsync(c)))
-            .Subscribe()
+        ConversationOperations.RenameRequests
+            .Subscribe(async c => await UpdateConversationSubjectAsync(c))
             .DisposeWith(Disposables);
     }
 
@@ -93,6 +90,7 @@ public sealed partial class MainPageViewModel : ReactiveObject,
         if (confirmed)
         {
             ConversationSource.Remove(conversation);
+            ConversationSource.Refresh();
 
             await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
