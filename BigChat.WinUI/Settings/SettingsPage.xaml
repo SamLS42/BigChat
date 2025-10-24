@@ -26,7 +26,8 @@
             Text="{x:Bind Loc.SettingsText, Mode=OneWay}" />
         <ScrollViewer Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <toolkit:SettingsExpander Header="Ollama configuration" IsExpanded="{x:Bind ViewModel.OllamaIsOn, Mode=OneWay}">
+                <settings:OllamaSettings />
+                <!--<toolkit:SettingsExpander Header="Ollama configuration" IsExpanded="{x:Bind ViewModel.OllamaIsOn, Mode=OneWay}">
                     <ToggleSwitch IsOn="{x:Bind ViewModel.OllamaIsOn, Mode=TwoWay}" />
                     <toolkit:SettingsExpander.Items>
                         <settings:OllamaSettings />
@@ -37,7 +38,7 @@
                     <toolkit:SettingsExpander.Items>
                         <settings:AzureAIInferenceSettings />
                     </toolkit:SettingsExpander.Items>
-                </toolkit:SettingsExpander>
+                </toolkit:SettingsExpander>-->
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -20,12 +20,14 @@ public static class RegistrationExtensions
             {
                 ISettingsService settings = services.GetRequiredService<ISettingsService>();
 
-                return settings.GetSelectedClient() switch
-                {
-                    SupportedClients.AzureAIInference => services.GetKeyedService<IChatClient>(nameof(ConfiguredAzureAIInferenceClient))!,
-                    SupportedClients.Ollama => services.GetKeyedService<IChatClient>(nameof(ConfiguredOllamaChatClient))!,
-                    _ => services.GetKeyedService<IChatClient>(nameof(SupportedClients.Onnx))!
-                };
+                return services.GetKeyedService<IChatClient>(nameof(ConfiguredOllamaChatClient))!;
+
+                //return settings.GetSelectedClient() switch
+                //{
+                //    SupportedClients.AzureAIInference => services.GetKeyedService<IChatClient>(nameof(ConfiguredAzureAIInferenceClient))!,
+                //    SupportedClients.Ollama => services.GetKeyedService<IChatClient>(nameof(ConfiguredOllamaChatClient))!,
+                //    _ => services.GetKeyedService<IChatClient>(nameof(SupportedClients.Onnx))!
+                //};
             })
             .AddSingleton<SubjectResolver>()
             .AddSingleton<NotificationService>()

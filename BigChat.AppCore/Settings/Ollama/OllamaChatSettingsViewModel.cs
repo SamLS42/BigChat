@@ -5,7 +5,6 @@ using OllamaSharp;
 using OllamaSharp.Models;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using System.Numerics;
 using System.Reactive.Linq;
 
 namespace BigChat.AppCore.Settings;
