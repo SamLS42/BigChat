@@ -10,6 +10,9 @@ public sealed partial class LocalizedTexts : ReactiveObject
     private IStringLocalizer StringLocalizer { get; set; }
     [Reactive] public partial string SettingsText { get; private set; }
     [Reactive] public partial string ApiEndpointText { get; private set; }
+    [Reactive] public partial string OllamaNotRunningText { get; private set; }
+    [Reactive] public partial string OllamaCheckingText { get; private set; }
+    [Reactive] public partial string OllamaIsAvailableText { get; private set; }
     [Reactive] public partial string APIKeyText { get; private set; }
     [Reactive] public partial string APIKeyToolTipText { get; private set; }
     [Reactive] public partial string CompletionModelText { get; private set; }
@@ -67,6 +70,9 @@ public sealed partial class LocalizedTexts : ReactiveObject
         AppThemeToolTipText = StringLocalizer[ResourceKeys.AppThemeToolTip];
         NewChatText = StringLocalizer[ResourceKeys.NewChat];
         ApiEndpointText = StringLocalizer[ResourceKeys.ApiEndpoint];
+        OllamaNotRunningText = StringLocalizer[ResourceKeys.OllamaNotRunning];
+        OllamaCheckingText = StringLocalizer[ResourceKeys.OllamaChecking];
+        OllamaIsAvailableText = StringLocalizer[ResourceKeys.OllamaIsAvailable];
         DeleteText = StringLocalizer[ResourceKeys.Delete];
         RenameText = StringLocalizer[ResourceKeys.Rename];
         InputBoxPlaceholderText = StringLocalizer[ResourceKeys.InputBoxPlaceholder];

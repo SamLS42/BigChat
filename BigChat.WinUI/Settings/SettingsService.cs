@@ -65,8 +65,8 @@ internal sealed class SettingsService : ISettingsService
             return deserialized;
         }
 
-        SetSelectedClient(SupportedClients.Onnx);
-        return SupportedClients.Onnx;
+        SetSelectedClient(SupportedClients.Ollama);
+        return SupportedClients.Ollama;
     }
 
     public void SetSelectedClient(SupportedClients value)

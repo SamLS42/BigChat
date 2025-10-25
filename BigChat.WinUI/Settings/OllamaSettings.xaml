@@ -17,7 +17,18 @@
             </DataTemplate>
         </StackPanel.Resources>
         <toolkit:SettingsCard Header="{x:Bind Loc.ApiEndpointText}">
-            <TextBox x:Name="EndpointBox" Style="{StaticResource TextBlockStyle}" />
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <InfoBadge
+                    x:Name="NotAvailableBadge"
+                    Style="{ThemeResource CriticalIconInfoBadgeStyle}"
+                    ToolTipService.ToolTip="{x:Bind Loc.OllamaNotRunningText}" />
+                <ProgressRing x:Name="CheckingBadge" ToolTipService.ToolTip="{x:Bind Loc.OllamaCheckingText}" />
+                <InfoBadge
+                    x:Name="IsAvailableBadge"
+                    Style="{ThemeResource SuccessIconInfoBadgeStyle}"
+                    ToolTipService.ToolTip="{x:Bind Loc.OllamaIsAvailableText}" />
+                <TextBox x:Name="EndpointBox" Style="{StaticResource TextBlockStyle}" />
+            </StackPanel>
         </toolkit:SettingsCard>
         <toolkit:SettingsCard>
             <toolkit:SettingsCard.Header>

@@ -1,9 +1,7 @@
 ﻿using BigChat.AppCore;
-using BigChat.AppCore.ChatClient;
 using BigChat.AppCore.Settings;
 using BigChat.AppCore.Settings.Ollama;
 using BigChat.Infrastructure.Data;
-using BigChat.Onnx;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,11 +41,11 @@ public partial class App : Application
 
         ISettingsService settingsService = ServiceLocator.GetRequiredService<ISettingsService>();
 
-        if (settingsService.GetSelectedClient() == SupportedClients.Onnx)
-        {
-            //Initialize in the background
-            Task.Run(async () => await ServiceLocator.GetRequiredService<OnnxSetupService>().InitializeAsync());
-        }
+        //if (settingsService.GetSelectedClient() == SupportedClients.Onnx)
+        //{
+        //    //Initialize in the background
+        //    Task.Run(async () => await ServiceLocator.GetRequiredService<OnnxSetupService>().InitializeAsync());
+        //}
     }
 
     private void ConfigureServices()
@@ -80,7 +78,7 @@ public partial class App : Application
                     builder.SetMinimumLevel(LogLevel.Error);
                     builder.AddEventLog();
                 })
-                .AddSingleton<OnnxSetupService>()
+                //.AddSingleton<OnnxSetupService>()
                 .AddPlatformServices()
                 .AddCoreServices();
         }).Build();

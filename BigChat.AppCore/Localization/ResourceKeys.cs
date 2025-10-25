@@ -22,6 +22,9 @@ internal static class ResourceKeys
     public static string AppTheme { get; } = nameof(AppTheme);
     public static string AppThemeToolTip { get; } = nameof(AppThemeToolTip);
     public static string ApiEndpoint { get; } = nameof(ApiEndpoint);
+    public static string OllamaNotRunning { get; } = nameof(OllamaNotRunning);
+    public static string OllamaChecking { get; } = nameof(OllamaChecking);
+    public static string OllamaIsAvailable { get; } = nameof(OllamaIsAvailable);
     public static string Delete { get; } = nameof(Delete);
     public static string Rename { get; } = nameof(Rename);
     public static string InputBoxPlaceholder { get; } = nameof(InputBoxPlaceholder);

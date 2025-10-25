@@ -5,16 +5,17 @@
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap rescap">
+  xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
+  IgnorableNamespaces="uap rescap uap18">
 
 	<Identity
-	  Name="2297febc-8b76-4ec0-923e-62f382a74189"
-	  Publisher="CN=User"
+	  Name="SammyL.S.BigChat"
+	  Publisher="CN=18293D6B-CAEC-4C39-BD18-A7056F9FC855"
 	  Version="1.0.0.0" />
 
 	<Properties>
 		<DisplayName>BigChat</DisplayName>
-		<PublisherDisplayName>User</PublisherDisplayName>
+		<PublisherDisplayName>Sammy L.S.</PublisherDisplayName>
 		<Logo>Assets\StoreLogo.png</Logo>
 	</Properties>
 
@@ -29,7 +30,7 @@
 	<Applications>
 		<Application Id="App"
 		  Executable="$targetnametoken$.exe"
-		  EntryPoint="$targetentrypoint$">
+		  EntryPoint="$targetentrypoint$" >
 			<uap:VisualElements
 			  DisplayName="BigChat"
 			  Description="BigChat"
@@ -38,12 +39,14 @@
 			  Square44x44Logo="Assets\Square44x44Logo.png">
 				<uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
 				<uap:SplashScreen Image="Assets\SplashScreen.png" />
-				<uap:LockScreen BadgeLogo="Assets\BadgeLogo.png" Notification="badge"/>
+				<uap:InitialRotationPreference>
+					<uap:Rotation Preference="landscape"/></uap:InitialRotationPreference>
 			</uap:VisualElements>
 		</Application>
 	</Applications>
 
 	<Capabilities>
+		<Capability Name="internetClient"/>
 		<rescap:Capability Name="runFullTrust" />
 	</Capabilities>
 </Package>

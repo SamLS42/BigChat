@@ -12,6 +12,7 @@ namespace BigChat.AppCore.Settings;
 public partial class OllamaSettingsViewModel : ReactiveObject
 {
     private bool IsInitialzied { get; set; }
+    [Reactive] public partial OllamaState OllamaState { get; set; }
     [Reactive] public partial string Endpoint { get; set; }
     [Reactive] public partial Model? CompletionModel { get; set; }
     [Reactive] public partial double Temperature { get; set; }
@@ -30,6 +31,13 @@ public partial class OllamaSettingsViewModel : ReactiveObject
 
         Endpoint = ChatSettings.Endpoint;
 
+        this.WhenAnyValue(x => x.Endpoint)
+            .Where(e => !string.IsNullOrWhiteSpace(e))
+            .Throttle(TimeSpan.FromMilliseconds(1000))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .SelectMany(_ => Observable.FromAsync(CheckAvailabilityAsync))
+            .Subscribe();
+
         LoadSettings();
 
         this.WhenAnyPropertyChanged()
@@ -37,12 +45,31 @@ public partial class OllamaSettingsViewModel : ReactiveObject
             .Subscribe(_ => Save());
     }
 
+    private async Task CheckAvailabilityAsync(CancellationToken cancellationToken = default)
+    {
+        OllamaState = OllamaState.Checking;
+
+        using OllamaApiClient ollama = new(Endpoint);
+
+        try
+        {
+            await ollama.GetVersionAsync(cancellationToken);
+            OllamaState = OllamaState.Available;
+            LoadModelsCommand.Execute().Subscribe();
+        }
+        catch (HttpRequestException)
+        {
+            OllamaState = OllamaState.NotAvailable;
+            return;
+        }
+    }
+
     [ReactiveCommand]
-    private async Task LoadModelsAsync()
+    private async Task LoadModelsAsync(CancellationToken cancellationToken = default)
     {
         using OllamaApiClient ollama = new(Endpoint);
 
-        Model[] models = [.. await ollama.ListLocalModelsAsync()];
+        Model[] models = [.. await ollama.ListLocalModelsAsync(cancellationToken)];
         using SemaphoreSlim semaphore = new(initialCount: 8);
 
         IEnumerable<Task<(Model Model, string[] Capabilities)>> tasks = models.Select(async model =>
@@ -118,4 +145,11 @@ public partial class OllamaSettingsViewModel : ReactiveObject
 
         LoadSettings();
     }
+}
+
+public enum OllamaState
+{
+    Checking,
+    Available,
+    NotAvailable
 }

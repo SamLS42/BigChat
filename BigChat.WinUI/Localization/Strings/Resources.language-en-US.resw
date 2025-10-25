@@ -198,4 +198,13 @@
   <data name="Thought" xml:space="preserve">
     <value>Thought</value>
   </data>
+  <data name="OllamaNotRunning" xml:space="preserve">
+    <value>Failed to detect Ollama instance</value>
+  </data>
+  <data name="OllamaIsAvailable" xml:space="preserve">
+    <value>Ollama is available</value>
+  </data>
+  <data name="OllamaChecking" xml:space="preserve">
+    <value>Checking if Ollama is available</value>
+  </data>
 </root>
