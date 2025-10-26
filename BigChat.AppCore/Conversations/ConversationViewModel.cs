@@ -175,8 +175,8 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         }
         catch (HttpRequestException e)
         {
-            //TODO: 
-            responseMessage.Content = $"Please check if the AI provider is configured, we are getting this error message:\n\n{e.Message}";
+            responseMessage.IsPending = false;
+            responseMessage.Content = $"Please check if the Settings are configured, we are getting this error message:\n\n`{e.Message}`";
             await db.Messages.Where(m => m.Id == responseMessage.Id).ExecuteDeleteAsync();
         }
         finally
