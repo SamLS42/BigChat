@@ -38,7 +38,7 @@
             SelectionMode="None">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsStackPanel VerticalAlignment="Top" ItemsUpdatingScrollMode="KeepScrollOffset" />
+                    <ItemsStackPanel VerticalAlignment="Top" />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>

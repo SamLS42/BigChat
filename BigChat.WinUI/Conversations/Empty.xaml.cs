@@ -39,6 +39,11 @@ internal sealed partial class Empty : Page, IActivatableView
 
     private void SendInput()
     {
+        if (string.IsNullOrWhiteSpace(InputBox.Text))
+        {
+            return;
+        }
+
         UserInputSource.OnNext(InputBox.Text);
         InputBox.Text = string.Empty;
     }

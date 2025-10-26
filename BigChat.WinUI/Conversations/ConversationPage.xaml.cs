@@ -2,6 +2,8 @@ using BigChat.AppCore;
 using BigChat.AppCore.Conversations;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.ViewModel;
+using CommunityToolkit.WinUI;
+using CommunityToolkit.WinUI.Controls;
 using DynamicData;
 using Microsoft.Extensions.AI;
 using Microsoft.UI.Input;
@@ -56,13 +58,18 @@ internal sealed partial class ConversationPage : ReactiveConversationPage, IDisp
                 await Task.Yield();
                 MessageListView.UpdateLayout();
 
-                if (lastAdd.Role == ChatRole.User && await ViewModel!.LoadHistoryCommand.CanExecute.FirstAsync())
+                //Wait for message markdown rendering to complete
+                while (MessageListView.FindDescendants().OfType<MarkdownTextBlock>().Any(m => m.MarkdownDocument is null))
+                {
+                    await Task.Yield();
+                    MessageListView.UpdateLayout();
+                }
+
+                bool finishedLoadingHistory = await ViewModel!.LoadHistoryCommand.CanExecute.FirstAsync();
+
+                if (finishedLoadingHistory && lastAdd.Role == ChatRole.User && ViewModel.Messages.Items.TakeLast(2).Contains(lastAdd))
                 {
                     MessageListView.ScrollIntoView(lastAdd, ScrollIntoViewAlignment.Leading);
-                }
-                else
-                {
-                    MessageListView.ScrollIntoView(lastAdd, ScrollIntoViewAlignment.Default);
                 }
             })
             .Subscribe()
@@ -105,6 +112,11 @@ internal sealed partial class ConversationPage : ReactiveConversationPage, IDisp
         if (e.Key == VirtualKey.Enter && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
         {
             e.Handled = true;
+
+            if (string.IsNullOrWhiteSpace(InputBox.Text))
+            {
+                return;
+            }
 
             if (ViewModel!.AiIsResponding)
             {
