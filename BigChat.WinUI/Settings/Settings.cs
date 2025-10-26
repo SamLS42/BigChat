@@ -1,6 +1,7 @@
 ﻿using BigChat.AppCore.Settings.AzureAIInference;
 using BigChat.AppCore.Settings.Ollama;
 using BigChat.AppCore.Settings.Onnx;
+using System.Windows;
 
 namespace BigChat.Settings;
 
@@ -12,4 +13,5 @@ internal sealed class Settings
     public required AzureAIInferenceClientSettings AzureAIInferenceClientSettings { get; set; }
     public required OllamaChatClientSettings OllamaChatClientSettings { get; set; }
     public required OnnxChatClientSettings OnnxChatClientSettings { get; set; }
+    public required WindowState WindowState { get; set; }
 }

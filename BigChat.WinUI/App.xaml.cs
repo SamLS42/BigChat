@@ -6,22 +6,35 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using OllamaSharp;
 using System.Reactive;
 using System.Reactive.Linq;
+using Windows.Graphics;
 
 namespace BigChat;
 
 public partial class App : Application
 {
     private IHost _host = null!;
-    private Window m_window = null!;
 
     public App()
     {
         InitializeComponent();
         ConfigureServices();
+
+
+        //ISettingsService settingsService = ServiceLocator.GetRequiredService<ISettingsService>();
+        //if (settingsService.GetSelectedClient() == SupportedClients.Onnx)
+        //{
+        //    //Initialize in the background
+        //    Task.Run(async () => await ServiceLocator.GetRequiredService<OnnxSetupService>().InitializeAsync());
+        //}
+    }
+
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    {
 
         IDbContextFactory<MyDbContext> dbContextFactory = ServiceLocator.GetRequiredService<IDbContextFactory<MyDbContext>>();
 
@@ -32,20 +45,7 @@ public partial class App : Application
                 await db.DisposeAsync();
                 return Unit.Default;
             }))
-            .Subscribe(_ =>
-            {
-                m_window = ServiceLocator.GetRequiredService<MainWindow>();
-                m_window.Activate();
-            });
-
-
-        ISettingsService settingsService = ServiceLocator.GetRequiredService<ISettingsService>();
-
-        //if (settingsService.GetSelectedClient() == SupportedClients.Onnx)
-        //{
-        //    //Initialize in the background
-        //    Task.Run(async () => await ServiceLocator.GetRequiredService<OnnxSetupService>().InitializeAsync());
-        //}
+            .Subscribe(_ => LaunchWindow());
     }
 
     private void ConfigureServices()
@@ -84,5 +84,24 @@ public partial class App : Application
         }).Build();
 
         ServiceLocator.SetLocator(_host.Services);
+    }
+    private void LaunchWindow()
+    {
+        ISettingsService localSetting = ServiceLocator.GetRequiredService<ISettingsService>();
+        WindowState windowState = localSetting.GetWindowState();
+
+        MainWindow? window = new();
+
+        AppWindow appWindow = window.AppWindow;
+
+        appWindow.Move(new PointInt32(windowState.X, windowState.Y));
+        appWindow.Resize(new SizeInt32(windowState.Width, windowState.Height));
+
+        if (windowState.IsMaximized && appWindow.Presenter is OverlappedPresenter presenter)
+        {
+            presenter.Maximize();
+        }
+
+        window.Activate();
     }
 }

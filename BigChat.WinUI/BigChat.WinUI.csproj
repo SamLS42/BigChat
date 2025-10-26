@@ -59,6 +59,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Vanara.PInvoke.User32" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="Pages\MainPage.xaml">

@@ -12,10 +12,12 @@ public interface ISettingsService
     OnnxChatClientSettings GetOnnxChatSettings();
     string GetAppTheme();
     SupportedClients GetSelectedClient();
+    WindowState GetWindowState();
 
     void SetAzureAIInferenceClientSettings(AzureAIInferenceClientSettings value);
     void SetOllamaChatClientSettings(OllamaChatClientSettings value);
     void SetOnnxChatClientSettings(OnnxChatClientSettings value);
     void SetAppTheme(string value);
     void SetSelectedClient(SupportedClients value);
+    void SetWindowState(WindowState state);
 }

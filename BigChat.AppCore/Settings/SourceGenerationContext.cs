@@ -11,4 +11,5 @@ namespace BigChat.AppCore.Settings;
 [JsonSerializable(typeof(OllamaChatClientSettings))]
 [JsonSerializable(typeof(OnnxChatClientSettings))]
 [JsonSerializable(typeof(SupportedClients))]
+[JsonSerializable(typeof(WindowState))]
 public sealed partial class SourceGenerationContext : JsonSerializerContext;

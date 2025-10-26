@@ -69,6 +69,25 @@ internal sealed class SettingsService : ISettingsService
         return SupportedClients.Ollama;
     }
 
+    public WindowState GetWindowState()
+    {
+        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.WindowState), out object? item) && item is string value
+            && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.WindowState) is WindowState deserialized)
+        {
+            return deserialized;
+        }
+
+        WindowState storedValue = new();
+        SetWindowState(storedValue);
+        return storedValue;
+    }
+
+    public void SetWindowState(WindowState value)
+    {
+        string jsonValue = JsonSerializer.Serialize(value, SourceGenerationContext.Default.WindowState);
+        ApplicationData.Current.LocalSettings.Values[nameof(Settings.WindowState)] = jsonValue;
+    }
+
     public void SetSelectedClient(SupportedClients value)
     {
         ApplicationData.Current.LocalSettings.Values[nameof(Settings.SelectedClient)] = JsonSerializer.Serialize(value, SourceGenerationContext.Default.SupportedClients);
