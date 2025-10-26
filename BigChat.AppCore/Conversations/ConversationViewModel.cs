@@ -83,6 +83,11 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     [ReactiveCommand]
     private async Task AddMessageAsync(string inputText, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(inputText))
+        {
+            return;
+        }
+
         Message message = await DataService.AddMessageAsync(conversationId: Id, chatRole: ChatRole.User, content: inputText, cancellationToken);
 
         MessageViewModel messageViewModel = message.ToMessageViewModel();

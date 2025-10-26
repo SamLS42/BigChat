@@ -178,7 +178,7 @@
     <value>Select which app theme to display</value>
   </data>
   <data name="ApiEndpoint" xml:space="preserve">
-    <value>API endpoint</value>
+    <value>Ollama API endpoint</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>

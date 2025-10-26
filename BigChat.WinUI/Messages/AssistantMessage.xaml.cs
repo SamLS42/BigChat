@@ -1,6 +1,7 @@
 using BigChat.AppCore;
 using BigChat.AppCore.Localization;
 using BigChat.AppCore.ViewModel;
+using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
@@ -23,6 +24,8 @@ internal sealed partial class AssistantMessage : ReactiveAssistantMessage
     public AssistantMessage()
     {
         InitializeComponent();
+
+        this.FindChildren().OfType<MarkdownTextBlock>().ForEach(m => m.UpdateDebounceDelayMs = TimeSpan.FromMilliseconds(200));
 
         this.WhenActivated(d =>
         {
