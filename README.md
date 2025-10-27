@@ -8,19 +8,14 @@ BigChat is a WinUI 3 chat application. It provides a modern desktop interface fo
 * **Ollama Support:** Currently supports **only Ollama**, integrated via **OllamaSharp** and **Microsoft.Extensions.AI**.
 * **Local Data Store:** Uses **Entity Framework Core with SQLite** for persisting conversations and messages.
 * **Settings Management:** Configure chat parameters such as temperature, token limits, and penalties.
-* **Custom Markdown Rendering:** Uses a modified version of `MarkdownTextBlock` from the Community Toolkit (to be published in a separate repository).
-
-## Notes
-
-* Other AI providers will be added in future versions.
-* The custom `MarkdownTextBlock` implementation must be referenced from its separate repository once available.
+* **Custom Markdown Rendering:** Uses a modified version of `MarkdownTextBlock` from the Community Toolkit.
 
 ## Prerequisites
 
 * **Windows 11** or later
 * **Visual Studio 2026** with WinUI 3 and .NET 10 workloads
 * **.NET 10 SDK**
-* **[CommunityToolkit.Labs packages source](https://github.com/CommunityToolkit/Labs-Windows?tab=readme-ov-file#getting-started)**
+* **[Modified CommunityToolkit.Labs packages source](https://github.com/SamLS42/Labs-Windows?tab=readme-ov-file#getting-started)**
 
 ## Getting Started
 
