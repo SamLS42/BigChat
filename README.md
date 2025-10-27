@@ -1,64 +1,66 @@
 # BigChat
 
-BigChat is a WinUI 3 chat application built using a vertical slice architecture. It provides a modern desktop interface for chatting with large language models. You can choose between using the Ollama inference engine or Azure AI Inference to drive the chat functionality.
-
-![image](https://github.com/user-attachments/assets/14c3e019-2b59-4bdf-8462-962349024429)
+BigChat is a WinUI 3 chat application. It provides a modern desktop interface for chatting with large language models.
 
 ## Features
 
-- **Chat UI:** A responsive interface where conversations are listed and managed.
-- **Multiple AI Providers:** Support for both Ollama and Azure AI Inference enabling flexible chat experiences.
-- **Local Data Store:** Entity Framework Core with SQLite is used for data persistence to store conversations and messages.
-- **Settings Management:** Easily switch between AI providers and customize chat parameters (such as temperature, token limits, and penalties).
+* **Chat UI:** A responsive interface for managing conversations.
+* **Ollama Support:** Currently supports **only Ollama**, integrated via **OllamaSharp** and **Microsoft.Extensions.AI**.
+* **Local Data Store:** Uses **Entity Framework Core with SQLite** for persisting conversations and messages.
+* **Settings Management:** Configure chat parameters such as temperature, token limits, and penalties.
+* **Custom Markdown Rendering:** Uses a modified version of `MarkdownTextBlock` from the Community Toolkit (to be published in a separate repository).
+
+## Notes
+
+* Other AI providers will be added in future versions.
+* The custom `MarkdownTextBlock` implementation must be referenced from its separate repository once available.
 
 ## Prerequisites
 
-- **Windows 10** or later.
-- **Visual Studio 2022** with WinUI 3 and .NET 9 development workload installed.
-- **.NET 9 SDK**
-- **[CommunityToolkit.Labs packages source](https://github.com/CommunityToolkit/Labs-Windows?tab=readme-ov-file#getting-started)**
+* **Windows 11** or later
+* **Visual Studio 2026** with WinUI 3 and .NET 10 workloads
+* **.NET 10 SDK**
+* **[CommunityToolkit.Labs packages source](https://github.com/CommunityToolkit/Labs-Windows?tab=readme-ov-file#getting-started)**
 
 ## Getting Started
 
 1. **Clone the Repository**
-
 2. **Restore Dependencies and Build**
-
-   Open the solution in Visual Studio 2022. Restore NuGet packages, then build the solution.
-
+   Open the solution in Visual Studio, restore NuGet packages, and build the project.
 3. **Run the Application**
-
-   Set **BigChat.WinUI** as the startup project and run the application. The main window will load the chat interface, where you can start a new chat session with your preferred AI provider.
+   Set **BigChat.WinUI** as the startup project and run. The main window will load the chat interface.
 
 ## Project Structure
 
-- **BigChat.WinUI:** Contains the WinUI 3 UI implementation and application startup code.
-- **BigChat.AppCore:** Houses the application logic including view models, messaging, and navigation.
-- **BigChat.Infrastructure:** Implements the data access layer with EF Core (SQLite) and integrates AI provider services.
+* **BigChat.WinUI:** UI layer built with WinUI 3.
+* **BigChat.AppCore:** Application logic, view models, and navigation.
+* **BigChat.Infrastructure:** Data access with EF Core and Ollama service integration.
 
 ## Configuring AI Providers
 
-In the **Settings** page of the application, you can configure the endpoints and credentials for:
-- **Ollama Chat:** Set the model ID, temperature, and other chat parameters.
-- **Azure AI Inference:** Provide the API key, model ID, and adjust parameters such as temperature and token limits.
+Currently, only **Ollama** is supported.
+In the **Settings** page, set:
 
-Adjust these settings to tailor the chat experience to your needs.
+* **Model ID**
+* **Temperature**
+* **Token limit** and related chat parameters
+
+Additional providers (e.g., Azure AI Inference) will be supported later.
 
 ## Disclaimer
 
-**This project is not intended for production use.**  
-It leverages several **alpha, preview, and experimental libraries**. These libraries may have unstable APIs and limited support, so use this project only for experimental purposes or as a learning tool.
+**Experimental use only.**
+This project relies on **alpha and preview libraries**, which may change or break in future updates. Use for learning or experimentation.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE.txt) file for details.
+Licensed under the **MIT License**. See [LICENSE](LICENSE.txt) for details.
 
 ## Acknowledgments
 
-- The project leverages the latest [WinUI](https://github.com/microsoft/microsoft-ui-xaml) framework.
-- Built using technologies such as .NET 9, Entity Framework Core, and CommunityToolkit libraries.
+* Built on [WinUI](https://github.com/microsoft/microsoft-ui-xaml)
+* Uses **.NET 10**, **Entity Framework Core**, and **CommunityToolkit** components
 
 ---
 
-Happy coding and enjoy your chat experience with BigChat!
-
+Efficient, modern, and open.
