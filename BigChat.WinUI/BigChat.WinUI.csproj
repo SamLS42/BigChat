@@ -117,8 +117,7 @@
 		<PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
 		<SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
 		<SignAssembly>False</SignAssembly>
-		<PackageCertificateThumbprint>84B024E53B00EFCC90A3B824BA07E820F91E3115</PackageCertificateThumbprint>
-		<PackageCertificateKeyFile>BigChat.WinUI_TemporaryKey.pfx</PackageCertificateKeyFile>
+		<PackageCertificateThumbprint>CF95AA16C2E4DDDE240B5BCFBA95E734A4CEB001</PackageCertificateThumbprint>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PublishAot>False</PublishAot>
 	</PropertyGroup>

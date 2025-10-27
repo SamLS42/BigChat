@@ -7,7 +7,7 @@
     <PackageVersion Include="Microsoft.Agents.AI" Version="1.0.0-preview.251009.1" />
     <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="17.14.28" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0-rc.2.25502.107" />
-    <PackageVersion Include="CommunityToolkit.Labs.WinUI.Controls.MarkdownTextBlock" Version="0.1.251026" />
+    <PackageVersion Include="CommunityToolkit.Labs.WinUI.Controls.MarkdownTextBlock" Version="0.1.251027" />
     <PackageVersion Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250402" />
     <PackageVersion Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />

@@ -10,8 +10,8 @@
 
 	<Identity
 	  Name="SammyL.S.BigChat"
-	  Publisher="CN=18293D6B-CAEC-4C39-BD18-A7056F9FC855"
-	  Version="1.0.0.0" />
+	  Publisher="CN=Sammy Lastre Silveira"
+	  Version="1.0.1.0" />
 
 	<Properties>
 		<DisplayName>BigChat</DisplayName>
