@@ -2,6 +2,8 @@
 
 BigChat is a WinUI 3 chat application. It provides a modern desktop interface for chatting with large language models.
 
+<img width="1824" height="1330" alt="Screenshot 2025-10-27 171911" src="https://github.com/user-attachments/assets/4db0be8a-5220-45f0-96aa-264aec1851f3" />
+
 ## Features
 
 * **Chat UI:** A responsive interface for managing conversations.
