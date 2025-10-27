@@ -17,7 +17,7 @@ BigChat is a WinUI 3 chat application. It provides a modern desktop interface fo
 * **Windows 11** or later
 * **Visual Studio 2026** with WinUI 3 and .NET 10 workloads
 * **.NET 10 SDK**
-* **[Modified CommunityToolkit.Labs packages source](https://github.com/SamLS42/Labs-Windows?tab=readme-ov-file#getting-started)**
+* **[Modified CommunityToolkit.Labs packages source](https://github.com/SamLS42/Labs-Windows)**
 
 ## Getting Started
 
