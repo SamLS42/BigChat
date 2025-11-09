@@ -11,19 +11,10 @@
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<AppxOSMinVersionReplaceManifestVersion>false</AppxOSMinVersionReplaceManifestVersion>
 		<AppxOSMaxVersionTestedReplaceManifestVersion>false</AppxOSMaxVersionTestedReplaceManifestVersion>
 	</PropertyGroup>
-	<ItemGroup>
-		<None Remove="Pages\ConversationPage.xaml" />
-		<None Remove="Pages\MainPage.xaml" />
-		<None Remove="Pages\SettingsPage.xaml" />
-		<None Remove="Settings\AzureAIInferenceSettings.xaml" />
-		<None Remove="Settings\OllamaSettings.xaml" />
-		<None Remove="UserControls\ChatNavigationViewItem.xaml" />
-		<None Remove="UserControls\UserInput.xaml" />
-		<None Remove="UserControls\UserMessage.xaml" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="Assets\SplashScreen.scale-200.png" />
@@ -152,4 +143,7 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </Page>
 	</ItemGroup>
+  <PropertyGroup>
+		<NoWarn>$(NoWarn);CA5392</NoWarn>
+	</PropertyGroup>
 </Project>
