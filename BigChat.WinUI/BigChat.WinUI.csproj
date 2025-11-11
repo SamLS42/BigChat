@@ -41,14 +41,14 @@
 		<PackageReference Include="CommunityToolkit.WinUI.Extensions" />
 		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.WindowsAppSDK" />
 		<PackageReference Include="ReactiveUI.WinUI" />
 		<PackageReference Include="Roslynator.Analyzers">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Vanara.PInvoke.User32" />
 	</ItemGroup>
@@ -56,29 +56,29 @@
 		<Page Update="Pages\MainPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
-	</ItemGroup>	  
+	</ItemGroup>
 	<ItemGroup>
-	<ProjectReference Include="..\BigChat.AppCore\BigChat.AppCore.csproj" />
-</ItemGroup>	  
+		<ProjectReference Include="..\BigChat.AppCore\BigChat.AppCore.csproj" />
+	</ItemGroup>
 	<ItemGroup>
-	  <Page Update="Settings\AzureAIInferenceSettings.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>	  
+		<Page Update="Settings\AzureAIInferenceSettings.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
 	<ItemGroup>
-	  <Page Update="Settings\OllamaSettings.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>	  
+		<Page Update="Settings\OllamaSettings.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
 	<ItemGroup>
-	  <Page Update="CustomStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>	  
+		<Page Update="CustomStyles.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
 	<ItemGroup>
-	  <Page Update="UserControls\UserInput.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
+		<Page Update="UserControls\UserInput.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="Pages\SettingsPage.xaml">
@@ -131,19 +131,19 @@
 		<DebugType>full</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Page Update="UserControls\ChatNavigationViewItem.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	  <Page Update="UserControls\AssistantMessage.xaml">
-	    <SubType>Designer</SubType>
-	  </Page>
+		<Page Update="UserControls\ChatNavigationViewItem.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="UserControls\AssistantMessage.xaml">
+			<SubType>Designer</SubType>
+		</Page>
 	</ItemGroup>
 	<ItemGroup>
-	  <Page Update="UserControls\UserMessage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
+		<Page Update="UserControls\UserMessage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
 	</ItemGroup>
-  <PropertyGroup>
+	<PropertyGroup>
 		<NoWarn>$(NoWarn);CA5392</NoWarn>
 	</PropertyGroup>
 </Project>
