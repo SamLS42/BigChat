@@ -24,6 +24,8 @@
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.20250829.1" />
     <PackageVersion Include="OllamaSharp" Version="5.4.9" />
     <PackageVersion Include="ReactiveUI" Version="22.2.1" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="MSTest" Version="3.11.0" />
     <PackageVersion Include="ReactiveUI.SourceGenerators" Version="2.5.1" />
     <PackageVersion Include="ReactiveUI.WinUI" Version="22.2.1" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.14.1" />

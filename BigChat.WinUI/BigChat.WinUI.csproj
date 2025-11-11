@@ -106,9 +106,9 @@
 		<PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
 		<PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
 		<PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
-		<SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
 		<SignAssembly>False</SignAssembly>
-		<PackageCertificateThumbprint>CF95AA16C2E4DDDE240B5BCFBA95E734A4CEB001</PackageCertificateThumbprint>
+		<PackageCertificateThumbprint>50ED609F434FB2E9541CFE743D9B68E1729A0B9E</PackageCertificateThumbprint>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PublishAot>False</PublishAot>
 	</PropertyGroup>

@@ -10,6 +10,7 @@ public class NotificationService : IDisposable
 
     public void Send(Severity severity, string message)
     {
+        ArgumentNullException.ThrowIfNull(message);
         NotificationSource.OnNext(new(message, severity));
     }
 

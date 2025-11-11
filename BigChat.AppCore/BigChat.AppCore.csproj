@@ -28,6 +28,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="BigChat.AppCore.UnitTests" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Folder Include="Embeddings\" />
 	</ItemGroup>
 
