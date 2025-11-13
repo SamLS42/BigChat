@@ -15,6 +15,9 @@
 		<AppxOSMinVersionReplaceManifestVersion>false</AppxOSMinVersionReplaceManifestVersion>
 		<AppxOSMaxVersionTestedReplaceManifestVersion>false</AppxOSMaxVersionTestedReplaceManifestVersion>
 	</PropertyGroup>
+	<ItemGroup>
+	  <None Remove="Settings\About.xaml" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Content Include="Assets\SplashScreen.scale-200.png" />
@@ -59,6 +62,11 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\BigChat.AppCore\BigChat.AppCore.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Page Update="Settings\About.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="Settings\OpenAISettings.xaml">

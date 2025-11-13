@@ -18,7 +18,8 @@
                 x:Name="PageHeader1"
                 Grid.Column="0"
                 HorizontalAlignment="Left"
-                Style="{StaticResource TitleTextBlockStyle}"
+                VerticalAlignment="Bottom"
+                Style="{StaticResource SubtitleTextBlockStyle}"
                 Text="{x:Bind Loc.OpenAICompatibleService}" />
             <ToggleSwitch
                 x:Name="IsEnableSwitch"

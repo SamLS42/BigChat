@@ -25,12 +25,14 @@
                 x:Name="PageHeader1"
                 Grid.Column="0"
                 HorizontalAlignment="Left"
-                Style="{StaticResource TitleTextBlockStyle}"
+                VerticalAlignment="Bottom"
+                Style="{StaticResource SubtitleTextBlockStyle}"
                 Text="Ollama" />
             <ToggleSwitch
                 x:Name="IsEnableSwitch"
                 Grid.Column="1"
-                HorizontalAlignment="Right" />
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom" />
         </Grid>
         <toolkit:SettingsCard Header="{x:Bind Loc.ApiEndpointText}">
             <StackPanel Orientation="Horizontal" Spacing="4">

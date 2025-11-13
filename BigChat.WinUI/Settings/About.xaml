@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+    x:Class="BigChat.Settings.About"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:BigChat.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d">
+
+    <StackPanel Spacing="4">
+        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="About" />
+        <toolkit:SettingsExpander
+            Margin="0,0,0,36"
+            Description="© 2025 Sammy Lastre Silveira. All rights reserved."
+            Header="BigChat">
+            <toolkit:SettingsExpander.HeaderIcon>
+                <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/StoreLogo.png" />
+            </toolkit:SettingsExpander.HeaderIcon>
+            <TextBlock
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                IsTextSelectionEnabled="True"
+                Text="{x:Bind Version}" />
+            <toolkit:SettingsExpander.Items>
+                <toolkit:SettingsCard
+                    x:Name="ToCloneRepoCard"
+                    Click="toCloneRepoCard_Click"
+                    Header="To clone this repository"
+                    IsClickEnabled="True">
+                    <TextBlock
+                        x:Name="GitCloneTextBlock"
+                        FontFamily="Consolas"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsTextSelectionEnabled="True"
+                        Text="git clone https://github.com/SamLS42/BigChat" />
+                    <toolkit:SettingsCard.ActionIcon>
+                        <FontIcon Glyph="&#xE8C8;" />
+                    </toolkit:SettingsCard.ActionIcon>
+                </toolkit:SettingsCard>
+                <toolkit:SettingsCard
+                    x:Name="BugRequestCard"
+                    Click="bugRequestCard_Click"
+                    Header="File a bug or request new sample"
+                    IsClickEnabled="True">
+                    <toolkit:SettingsCard.ActionIcon>
+                        <FontIcon Glyph="&#xE8A7;" />
+                    </toolkit:SettingsCard.ActionIcon>
+                </toolkit:SettingsCard>
+                <toolkit:SettingsCard
+                    HorizontalContentAlignment="Left"
+                    ContentAlignment="Vertical"
+                    Header="THIS CODE AND INFORMATION IS PROVIDED ‘AS IS’ WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.">
+                    <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                        <HyperlinkButton Content="Microsoft Services Agreement" NavigateUri="https://go.microsoft.com/fwlink/?LinkId=822631" />
+                        <HyperlinkButton Content="Microsoft Privacy Statement" NavigateUri="https://go.microsoft.com/fwlink/?LinkId=521839" />
+                    </StackPanel>
+                </toolkit:SettingsCard>
+            </toolkit:SettingsExpander.Items>
+        </toolkit:SettingsExpander>
+    </StackPanel>
+</UserControl>
