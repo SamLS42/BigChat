@@ -1,6 +1,5 @@
 ﻿using BigChat.AppCore;
 using BigChat.AppCore.Settings;
-using BigChat.AppCore.Settings.Ollama;
 using BigChat.Infrastructure.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using OllamaSharp;
 using System.Diagnostics;
 using Windows.Graphics;
 using Windows.Storage;
@@ -71,12 +69,12 @@ public partial class App : Application
                 builder.SetMinimumLevel(LogLevel.Information);
             });
 
-            services.AddEmbeddingGenerator(svc =>
-            {
-                ISettingsService settings = svc.GetRequiredService<ISettingsService>();
-                OllamaChatClientSettings ollamaSettings = settings.GetOllamaChatSettings();
-                return new OllamaApiClient(new Uri(ollamaSettings.Endpoint), "embeddinggemma:latest");
-            });
+            //services.AddEmbeddingGenerator(svc =>
+            //{
+            //    ISettingsService settings = svc.GetRequiredService<ISettingsService>();
+            //    OllamaChatClientSettings ollamaSettings = settings.GetOllamaChatSettings();
+            //    return new OllamaApiClient(new Uri(ollamaSettings.Endpoint), "embeddinggemma:latest");
+            //});
 
             services.AddTransient<MainWindow>();
 

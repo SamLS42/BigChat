@@ -63,7 +63,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
             .DisposeWith(Disposables);
     }
 
-    // Commands and public methods
+    // Commands
     [ReactiveCommand]
     private void Delete()
     {
@@ -76,9 +76,21 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
         ConversationOperations.RequestRename(this);
     }
 
+    // Public methods
     public override string ToString()
     {
         return Subject;
+    }
+
+    // Private methods
+    [ReactiveCommand]
+    private async Task LoadHistoryAsync(CancellationToken cancellationToken = default)
+    {
+        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
+
+        MessageViewModel[] messages = [.. db.Messages.Where(m => m.ConversationId == Id).Select(m => m.ToMessageViewModel())];
+
+        MessageSource.EditDiff(messages, areItemsEqual: (m1, m2) => m1.Id == m2.Id);
     }
 
     [ReactiveCommand]
@@ -101,23 +113,12 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
     }
 
     [ReactiveCommand]
-    private async Task LoadHistoryAsync(CancellationToken cancellationToken = default)
-    {
-        await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
-
-        MessageViewModel[] messages = [.. db.Messages.Where(m => m.ConversationId == Id).Select(m => m.ToMessageViewModel())];
-
-        MessageSource.EditDiff(messages, areItemsEqual: (m1, m2) => m1.Id == m2.Id);
-    }
-
-    [ReactiveCommand]
     private async Task StopResponseAsync()
     {
         await StopResponseCts.CancelAsync();
         StopResponseCts = new CancellationTokenSource();
     }
 
-    // Private helpers
     private async Task UpdateMessageAsync(MessageViewModel message, CancellationToken cancellationToken = default)
     {
         await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
