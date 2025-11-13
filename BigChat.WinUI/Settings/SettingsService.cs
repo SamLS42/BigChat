@@ -1,8 +1,11 @@
-﻿using BigChat.AppCore.ChatClient;
+﻿using BigChat.AppCore.ChatClients;
 using BigChat.AppCore.Settings;
 using BigChat.AppCore.Settings.AzureAIInference;
 using BigChat.AppCore.Settings.Ollama;
 using BigChat.AppCore.Settings.Onnx;
+using BigChat.AppCore.Settings.OpenAI;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text.Json;
 using Windows.Storage;
 
@@ -10,6 +13,19 @@ namespace BigChat.Settings;
 
 internal sealed class SettingsService : ISettingsService
 {
+    public SettingsService()
+    {
+        SupportedClients selectedCliente = SupportedClients.None;
+
+        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.SelectedClient), out object? item) && item is string value
+            && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.SupportedClients) is SupportedClients deserialized)
+        {
+            selectedCliente = deserialized;
+        }
+
+        SelectedClienteSource = new BehaviorSubject<SupportedClients>(selectedCliente);
+    }
+
     public AzureAIInferenceClientSettings GetAzureAIInferenceSettings()
     {
         if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.AzureAIInferenceClientSettings), out object? item) && item is string value
@@ -57,17 +73,9 @@ internal sealed class SettingsService : ISettingsService
         ApplicationData.Current.LocalSettings.Values[nameof(Settings.AppTheme)] = value;
     }
 
-    public SupportedClients GetSelectedClient()
-    {
-        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.SelectedClient), out object? item) && item is string value
-            && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.SupportedClients) is SupportedClients deserialized)
-        {
-            return deserialized;
-        }
-
-        SetSelectedClient(SupportedClients.Ollama);
-        return SupportedClients.Ollama;
-    }
+    private BehaviorSubject<SupportedClients> SelectedClienteSource { get; }
+    public IObservable<SupportedClients> SelectedClientChanges => SelectedClienteSource.AsObservable();
+    public SupportedClients SelectedClient => SelectedClienteSource.Value;
 
     public WindowState GetWindowState()
     {
@@ -90,7 +98,11 @@ internal sealed class SettingsService : ISettingsService
 
     public void SetSelectedClient(SupportedClients value)
     {
+        if (value == SelectedClienteSource.Value)
+            return;
+
         ApplicationData.Current.LocalSettings.Values[nameof(Settings.SelectedClient)] = JsonSerializer.Serialize(value, SourceGenerationContext.Default.SupportedClients);
+        SelectedClienteSource.OnNext(value);
     }
 
 
@@ -123,5 +135,24 @@ internal sealed class SettingsService : ISettingsService
     {
         string jsonValue = JsonSerializer.Serialize(value, SourceGenerationContext.Default.OnnxChatClientSettings);
         ApplicationData.Current.LocalSettings.Values[nameof(Settings.OnnxChatClientSettings)] = jsonValue;
+    }
+
+    public OpenAIClientSettings GetOpenAISettings()
+    {
+        if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.OpenAIClientSettings), out object? item) && item is string value
+            && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.OpenAIClientSettings) is OpenAIClientSettings deserialized)
+        {
+            return deserialized;
+        }
+
+        OpenAIClientSettings storedValue = new();
+        SetOpenAIClientSettings(storedValue);
+        return storedValue;
+    }
+
+    public void SetOpenAIClientSettings(OpenAIClientSettings value)
+    {
+        string jsonValue = JsonSerializer.Serialize(value, SourceGenerationContext.Default.OpenAIClientSettings);
+        ApplicationData.Current.LocalSettings.Values[nameof(Settings.OpenAIClientSettings)] = jsonValue;
     }
 }

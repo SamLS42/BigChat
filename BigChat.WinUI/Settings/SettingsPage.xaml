@@ -19,26 +19,10 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock
-            x:Name="PageHeader"
-            HorizontalAlignment="Left"
-            Style="{StaticResource TitleTextBlockStyle}"
-            Text="{x:Bind Loc.SettingsText, Mode=OneWay}" />
         <ScrollViewer Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <StackPanel>
+            <StackPanel Spacing="8">
+                <settings:OpenAISettings />
                 <settings:OllamaSettings />
-                <!--<toolkit:SettingsExpander Header="Ollama configuration" IsExpanded="{x:Bind ViewModel.OllamaIsOn, Mode=OneWay}">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.OllamaIsOn, Mode=TwoWay}" />
-                    <toolkit:SettingsExpander.Items>
-                        <settings:OllamaSettings />
-                    </toolkit:SettingsExpander.Items>
-                </toolkit:SettingsExpander>
-                <toolkit:SettingsExpander Header="Azure AI Inference configuration" IsExpanded="{x:Bind ViewModel.AzureAIInferenceIsOn, Mode=OneWay}">
-                    <ToggleSwitch IsOn="{x:Bind ViewModel.AzureAIInferenceIsOn, Mode=TwoWay}" />
-                    <toolkit:SettingsExpander.Items>
-                        <settings:AzureAIInferenceSettings />
-                    </toolkit:SettingsExpander.Items>
-                </toolkit:SettingsExpander>-->
             </StackPanel>
         </ScrollViewer>
     </Grid>

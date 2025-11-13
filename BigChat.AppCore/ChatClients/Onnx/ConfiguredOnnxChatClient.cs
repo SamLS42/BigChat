@@ -1,6 +1,5 @@
 ﻿using BigChat.AppCore.Settings;
 using BigChat.AppCore.Settings.Onnx;
-using BigChat.Embedding.ChatClient;
 using Microsoft.Extensions.AI;
 using Microsoft.ML.OnnxRuntimeGenAI;
 

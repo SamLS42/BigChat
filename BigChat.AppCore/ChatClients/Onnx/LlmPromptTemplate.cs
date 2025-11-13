@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace BigChat.Embedding.ChatClient;
+namespace BigChat.AppCore.ChatClients.Onnx;
 
 public sealed class LlmPromptTemplate
 {

@@ -1,21 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<local:ReactiveOllamaSettings
-    x:Class="BigChat.Settings.OllamaSettings"
+<local:ReactiveOpenAISettings
+    x:Class="BigChat.Settings.OpenAISettings"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:BigChat.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ollama="using:OllamaSharp.Models"
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
     <StackPanel Spacing="4">
-        <StackPanel.Resources>
-            <DataTemplate x:Key="OllamaModelName" x:DataType="ollama:Model">
-                <TextBlock Text="{x:Bind Name}" />
-            </DataTemplate>
-        </StackPanel.Resources>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -26,7 +19,7 @@
                 Grid.Column="0"
                 HorizontalAlignment="Left"
                 Style="{StaticResource TitleTextBlockStyle}"
-                Text="Ollama" />
+                Text="{x:Bind Loc.OpenAICompatibleService}" />
             <ToggleSwitch
                 x:Name="IsEnableSwitch"
                 Grid.Column="1"
@@ -34,7 +27,7 @@
         </Grid>
         <toolkit:SettingsCard Header="{x:Bind Loc.ApiEndpointText}">
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <InfoBadge
+                <!--<InfoBadge
                     x:Name="NotAvailableBadge"
                     Style="{ThemeResource CriticalIconInfoBadgeStyle}"
                     ToolTipService.ToolTip="{x:Bind Loc.OllamaNotRunningText}" />
@@ -42,26 +35,24 @@
                 <InfoBadge
                     x:Name="IsAvailableBadge"
                     Style="{ThemeResource SuccessIconInfoBadgeStyle}"
-                    ToolTipService.ToolTip="{x:Bind Loc.OllamaIsAvailableText}" />
+                    ToolTipService.ToolTip="{x:Bind Loc.OllamaIsAvailableText}" />-->
                 <TextBox x:Name="EndpointBox" Style="{StaticResource TextBoxStyle}" />
             </StackPanel>
         </toolkit:SettingsCard>
         <toolkit:SettingsCard>
             <toolkit:SettingsCard.Header>
+                <TextBlock Text="{x:Bind Loc.APIKeyText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.APIKeyToolTipText, Mode=OneWay}" />
+            </toolkit:SettingsCard.Header>
+            <PasswordBox
+                x:Name="ApiKeyBox"
+                IsPasswordRevealButtonEnabled="True"
+                Style="{StaticResource PasswordBoxStyle}" />
+        </toolkit:SettingsCard>
+        <toolkit:SettingsCard>
+            <toolkit:SettingsCard.Header>
                 <TextBlock Text="{x:Bind Loc.CompletionModelText, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Loc.ModelIdToolTipText, Mode=OneWay}" />
             </toolkit:SettingsCard.Header>
-            <Grid>
-                <ComboBox
-                    x:Name="CompletionModelSelector"
-                    ItemTemplate="{StaticResource OllamaModelName}"
-                    ItemsSource="{x:Bind CompletionModels, Mode=OneWay}" />
-                <ProgressBar
-                    x:Name="LoadCompletionModelsProgress"
-                    VerticalAlignment="Bottom"
-                    IsIndeterminate="True"
-                    ShowError="False"
-                    ShowPaused="False" />
-            </Grid>
+            <TextBox x:Name="ModelBox" Style="{StaticResource TextBoxStyle}" />
         </toolkit:SettingsCard>
         <toolkit:SettingsExpander
             x:Name="OllamaAdvanceSettings"
@@ -127,4 +118,4 @@
             </toolkit:SettingsExpander.Items>
         </toolkit:SettingsExpander>
     </StackPanel>
-</local:ReactiveOllamaSettings>
+</local:ReactiveOpenAISettings>

@@ -31,4 +31,5 @@ internal static class ResourceKeys
     public static string Cancel { get; } = nameof(Cancel);
     public static string MissingSettingsMessage { get; } = nameof(MissingSettingsMessage);
     public static string Thought { get; } = nameof(Thought);
+    public static string OpenAICompatibleService { get; } = nameof(OpenAICompatibleService);
 }

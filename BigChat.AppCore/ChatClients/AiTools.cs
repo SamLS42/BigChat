@@ -3,7 +3,7 @@ using BigChat.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 
-namespace BigChat.AppCore.ChatClient;
+namespace BigChat.AppCore.ChatClients;
 
 public class AiTools(IDbContextFactory<MyDbContext> dbContextFactory)
 {

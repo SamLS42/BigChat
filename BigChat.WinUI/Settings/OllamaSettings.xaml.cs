@@ -20,7 +20,11 @@ public sealed partial class OllamaSettings : ReactiveOllamaSettings, IDisposable
     public OllamaSettings()
     {
         InitializeComponent();
+
         ViewModel = ServiceLocator.GetRequiredService<OllamaSettingsViewModel>();
+
+        this.Bind(ViewModel, x => x.IsSelected, v => v.IsEnableSwitch.IsOn)
+            .DisposeWith(Disposables);
 
         this.Bind(ViewModel, x => x.Endpoint, v => v.EndpointBox.Text)
             .DisposeWith(Disposables);
@@ -83,6 +87,11 @@ public sealed partial class OllamaSettings : ReactiveOllamaSettings, IDisposable
                 break;
             case OllamaState.Checking:
                 CheckingBadge.Visibility = Visibility.Visible;
+                IsAvailableBadge.Visibility = Visibility.Collapsed;
+                NotAvailableBadge.Visibility = Visibility.Collapsed;
+                break;
+            default:
+                CheckingBadge.Visibility = Visibility.Collapsed;
                 IsAvailableBadge.Visibility = Visibility.Collapsed;
                 NotAvailableBadge.Visibility = Visibility.Collapsed;
                 break;

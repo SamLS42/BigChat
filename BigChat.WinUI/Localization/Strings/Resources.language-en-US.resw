@@ -178,7 +178,7 @@
     <value>Select which app theme to display</value>
   </data>
   <data name="ApiEndpoint" xml:space="preserve">
-    <value>Ollama API endpoint</value>
+    <value>API endpoint</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
@@ -206,5 +206,8 @@
   </data>
   <data name="OllamaChecking" xml:space="preserve">
     <value>Checking if Ollama is available</value>
+  </data>
+  <data name="OpenAICompatibleService" xml:space="preserve">
+    <value>OpenAI-compatible service</value>
   </data>
 </root>

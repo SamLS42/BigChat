@@ -37,6 +37,7 @@ public sealed partial class LocalizedTexts : ReactiveObject
     [Reactive] public partial string CancelText { get; internal set; }
     [Reactive] public partial string MissingSettingsMessageText { get; internal set; }
     [Reactive] public partial string Thought { get; internal set; }
+    [Reactive] public partial string OpenAICompatibleService { get; internal set; }
     public double MaxTemperature => Constants.MaxTemperature;
     public double MinTemperature => Constants.MinTemperature;
     public double MaxTopP => Constants.MaxTopP;
@@ -79,5 +80,6 @@ public sealed partial class LocalizedTexts : ReactiveObject
         CancelText = StringLocalizer[ResourceKeys.Cancel];
         MissingSettingsMessageText = StringLocalizer[ResourceKeys.MissingSettingsMessage];
         Thought = StringLocalizer[ResourceKeys.Thought];
+        OpenAICompatibleService = StringLocalizer[ResourceKeys.OpenAICompatibleService];
     }
 }

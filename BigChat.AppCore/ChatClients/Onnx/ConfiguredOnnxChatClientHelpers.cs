@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.AI;
 using System.Text;
 
-namespace BigChat.Embedding.ChatClient;
+namespace BigChat.AppCore.ChatClients.Onnx;
 
 public static class ConfiguredOnnxChatClientHelpers
 {

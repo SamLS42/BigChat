@@ -20,6 +20,7 @@ public partial class OllamaSettingsViewModel : ReactiveObject
     [Reactive] public partial double TopP { get; set; }
     [Reactive] public partial double FrequencyPenalty { get; set; }
     [Reactive] public partial double PresencePenalty { get; set; }
+    [Reactive] public partial bool IsSelected { get; set; }
     private SourceList<Model> CompletionModelsSource { get; } = new();
     public IObservableList<Model> CompletionModels => CompletionModelsSource.AsObservableList();
     private OllamaChatClientSettings ChatSettings { get; }
@@ -31,8 +32,16 @@ public partial class OllamaSettingsViewModel : ReactiveObject
 
         Endpoint = ChatSettings.Endpoint;
 
-        this.WhenAnyValue(x => x.Endpoint)
-            .Where(e => !string.IsNullOrWhiteSpace(e))
+        SettingsService.SelectedClientChanges
+            .Select(c => c == ChatClients.SupportedClients.Ollama)
+            .Subscribe(v => IsSelected = v);
+
+        this.WhenAnyValue(x => x.IsSelected)
+            .Where(x => x)
+            .Subscribe(_ => SettingsService.SetSelectedClient(ChatClients.SupportedClients.Ollama));
+
+        this.WhenAnyValue(x => x.Endpoint, x => x.IsSelected, (Endpoint, IsSelected) => new { Endpoint, IsSelected })
+            .Where(v => v.IsSelected && !string.IsNullOrWhiteSpace(v.Endpoint))
             .Throttle(TimeSpan.FromMilliseconds(1000))
             .ObserveOn(RxApp.MainThreadScheduler)
             .SelectMany(_ => Observable.FromAsync(CheckAvailabilityAsync))
@@ -40,7 +49,13 @@ public partial class OllamaSettingsViewModel : ReactiveObject
 
         LoadSettings();
 
-        this.WhenAnyPropertyChanged()
+        this.WhenAnyPropertyChanged(nameof(Endpoint),
+                nameof(CompletionModel),
+                nameof(Temperature),
+                nameof(MaxOutputTokens),
+                nameof(TopP),
+                nameof(FrequencyPenalty),
+                nameof(PresencePenalty))
             .SkipWhile(_ => !IsInitialzied)
             .Subscribe(_ => Save());
     }
@@ -149,6 +164,7 @@ public partial class OllamaSettingsViewModel : ReactiveObject
 
 public enum OllamaState
 {
+    None,
     Checking,
     Available,
     NotAvailable

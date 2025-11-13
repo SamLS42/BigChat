@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
+using System.ClientModel;
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
@@ -177,6 +178,12 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
                 });
 
             await DataService.UpdateMessageAsync(responseMessage.Id, responseMessage.Content, responseMessage.ThinkContent);
+        }
+        catch (ClientResultException exception)
+        {
+            responseMessage.IsPending = false;
+            responseMessage.Content = exception.Message;
+            await db.Messages.Where(m => m.Id == responseMessage.Id).ExecuteDeleteAsync();
         }
         catch (HttpRequestException e)
         {

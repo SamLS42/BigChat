@@ -3,7 +3,7 @@ using BigChat.AppCore.Settings.Ollama;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
 
-namespace BigChat.AppCore.ChatClient;
+namespace BigChat.AppCore.ChatClients;
 
 internal sealed class ConfiguredOllamaChatClient : IChatClient
 {
@@ -11,15 +11,7 @@ internal sealed class ConfiguredOllamaChatClient : IChatClient
     private OllamaApiClient? ChatClient { get; set; }
     private ChatOptions ChatOptions { get; } = new ChatOptions();
     private string Endpoint => SettingsService.GetOllamaChatSettings().Endpoint;
-    private int EndpointHash { get; set; }
-
-    public ConfiguredOllamaChatClient()
-    {
-        if (Endpoint is not null)
-        {
-            EndpointHash = StringComparer.Ordinal.GetHashCode(Endpoint);
-        }
-    }
+    private string CurrentEndpoint { get; set; } = string.Empty;
 
     public void Dispose()
     {
@@ -33,13 +25,13 @@ internal sealed class ConfiguredOllamaChatClient : IChatClient
             throw new MissingSettingsException() { SettingName = nameof(Endpoint) };
         }
 
-        if (EndpointHash != StringComparer.Ordinal.GetHashCode(Endpoint) || ChatClient is null)
+        if (CurrentEndpoint != Endpoint || ChatClient is null)
         {
             ChatClient?.Dispose();
 
             ChatClient = new OllamaApiClient(Endpoint);
 
-            EndpointHash = StringComparer.Ordinal.GetHashCode(Endpoint);
+            CurrentEndpoint = Endpoint;
         }
 
         return ChatClient;

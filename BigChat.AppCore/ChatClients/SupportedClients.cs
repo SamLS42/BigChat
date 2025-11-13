@@ -1,8 +1,10 @@
-﻿namespace BigChat.AppCore.ChatClient;
+﻿namespace BigChat.AppCore.ChatClients;
 
 public enum SupportedClients
 {
-    Ollama = 0,
-    AzureAIInference = 1,
-    Onnx = 2,
+    None = 0,
+    Ollama = 1,
+    AzureAIInference = 2,
+    Onnx = 3,
+    OpenAI = 4,
 }
