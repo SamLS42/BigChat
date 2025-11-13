@@ -117,7 +117,7 @@
 		<PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
 		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
 		<SignAssembly>False</SignAssembly>
-		<PackageCertificateThumbprint>50ED609F434FB2E9541CFE743D9B68E1729A0B9E</PackageCertificateThumbprint>
+		<PackageCertificateThumbprint>2E37F86B00D469227ACA735B6622F51BB32CDA10</PackageCertificateThumbprint>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PublishAot>False</PublishAot>
 	</PropertyGroup>

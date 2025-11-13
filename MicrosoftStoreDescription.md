@@ -1,4 +1,3 @@
-Short description (120 characters)
 A native WinUI 3 chat client to experiment with LLMs: local Ollama or OpenAI-compatible endpoints with local history.
 
 Full description (for Microsoft Store listing)
