@@ -1,3 +1,7 @@
+<a href="https://apps.microsoft.com/detail/9pkxj6mq56q1?referrer=appbadge&mode=direct">
+	<img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
+</a>
+
 # BigChat
 
 BigChat is a WinUI 3 chat application that provides a modern desktop interface for interacting with large language models. It is designed for experimentation, developer workflows, and local/cloud model usage on Windows.

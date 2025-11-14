@@ -155,4 +155,7 @@
 	<PropertyGroup>
 		<NoWarn>$(NoWarn);CA5392</NoWarn>
 	</PropertyGroup>
+	<ItemGroup>
+	  <InternalsVisibleTo Include="BigChat.AppCore.UnitTests" />
+	</ItemGroup>
 </Project>

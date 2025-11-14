@@ -10,6 +10,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
   </Folder>
+  <Project Path="BigChat.AppCore.UnitTests/BigChat.AppCore.UnitTests.csproj" Id="1457d05c-1f88-484c-81e3-c5ca5b431515" />
   <Project Path="BigChat.AppCore/BigChat.AppCore.csproj" />
   <Project Path="BigChat.Embedding/BigChat.Embedding.csproj" />
   <Project Path="BigChat.Infrastructure/BigChat.Infrastructure.csproj" />

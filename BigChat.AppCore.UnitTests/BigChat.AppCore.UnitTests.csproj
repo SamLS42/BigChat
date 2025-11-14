@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+		<IsTestProject>true</IsTestProject>
+		<IsPackable>false</IsPackable>
+		<LangVersion>latest</LangVersion>
+		<DisableTransitiveProjectReferences>false</DisableTransitiveProjectReferences>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Moq" />
+		<PackageReference Include="MSTest" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BigChat.AppCore\BigChat.AppCore.csproj" />
+		<ProjectReference Include="..\BigChat.WinUI\BigChat.WinUI.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Settings\Ollama\" />
+		<Folder Include="Settings\OpenAI\" />
+	</ItemGroup>
+
+</Project>
