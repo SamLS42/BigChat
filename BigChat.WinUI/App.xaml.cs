@@ -1,4 +1,5 @@
 ﻿using BigChat.AppCore;
+using BigChat.AppCore.Notifications;
 using BigChat.AppCore.Settings;
 using BigChat.Infrastructure.Data;
 using Microsoft.Data.Sqlite;
@@ -47,6 +48,19 @@ public partial class App : Application
         }
 
         ConfigureServices();
+
+        ConfigureExceptionHandler();
+    }
+
+    private void ConfigureExceptionHandler()
+    {
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+        {
+            Exception ex = (Exception)e.ExceptionObject;
+            ServiceLocator.GetRequiredService<NotificationService>()
+                .Send(Severity.Error, ex.Message);
+            Debug.WriteLine($"Unhandled exception: {ex}");
+        };
     }
 
     protected override async void OnLaunched(LaunchActivatedEventArgs args)

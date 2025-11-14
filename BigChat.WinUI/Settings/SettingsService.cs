@@ -15,7 +15,7 @@ internal sealed class SettingsService : ISettingsService
 {
     public SettingsService()
     {
-        SupportedClients selectedCliente = SupportedClients.None;
+        SupportedClients selectedCliente = SupportedClients.Unconfigured;
 
         if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(Settings.SelectedClient), out object? item) && item is string value
             && JsonSerializer.Deserialize(value, SourceGenerationContext.Default.SupportedClients) is SupportedClients deserialized)

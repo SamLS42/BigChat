@@ -19,11 +19,11 @@
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="9.0.4" />
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.ML.OnnxRuntimeGenAI.Managed" Version="0.10.1" />
+    <PackageVersion Include="Microsoft.ML.OnnxRuntimeGenAI.Managed" Version="0.11.0" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Onnx" Version="1.66.0-alpha" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.SqliteVec" Version="1.67.1-preview" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.20250829.1" />
-    <PackageVersion Include="OllamaSharp" Version="5.4.9" />
+    <PackageVersion Include="OllamaSharp" Version="5.4.10" />
     <PackageVersion Include="ReactiveUI" Version="22.2.1" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="MSTest" Version="3.11.0" />
@@ -40,8 +40,8 @@
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6584" />
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.251003001" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-    <PackageVersion Include="System.Interactive" Version="6.0.3" />
-    <PackageVersion Include="System.Interactive.Async" Version="6.0.3" />
+    <PackageVersion Include="System.Interactive" Version="7.0.0-preview.10" />
+    <PackageVersion Include="System.Interactive.Async" Version="7.0.0-preview.10" />
     <PackageVersion Include="System.Reactive" Version="6.0.1" />
     <PackageVersion Include="Vanara.PInvoke.User32" Version="4.2.1" />
     <PackageVersion Include="xunit.v3" Version="2.0.1" />

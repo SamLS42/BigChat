@@ -18,6 +18,7 @@ public static class RegistrationExtensions
             .AddKeyedSingleton<IChatClient, ConfiguredAzureAIInferenceClient>(nameof(ConfiguredAzureAIInferenceClient))
             .AddKeyedSingleton<IChatClient, ConfiguredOllamaChatClient>(nameof(ConfiguredOllamaChatClient))
             .AddKeyedSingleton<IChatClient, ConfiguredOpenAIClient>(nameof(ConfiguredOpenAIClient))
+            .AddKeyedSingleton<IChatClient, UnconfiguredAIClient>(nameof(UnconfiguredAIClient))
             .AddTransient(services =>
             {
                 ISettingsService settings = services.GetRequiredService<ISettingsService>();
@@ -27,7 +28,7 @@ public static class RegistrationExtensions
                     SupportedClients.AzureAIInference => services.GetKeyedService<IChatClient>(nameof(ConfiguredAzureAIInferenceClient))!,
                     SupportedClients.Ollama => services.GetKeyedService<IChatClient>(nameof(ConfiguredOllamaChatClient))!,
                     SupportedClients.OpenAI => services.GetKeyedService<IChatClient>(nameof(ConfiguredOpenAIClient))!,
-                    _ => services.GetKeyedService<IChatClient>(nameof(SupportedClients.None))!
+                    _ => services.GetKeyedService<IChatClient>(nameof(UnconfiguredAIClient))!
                 };
             })
             .AddSingleton<SubjectResolver>()

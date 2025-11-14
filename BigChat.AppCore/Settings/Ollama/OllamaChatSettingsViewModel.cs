@@ -11,7 +11,6 @@ namespace BigChat.AppCore.Settings;
 
 public partial class OllamaSettingsViewModel : ReactiveObject
 {
-    private bool IsInitialzied { get; set; }
     [Reactive] public partial OllamaState OllamaState { get; set; }
     [Reactive] public partial string Endpoint { get; set; }
     [Reactive] public partial Model? CompletionModel { get; set; }
@@ -26,6 +25,9 @@ public partial class OllamaSettingsViewModel : ReactiveObject
     private OllamaChatClientSettings ChatSettings { get; }
     private ISettingsService SettingsService { get; } = ServiceLocator.GetRequiredService<ISettingsService>();
 
+    private bool IsInitialzied { get; set; }
+    private bool SuppressSave { get; set; }
+
     public OllamaSettingsViewModel()
     {
         ChatSettings = SettingsService.GetOllamaChatSettings();
@@ -37,8 +39,18 @@ public partial class OllamaSettingsViewModel : ReactiveObject
             .Subscribe(v => IsSelected = v);
 
         this.WhenAnyValue(x => x.IsSelected)
-            .Where(x => x)
-            .Subscribe(_ => SettingsService.SetSelectedClient(ChatClients.SupportedClients.Ollama));
+            .Subscribe(v =>
+            {
+                if (v)
+                {
+                    SettingsService.SetSelectedClient(ChatClients.SupportedClients.Ollama);
+                    return;
+                }
+                if (SettingsService.SelectedClient == ChatClients.SupportedClients.Ollama)
+                {
+                    SettingsService.SetSelectedClient(ChatClients.SupportedClients.Unconfigured);
+                }
+            });
 
         this.WhenAnyValue(x => x.Endpoint, x => x.IsSelected, (Endpoint, IsSelected) => new { Endpoint, IsSelected })
             .Where(v => v.IsSelected && !string.IsNullOrWhiteSpace(v.Endpoint))
@@ -56,7 +68,8 @@ public partial class OllamaSettingsViewModel : ReactiveObject
                 nameof(TopP),
                 nameof(FrequencyPenalty),
                 nameof(PresencePenalty))
-            .SkipWhile(_ => !IsInitialzied)
+            .Where(_ => !SuppressSave)
+            .Where(_ => IsInitialzied)
             .Subscribe(_ => Save());
     }
 
@@ -82,6 +95,8 @@ public partial class OllamaSettingsViewModel : ReactiveObject
     [ReactiveCommand]
     private async Task LoadModelsAsync(CancellationToken cancellationToken = default)
     {
+        IsInitialzied = false;
+
         using OllamaApiClient ollama = new(Endpoint);
 
         Model[] models = [.. await ollama.ListLocalModelsAsync(cancellationToken)];
@@ -120,11 +135,19 @@ public partial class OllamaSettingsViewModel : ReactiveObject
 
     private void LoadSettings()
     {
-        Temperature = ChatSettings.Temperature;
-        MaxOutputTokens = ChatSettings.MaxOutputTokens;
-        TopP = ChatSettings.TopP;
-        FrequencyPenalty = ChatSettings.FrequencyPenalty;
-        PresencePenalty = ChatSettings.PresencePenalty;
+        SuppressSave = true;
+        try
+        {
+            Temperature = ChatSettings.Temperature;
+            MaxOutputTokens = ChatSettings.MaxOutputTokens;
+            TopP = ChatSettings.TopP;
+            FrequencyPenalty = ChatSettings.FrequencyPenalty;
+            PresencePenalty = ChatSettings.PresencePenalty;
+        }
+        finally
+        {
+            SuppressSave = false;
+        }
     }
 
     [ReactiveCommand]
@@ -157,8 +180,6 @@ public partial class OllamaSettingsViewModel : ReactiveObject
         }
 
         SettingsService.SetOllamaChatClientSettings(ChatSettings);
-
-        LoadSettings();
     }
 }
 

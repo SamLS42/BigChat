@@ -210,4 +210,7 @@
   <data name="OpenAICompatibleService" xml:space="preserve">
     <value>OpenAI-compatible service</value>
   </data>
+  <data name="UnconfiguredAIClientMessage" xml:space="preserve">
+    <value>Please configure an AI provider in Settings before starting a chat.</value>
+  </data>
 </root>

@@ -13,12 +13,12 @@
     <Grid ColumnSpacing="8">
         <Grid.ContextFlyout>
             <MenuFlyout Placement="Bottom">
-                <MenuFlyoutItem Command="{x:Bind Conversation.DeleteCommand}" Text="{x:Bind Loc.DeleteText, Mode=OneWay}">
+                <MenuFlyoutItem Command="{x:Bind Conversation.DeleteCommand, Mode=OneWay}" Text="{x:Bind Loc.DeleteText, Mode=OneWay}">
                     <MenuFlyoutItem.Icon>
                         <SymbolIcon Symbol="Delete" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem Command="{x:Bind Conversation.RenameCommand}" Text="{x:Bind Loc.RenameText, Mode=OneWay}">
+                <MenuFlyoutItem Command="{x:Bind Conversation.RenameCommand, Mode=OneWay}" Text="{x:Bind Loc.RenameText, Mode=OneWay}">
                     <MenuFlyoutItem.Icon>
                         <SymbolIcon Symbol="Edit" />
                     </MenuFlyoutItem.Icon>
@@ -46,12 +46,12 @@
             Visibility="Visible">
             <DropDownButton.Flyout>
                 <MenuFlyout Placement="Bottom">
-                    <MenuFlyoutItem Command="{x:Bind Conversation.DeleteCommand}" Text="{x:Bind Loc.DeleteText, Mode=OneWay}">
+                    <MenuFlyoutItem Command="{x:Bind Conversation.DeleteCommand, Mode=OneWay}" Text="{x:Bind Loc.DeleteText, Mode=OneWay}">
                         <MenuFlyoutItem.Icon>
                             <SymbolIcon Symbol="Delete" />
                         </MenuFlyoutItem.Icon>
                     </MenuFlyoutItem>
-                    <MenuFlyoutItem Command="{x:Bind Conversation.RenameCommand}" Text="{x:Bind Loc.RenameText, Mode=OneWay}">
+                    <MenuFlyoutItem Command="{x:Bind Conversation.RenameCommand, Mode=OneWay}" Text="{x:Bind Loc.RenameText, Mode=OneWay}">
                         <MenuFlyoutItem.Icon>
                             <SymbolIcon Symbol="Edit" />
                         </MenuFlyoutItem.Icon>

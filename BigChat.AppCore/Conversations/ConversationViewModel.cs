@@ -186,7 +186,7 @@ public sealed partial class ConversationViewModel : ReactiveObject, IDisposable
             responseMessage.Content = exception.Message;
             await db.Messages.Where(m => m.Id == responseMessage.Id).ExecuteDeleteAsync();
         }
-        catch (HttpRequestException e)
+        catch (Exception e)
         {
             responseMessage.IsPending = false;
             responseMessage.Content = $"Please check if the Settings are configured, we are getting this error message:\n\n`{e.Message}`";

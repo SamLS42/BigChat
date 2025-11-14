@@ -19,9 +19,9 @@
 		<PackageReference Include="Microsoft.Extensions.AI.AzureAIInference" />
 		<PackageReference Include="OllamaSharp" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.AI" />
 		<PackageReference Include="System.Interactive" />
 		<PackageReference Include="System.Interactive.Async" />
-		<PackageReference Include="Microsoft.Extensions.AI" />
 	</ItemGroup>
 
 	<ItemGroup>

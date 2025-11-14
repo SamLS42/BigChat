@@ -10,21 +10,23 @@
     xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     xmlns:ui="using:CommunityToolkit.WinUI"
     mc:Ignorable="d">
-    <Grid
-        x:Name="RootGrid"
-        MaxWidth="1024"
-        Margin="32"
-        RowSpacing="32">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="8">
-                <settings:OpenAISettings />
-                <settings:OllamaSettings />
-                <settings:About />
-            </StackPanel>
-        </ScrollViewer>
+
+    <Grid x:Name="RootGrid">
+        <ListView
+            x:Name="MessageListView"
+            Margin="32"
+            SelectionMode="None">
+            <ListView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="0,0,0,16" />
+                    <Setter Property="MaxWidth" Value="1024" />
+                    <Setter Property="IsTabStop" Value="False" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <settings:OpenAISettings />
+            <settings:OllamaSettings />
+            <settings:About />
+        </ListView>
     </Grid>
 </Page>

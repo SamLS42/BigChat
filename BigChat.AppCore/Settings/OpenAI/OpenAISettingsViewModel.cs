@@ -7,7 +7,6 @@ namespace BigChat.AppCore.Settings.OpenAI;
 
 public partial class OpenAISettingsViewModel : ReactiveObject
 {
-    private bool IsInitialzied { get; set; }
     [Reactive] public partial string Endpoint { get; set; }
     [Reactive] public partial string APIKey { get; set; }
     [Reactive] public partial string ModelId { get; set; }
@@ -19,8 +18,9 @@ public partial class OpenAISettingsViewModel : ReactiveObject
     [Reactive] public partial bool IsSelected { get; set; }
 
     private OpenAIClientSettings ChatSettings { get; }
-
     private ISettingsService SettingsService { get; } = ServiceLocator.GetRequiredService<ISettingsService>();
+    private bool IsInitialzied { get; set; }
+    private bool SuppressSave { get; set; }
 
     public OpenAISettingsViewModel()
     {
@@ -35,8 +35,7 @@ public partial class OpenAISettingsViewModel : ReactiveObject
             .Subscribe(v => IsSelected = v);
 
         this.WhenAnyValue(x => x.IsSelected)
-            .Where(x => x)
-            .Subscribe(_ => SettingsService.SetSelectedClient(ChatClients.SupportedClients.OpenAI));
+            .Subscribe(v => UpdateSelectedClient(v));
 
         LoadSettings();
 
@@ -49,19 +48,41 @@ public partial class OpenAISettingsViewModel : ReactiveObject
                 nameof(TopP),
                 nameof(FrequencyPenalty),
                 nameof(PresencePenalty))
-            .SkipWhile(_ => !IsInitialzied)
+            .Where(_ => !SuppressSave)
+            .Where(_ => IsInitialzied)
             .Subscribe(_ => Save());
 
         IsInitialzied = true;
     }
 
+    private void UpdateSelectedClient(bool v)
+    {
+        if (v)
+        {
+            SettingsService.SetSelectedClient(ChatClients.SupportedClients.OpenAI);
+            return;
+        }
+        if (SettingsService.SelectedClient == ChatClients.SupportedClients.OpenAI)
+        {
+            SettingsService.SetSelectedClient(ChatClients.SupportedClients.Unconfigured);
+        }
+    }
+
     private void LoadSettings()
     {
-        Temperature = ChatSettings.Temperature;
-        MaxOutputTokens = ChatSettings.MaxOutputTokens;
-        TopP = ChatSettings.TopP;
-        FrequencyPenalty = ChatSettings.FrequencyPenalty;
-        PresencePenalty = ChatSettings.PresencePenalty;
+        SuppressSave = true;
+        try
+        {
+            Temperature = ChatSettings.Temperature;
+            MaxOutputTokens = ChatSettings.MaxOutputTokens;
+            TopP = ChatSettings.TopP;
+            FrequencyPenalty = ChatSettings.FrequencyPenalty;
+            PresencePenalty = ChatSettings.PresencePenalty;
+        }
+        finally
+        {
+            SuppressSave = false;
+        }
     }
 
     [ReactiveCommand]
@@ -90,7 +111,5 @@ public partial class OpenAISettingsViewModel : ReactiveObject
         ChatSettings.PresencePenalty = PresencePenalty;
 
         SettingsService.SetOpenAIClientSettings(ChatSettings);
-
-        LoadSettings();
     }
 }

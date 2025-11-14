@@ -145,7 +145,7 @@ internal sealed partial class MainPage : ReactiveMainPageView, IDisposable
             .Bind(out Conversations)
             .OnItemRemoved(vm =>
             {
-                if (ReferenceEquals(ViewModel, vm))
+                if (ReferenceEquals(NavView.SelectedItem, vm))
                 {
                     OpenEmptyConversation();
                 }

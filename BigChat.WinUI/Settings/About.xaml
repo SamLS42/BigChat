@@ -41,20 +41,11 @@
                 <toolkit:SettingsCard
                     x:Name="BugRequestCard"
                     Click="bugRequestCard_Click"
-                    Header="File a bug or request new sample"
+                    Header="File a bug"
                     IsClickEnabled="True">
                     <toolkit:SettingsCard.ActionIcon>
                         <FontIcon Glyph="&#xE8A7;" />
                     </toolkit:SettingsCard.ActionIcon>
-                </toolkit:SettingsCard>
-                <toolkit:SettingsCard
-                    HorizontalContentAlignment="Left"
-                    ContentAlignment="Vertical"
-                    Header="THIS CODE AND INFORMATION IS PROVIDED ‘AS IS’ WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.">
-                    <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                        <HyperlinkButton Content="Microsoft Services Agreement" NavigateUri="https://go.microsoft.com/fwlink/?LinkId=822631" />
-                        <HyperlinkButton Content="Microsoft Privacy Statement" NavigateUri="https://go.microsoft.com/fwlink/?LinkId=521839" />
-                    </StackPanel>
                 </toolkit:SettingsCard>
             </toolkit:SettingsExpander.Items>
         </toolkit:SettingsExpander>

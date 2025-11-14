@@ -11,11 +11,11 @@
 	<Identity
 	  Name="SammyL.S.BigChat"
 	  Publisher="CN=18293D6B-CAEC-4C39-BD18-A7056F9FC855"
-	  Version="1.1.1.0" />
+	  Version="1.2.1.0" />
 
 	<Properties>
 		<DisplayName>BigChat</DisplayName>
-		<PublisherDisplayName>Sammy L.S.</PublisherDisplayName>
+		<PublisherDisplayName>Sammy Lastre Silveira</PublisherDisplayName>
 		<Logo>Assets\StoreLogo.png</Logo>
 	</Properties>
 

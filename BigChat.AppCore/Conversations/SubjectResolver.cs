@@ -41,19 +41,26 @@ public partial class SubjectResolver(IDbContextFactory<MyDbContext> dbContextFac
             new ChatMessage (role : ChatRole.User, content : DetermineSubjectOrder),
         ];
 
-        ChatResponse response = await ChatClient.GetResponseAsync(LastestMessages, cancellationToken: cancellationToken);
-
-        string? subject = SubjectMatcher()
-            .Matches(response.Text ?? string.Empty)
-            .LastOrDefault()?.Groups["subject"].Value
-            .Trim();
-
-        if (subject is not null)
+        try
         {
-            int modfiedRows = await db.Conversations.Where(c => c.Id == conversationId)
-                .ExecuteUpdateAsync(s => s.SetProperty(c => c.Subject, subject), cancellationToken: cancellationToken);
+            ChatResponse response = await ChatClient.GetResponseAsync(LastestMessages, cancellationToken: cancellationToken);
 
-            return subject;
+            string? subject = SubjectMatcher()
+                .Matches(response.Text ?? string.Empty)
+                .LastOrDefault()?.Groups["subject"].Value
+                .Trim();
+
+            if (subject is not null)
+            {
+                int modfiedRows = await db.Conversations.Where(c => c.Id == conversationId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(c => c.Subject, subject), cancellationToken: cancellationToken);
+
+                return subject;
+            }
+        }
+        catch (Exception)
+        {
+            return null;
         }
 
         return null;

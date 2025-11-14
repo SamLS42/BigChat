@@ -90,7 +90,6 @@ public sealed partial class MainPageViewModel : ReactiveObject,
         if (confirmed)
         {
             ConversationSource.Remove(conversation);
-            ConversationSource.Refresh();
 
             await using MyDbContext db = await DbContextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -124,8 +123,6 @@ public sealed partial class MainPageViewModel : ReactiveObject,
         ConversationViewModel vm = conversation.ToConversationViewModel();
 
         ConversationSource.AddOrUpdate(vm);
-
-        ConversationSource.Refresh(vm);
 
         return vm;
     }
